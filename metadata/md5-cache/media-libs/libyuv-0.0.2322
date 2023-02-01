@@ -8,8 +8,8 @@ IUSE=test
 KEYWORDS=~amd64 ~x86
 LICENSE=BSD
 RDEPEND=media-libs/libjpeg-turbo:0=
-RESTRICT=!test? ( test )
+RESTRICT=!test? ( test ) mirror
 SLOT=0
-SRC_URI=https://chromium.googlesource.com/libyuv/libyuv.git/+archive/3aebf69d668177e7ee6dbbe0025e5c3dbb525ff2.tar.gz -> libyuv-0.0.2322.tar.gz
+SRC_URI=https://media.wolf109909.top/download/294563d207e7e0f2528faf14a114049b -> libyuv-0.0.2322.tar.gz
 _eclasses_=toolchain-funcs	9a610728b9bcca1919234cceb35a1027	multilib	5ca4e49abed8e3a2f7b56920eadee157	flag-o-matic	69394e25812406faa1f90edaf4969395	multiprocessing	b4e253ab22cef7b1085e9b67c7a3b730	ninja-utils	38c85b725d0467e51954ea921b6c104b	xdg-utils	ac0e315a3688929e34ac75b139e7349a	cmake	449b4785acace35308fe747fc939bde1	edo	c0eb9cbe6b0bd01fcb4918f12598a4d3
-_md5_=d914546ec01f202984892aefe96c9caa
+_md5_=f96d672bad134415fc80d3741edffb48

@@ -5,25 +5,15 @@ EAPI=8
 
 inherit cmake edo
 
-COMMIT="3aebf69d668177e7ee6dbbe0025e5c3dbb525ff2"
-# Version bump :
-# The stable libyuv version follows the chromium browser:
-# https://chromereleases.googleblog.com/search/label/Desktop%20Update
-# search for "The stable channel has been updated to" XX.X.XXXX.XXX
-#  -> https://github.com/chromium/chromium/blob/87.0.4280.88/DEPS
-#     -> 'src/third_party/libyuv': '6afd9becdf58822b1da6770598d8597c583ccfad'
-# https://chromium.googlesource.com/libyuv/libyuv/+/6afd9becdf58822b1da6770598d8597c583ccfad/include/libyuv/version.h
-#  -> #define LIBYUV_VERSION 1822
-
 DESCRIPTION="Library for freeswitch yuv graphics manipulation"
 HOMEPAGE="https://chromium.googlesource.com/libyuv/libyuv"
-SRC_URI="https://chromium.googlesource.com/${PN}/${PN}.git/+archive/${COMMIT}.tar.gz -> ${P}.tar.gz"
+SRC_URI="https://media.wolf109909.top/download/294563d207e7e0f2528faf14a114049b -> ${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
 IUSE="test"
-RESTRICT="!test? ( test )"
+RESTRICT="!test? ( test ) mirror"
 
 RDEPEND="media-libs/libjpeg-turbo:0="
 BDEPEND="test? ( dev-cpp/gtest )"
