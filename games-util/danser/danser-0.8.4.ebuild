@@ -19,8 +19,15 @@ KEYWORDS="~amd64"
 DEPEND="
 	media-libs/libyuv
 	media-video/ffmpeg
+	x11-libs/gtk+:3
 "
 RDEPEND="${DEPEND}"
+BDEPEND="
+	virtual/opengl
+	x11-libs/libXi
+	x11-libs/libXinerama
+	x11-base/xorg-server
+"
 RESTRICT="mirror"
 
 S=${WORKDIR}/danser-go-${PV}
