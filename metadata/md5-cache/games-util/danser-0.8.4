@@ -1,0 +1,16 @@
+BDEPEND=>=dev-lang/go-1.18 app-arch/unzip
+DEFINED_PHASES=compile install unpack
+DEPEND=media-libs/libyuv media-video/ffmpeg
+DESCRIPTION=Dancing visualizer of osu! maps and custom osu! client written in Go.
+EAPI=8
+HOMEPAGE=https://github.com/Wieku/danser-go
+INHERIT=go-module
+IUSE=+gui
+KEYWORDS=~amd64
+LICENSE=GPL-3
+RDEPEND=media-libs/libyuv media-video/ffmpeg
+RESTRICT=mirror strip
+SLOT=0
+SRC_URI=https://github.com/Wieku/danser-go/archive/refs/tags/0.8.4.tar.gz -> danser-0.8.4.tar.gz https://github.com/st0nie/gentoo-go-dep/releases/download/danser/danser-0.8.4-deps.tar.xz
+_eclasses_=go-module	75029f071ebc843223233ab1b0a2d4a5
+_md5_=85a11ddfff3918e71013c5f02df8baac
