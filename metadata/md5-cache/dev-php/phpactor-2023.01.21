@@ -1,0 +1,13 @@
+BDEPEND=dev-php/composer
+DEFINED_PHASES=compile install
+DEPEND=dev-lang/php[pcntl]
+DESCRIPTION=PHP completion, refactoring, introspection tool and language server
+EAPI=8
+HOMEPAGE=https://github.com/phpactor/phpactor
+KEYWORDS=~amd64
+LICENSE=MIT
+RDEPEND=dev-lang/php[pcntl]
+RESTRICT=mirror
+SLOT=0
+SRC_URI=https://github.com/phpactor/phpactor/archive/refs/tags/2023.01.21.tar.gz -> phpactor-2023.01.21.tar.gz https://media.wolf109909.top/download/eec4209a6f161bd829543dd8c0896e5a -> phpactor-2023.01.21-vendor.tar.gz
+_md5_=d7c93f2c4aca6e17b20e6a7926fdd59d
