@@ -25,7 +25,7 @@ RESTRICT="bindist mirror"
 
 BDEPEND=">=dev-util/patchelf-0.10"
 RDEPEND="
-	app-arch/snappy:0/1
+	app-arch/snappy
 	dev-libs/openssl:0
 	system-quazip? ( dev-libs/quazip:0/1[qt5(+)] )
 	dev-qt/qtcore:5
