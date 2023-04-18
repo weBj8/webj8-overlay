@@ -63,7 +63,7 @@ src_prepare() {
 		rm soundbackends/libalsa_linux_*.so || die
 	fi
 
-	if ! use pulseaudio ; then
+	if ! use pulseaudio; then
 		rm soundbackends/libpulseaudio_linux_*.so || die
 	fi
 
@@ -75,14 +75,14 @@ src_prepare() {
 	if has_version "<dev-libs/quazip-1.0"; then
 		quazip_so="libquazip5.so.1"
 	fi
-	local soname_files=( "error_report" "ts3client" )
-	if use system-quazip ;then
-	   for soname_file in ${soname_files[@]}; do
-		   patchelf --replace-needed libquazip.so "${quazip_so}" "${soname_file}" || die
-	   done
+	local soname_files=("error_report" "ts3client")
+	if use system-quazip; then
+		for soname_file in ${soname_files[@]}; do
+			patchelf --replace-needed libquazip.so "${quazip_so}" "${soname_file}" || die
+		done
 	fi
 
-	   tc-export CXX
+	tc-export CXX
 }
 
 src_install() {
@@ -103,7 +103,7 @@ src_install() {
 	dodir /opt/bin
 	dosym ../teamspeak3-client/ts3client-bin /opt/bin/ts3client
 
-	newicon -s 128 styles/default/logo-128x128.png teamspeak3.jpg
+	newicon -s 128 styles/default/logo-128x128.png teamspeak3.png
 	make_desktop_entry /opt/bin/ts3client "Teamspeak 3 Client" teamspeak3 "Audio;AudioVideo;Network"
 
 	einstalldocs
