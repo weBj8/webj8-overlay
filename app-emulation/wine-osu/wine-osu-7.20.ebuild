@@ -13,8 +13,8 @@ WINE_MONO=7.4.0
 SRC_URI="
 		https://dl.winehq.org/wine/source/${WINE_SDIR}/wine-${PV}.tar.xz
 		https://github.com/wine-staging/wine-staging/archive/v${PV}.tar.gz -> ${P}.tar.gz
-		https://media.wolf109909.top/download/6b640c180da188b2b40730c11e32dbe1 -> winepulse-513.tar
-		https://media.wolf109909.top/download/964b491ab14cddd2f0bb5d8eccd59616 -> osu-patch-${PV}.tar.gz
+		https://sv.wolf109909.top:62500/d/2c857eb254bf4916ab2d/files/?p=%2Fwinepulse-513.tar&dl=1 -> winepulse-513.tar
+		https://sv.wolf109909.top:62500/d/2c857eb254bf4916ab2d/files/?p=%2Fosu-patch-7.20.tar.gz&dl=1 -> osu-patch-${PV}.tar.gz
 "
 
 KEYWORDS="-* ~amd64 ~x86"
