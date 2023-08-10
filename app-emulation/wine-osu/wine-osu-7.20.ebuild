@@ -6,8 +6,8 @@ EAPI=8
 MULTILIB_COMPAT=( abi_x86_{32,64} )
 inherit autotools flag-o-matic multilib multilib-build toolchain-funcs wrapper
 
-WINE_GECKO=2.47.3
-WINE_MONO=7.4.0
+WINE_GECKO=2.47.4
+WINE_MONO=8.0.0
 
 (( $(ver_cut 2) )) && WINE_SDIR=$(ver_cut 1).x || WINE_SDIR=$(ver_cut 1).0
 SRC_URI="
