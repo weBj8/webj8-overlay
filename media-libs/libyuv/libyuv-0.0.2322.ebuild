@@ -7,7 +7,7 @@ inherit cmake edo
 
 DESCRIPTION="Library for freeswitch yuv graphics manipulation"
 HOMEPAGE="https://chromium.googlesource.com/libyuv/libyuv"
-SRC_URI="https://media.wolf109909.top/download/294563d207e7e0f2528faf14a114049b -> ${P}.tar.gz"
+SRC_URI="https://sv.wolf109909.top:62500/f/7db6c054c8d8409199a7/?dl=1 -> ${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0"
