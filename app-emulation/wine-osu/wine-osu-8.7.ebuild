@@ -4,34 +4,44 @@
 EAPI=8
 
 MULTILIB_COMPAT=( abi_x86_{32,64} )
-inherit autotools flag-o-matic multilib multilib-build toolchain-funcs wrapper
+PYTHON_COMPAT=( python3_{9..11} )
+inherit autotools edo flag-o-matic multilib multilib-build
+inherit python-any-r1 toolchain-funcs wrapper
 
-WINE_GECKO=2.47.3
+_P=wine-staging-${PV}
+WINE_GECKO=2.47.4
 WINE_MONO=7.4.0
 
-(( $(ver_cut 2) )) && WINE_SDIR=$(ver_cut 1).x || WINE_SDIR=$(ver_cut 1).0
-SRC_URI="
+if [[ ${PV} == *9999 ]]; then
+	inherit git-r3
+	EGIT_REPO_URI="https://github.com/wine-staging/wine-staging.git"
+	WINE_EGIT_REPO_URI="https://gitlab.winehq.org/wine/wine.git"
+else
+	(( $(ver_cut 2) )) && WINE_SDIR=$(ver_cut 1).x || WINE_SDIR=$(ver_cut 1).0
+	SRC_URI="
 		https://dl.winehq.org/wine/source/${WINE_SDIR}/wine-${PV}.tar.xz
-		https://github.com/wine-staging/wine-staging/archive/v${PV}.tar.gz -> ${P}.tar.gz
-		https://sv.wolf109909.top:62500/d/2c857eb254bf4916ab2d/files/?p=%2Fwinepulse-513.tar&dl=1 -> winepulse-513.tar
-		https://sv.wolf109909.top:62500/d/2c857eb254bf4916ab2d/files/?p=%2Fosu-patch-7.20.tar.gz&dl=1 -> osu-patch-${PV}.tar.gz
-"
-
-KEYWORDS="-* ~amd64 ~x86"
+		https://github.com/wine-staging/wine-staging/archive/v${PV}.tar.gz -> ${_P}.tar.gz
+		https://github.com/NelloKudo/WineBuilder/raw/master/osu-misc/winepulse-513.tar -> winepulse-513.tar
+		https://github.com/NelloKudo/WineBuilder/raw/master/osu-misc/wineoss-revert.tar -> wineoss-revert.tar
+		https://github.com/NelloKudo/WineBuilder/raw/master/osu-misc/winecoreaudio-revert.tar -> winecoreaudio-revert.tar
+		https://github.com/NelloKudo/WineBuilder/raw/master/osu-misc/winealsa-revert.tar -> winealsa-revert.tar
+		https://sv.wolf109909.top:62500/f/6350894741fe4486a068/?dl=1 -> 8.7-osu-wine-patch.tar.gz"
+	KEYWORDS="-* ~amd64 ~x86"
+fi
 S="${WORKDIR}/wine-${PV}"
 
-DESCRIPTION="Wine with Wine-Staging and wine-osu patchsets"
-HOMEPAGE="https://www.winehq.org/"
+DESCRIPTION="Free implementation of Windows(tm) on Unix, with Wine-Staging patchset"
+HOMEPAGE="https://wiki.winehq.org/Wine-Staging"
 
-LICENSE="LGPL-2.1+ BSD-2 IJG MIT ZLIB gsm libpng2 libtiff"
+LICENSE="LGPL-2.1+ BSD-2 IJG MIT OPENLDAP ZLIB gsm libpng2 libtiff"
 SLOT="${PV}"
 IUSE="
 	+X +abi_x86_32 +abi_x86_64 +alsa capi crossdev-mingw cups dos
 	llvm-libunwind debug custom-cflags +fontconfig +gecko gphoto2
-	+gstreamer kerberos ldap +mingw +mono netapi nls odbc openal
-	opencl +opengl osmesa pcap perl pulseaudio samba scanner +sdl
-	selinux +ssl +truetype udev udisks +unwind usb v4l +vulkan
-	+xcomposite xinerama"
+	+gstreamer kerberos +mingw +mono netapi nls opencl +opengl osmesa
+	pcap perl pulseaudio samba scanner +sdl selinux smartcard +ssl
+	+truetype udev udisks +unwind usb v4l +vulkan wayland +xcomposite
+	xinerama"
 REQUIRED_USE="
 	X? ( truetype )
 	crossdev-mingw? ( mingw )" # bug #551124 for truetype
@@ -60,7 +70,6 @@ WINE_DLOPEN_DEPEND="
 	fontconfig? ( media-libs/fontconfig[${MULTILIB_USEDEP}] )
 	kerberos? ( virtual/krb5[${MULTILIB_USEDEP}] )
 	netapi? ( net-fs/samba[${MULTILIB_USEDEP}] )
-	odbc? ( dev-db/unixODBC[${MULTILIB_USEDEP}] )
 	sdl? ( media-libs/libsdl2[haptic,joystick,${MULTILIB_USEDEP}] )
 	ssl? ( net-libs/gnutls:=[${MULTILIB_USEDEP}] )
 	truetype? ( media-libs/freetype[${MULTILIB_USEDEP}] )
@@ -81,18 +90,18 @@ WINE_COMMON_DEPEND="
 		media-libs/gst-plugins-base:1.0[${MULTILIB_USEDEP}]
 		media-libs/gstreamer:1.0[${MULTILIB_USEDEP}]
 	)
-	ldap? ( net-nds/openldap:=[${MULTILIB_USEDEP}] )
-	openal? ( media-libs/openal[${MULTILIB_USEDEP}] )
 	opencl? ( virtual/opencl[${MULTILIB_USEDEP}] )
 	pcap? ( net-libs/libpcap[${MULTILIB_USEDEP}] )
 	pulseaudio? ( media-libs/libpulse[${MULTILIB_USEDEP}] )
 	scanner? ( media-gfx/sane-backends[${MULTILIB_USEDEP}] )
+	smartcard? ( sys-apps/pcsc-lite[${MULTILIB_USEDEP}] )
 	udev? ( virtual/libudev:=[${MULTILIB_USEDEP}] )
 	unwind? (
 		llvm-libunwind? ( sys-libs/llvm-libunwind[${MULTILIB_USEDEP}] )
 		!llvm-libunwind? ( sys-libs/libunwind:=[${MULTILIB_USEDEP}] )
 	)
-	usb? ( dev-libs/libusb:1[${MULTILIB_USEDEP}] )"
+	usb? ( dev-libs/libusb:1[${MULTILIB_USEDEP}] )
+	wayland? ( dev-libs/wayland[${MULTILIB_USEDEP}] )"
 RDEPEND="
 	${WINE_COMMON_DEPEND}
 	app-emulation/wine-desktop-common
@@ -111,15 +120,33 @@ DEPEND="
 	${WINE_COMMON_DEPEND}
 	sys-kernel/linux-headers
 	X? ( x11-base/xorg-proto )"
+# gitapply.sh prefers git but can fallback to patch+extras
 BDEPEND="
+	${PYTHON_DEPS}
+	|| (
+		dev-vcs/git
+		(
+			sys-apps/gawk
+			sys-apps/util-linux
+		)
+	)
 	dev-lang/perl
+	sys-devel/binutils
 	sys-devel/bison
 	sys-devel/flex
 	virtual/pkgconfig
-	mingw? ( !crossdev-mingw? ( dev-util/mingw64-toolchain[${MULTILIB_USEDEP}] ) )
-	nls? ( sys-devel/gettext )"
+	mingw? ( !crossdev-mingw? (
+		>=dev-util/mingw64-toolchain-10.0.0_p1-r2[${MULTILIB_USEDEP}]
+	) )
+	nls? ( sys-devel/gettext )
+	wayland? ( dev-util/wayland-scanner )"
 IDEPEND=">=app-eselect/eselect-wine-2"
 
+QA_CONFIG_IMPL_DECL_SKIP=(
+	__clear_cache # unused on amd64+x86 (bug #900334)
+	res_getservers # false positive
+)
+QA_FLAGS_IGNORED="usr/lib/.*/wine/.*-unix/odbc32.so" # has no compiled objects
 QA_TEXTRELS="usr/lib/*/wine/i386-unix/*.so" # uses -fno-PIC -Wl,-z,notext
 
 PATCHES=(
@@ -147,43 +174,62 @@ pkg_pretend() {
 }
 
 src_unpack() {
-	unpack wine-${PV}.tar.xz ${P}.tar.gz osu-patch-${PV}.tar.gz
-	cd wine-${PV}/dlls/winepulse.drv || die
-	unpack winepulse-513.tar
+	if [[ ${PV} == *9999 ]]; then
+		EGIT_CHECKOUT_DIR=${WORKDIR}/${_P}
+		git-r3_src_unpack
+
+		EGIT_COMMIT=$(<"${EGIT_CHECKOUT_DIR}"/staging/upstream-commit) || die
+		EGIT_REPO_URI=${WINE_EGIT_REPO_URI}
+		EGIT_CHECKOUT_DIR=${S}
+		einfo "Fetching Wine commit matching the current patchset by default (${EGIT_COMMIT})"
+		git-r3_src_unpack
+	else
+		default
+	fi
+
+    unpack 8.7-osu-wine-patch.tar.gz
+
+    cd ${WORKDIR}/wine-${PV}/dlls/winepulse.drv || die
+    unpack winepulse-513.tar
+    
+    cd ${WORKDIR}/wine-${PV}/dlls/wineoss.drv || die
+    unpack wineoss-revert.tar
+    
+    cd ${WORKDIR}/wine-${PV}/dlls/winecoreaudio.drv || die
+    unpack winecoreaudio-revert.tar
+    
+    cd ${WORKDIR}/wine-${PV}/dlls/winealsa.drv || die
+    unpack winealsa-revert.tar
 }
 
 src_prepare() {
-	local staging=(
-		./patchinstall.sh DESTDIR="${S}"
+	local patchinstallargs=(
 		--all
-		--backend=eapply
 		--no-autoconf
 		-W winemenubuilder-Desktop_Icon_Path #652176
 		${MY_WINE_STAGING_CONF}
 	)
 
-	# source patcher in a subshell so can use eapply as a backend
-	ebegin "Running ${staging[*]}"
-	( cd "${WORKDIR}"/wine-staging-${PV}/patches && . "${staging[@]}" )
-	eend ${?} || die "Failed to apply the patchset"
+	edo "${PYTHON}" ../${_P}/staging/patchinstall.py "${patchinstallargs[@]}"
 
 	# sanity check, bumping these has a history of oversights
 	local geckomono=$(sed -En '/^#define (GECKO|MONO)_VER/{s/[^0-9.]//gp}' \
 		dlls/appwiz.cpl/addons.c || die)
 	if [[ ${WINE_GECKO}$'\n'${WINE_MONO} != "${geckomono}" ]]; then
 		local gmfatal=
+		[[ ${PV} == *9999 ]] && gmfatal=nonfatal
 		${gmfatal} die -n "gecko/mono mismatch in ebuild, has: " ${geckomono} " (please file a bug)"
 	fi
 
 	default
 
-	for i in "${WORKDIR}"/*patch; do
-		[ ! -f "$i" ] && continue
-		eapply "$i"
-	done
+    for i in "${WORKDIR}"/*patch; do
+        [ ! -f "$i" ] && continue
+        eapply "$i"
+    done
 
 	# ensure .desktop calls this variant + slot
-	sed -i "/^Exec=/s/wine /${P} /" loader/wine.desktop || die
+	sed -i "/^Exec=/s/wine /${_P} /" loader/wine.desktop || die
 
 	# always update for patches (including user's wrt #432348)
 	eautoreconf
@@ -212,11 +258,9 @@ src_configure() {
 		$(use_with gstreamer)
 		$(use_with kerberos gssapi)
 		$(use_with kerberos krb5)
-		$(use_with ldap)
 		$(use_with mingw)
 		$(use_with netapi)
 		$(use_with nls gettext)
-		$(use_with openal)
 		$(use_with opencl)
 		$(use_with opengl)
 		$(use_with osmesa)
@@ -225,6 +269,7 @@ src_configure() {
 		$(use_with pulseaudio pulse)
 		$(use_with scanner sane)
 		$(use_with sdl)
+		$(use_with smartcard pcsclite)
 		$(use_with ssl gnutls)
 		$(use_with truetype freetype)
 		$(use_with udev)
@@ -233,14 +278,21 @@ src_configure() {
 		$(use_with usb)
 		$(use_with v4l v4l2)
 		$(use_with vulkan)
+		$(use_with wayland)
 		$(use_with xcomposite)
 		$(use_with xinerama)
-		$(usev !odbc ac_cv_lib_soname_odbc=)
 	)
 
-	tc-ld-force-bfd #867097
-	use custom-cflags || strip-flags # can break in obscure ways, also no lto
+	tc-ld-force-bfd # builds with non-bfd but broken at runtime (bug #867097)
+	filter-lto # build failure
+	use mingw || filter-flags -fno-plt # build failure
+	use custom-cflags || strip-flags # can break in obscure ways at runtime
 	use crossdev-mingw || PATH=${BROOT}/usr/lib/mingw64-toolchain/bin:${PATH}
+
+	# temporary workaround for tc-ld-force-bfd not yet enforcing with mold
+	# https://github.com/gentoo/gentoo/pull/28355
+	[[ $($(tc-getCC) ${LDFLAGS} -Wl,--version 2>/dev/null) == mold* ]] &&
+		append-ldflags -fuse-ld=bfd
 
 	# build using upstream's way (--with-wine64)
 	# order matters: configure+compile 64->32, install 32->64
@@ -252,8 +304,9 @@ src_configure() {
 		mkdir ../build${bits} || die
 		cd ../build${bits} || die
 
-		# CROSSCC_amd64/x86 are unused by Wine, but recognized here for users
+		pe_arch=i386
 		if (( bits == 64 )); then
+			pe_arch=x86_64
 			: "${CROSSCC:=${CROSSCC_amd64:-x86_64-w64-mingw32-gcc}}"
 			conf+=( --enable-win64 )
 		elif use amd64; then
@@ -266,17 +319,22 @@ src_configure() {
 		fi
 		: "${CROSSCC:=${CROSSCC_x86:-i686-w64-mingw32-gcc}}"
 
-		# use *FLAGS for mingw, but strip unsupported (e.g. --hash-style=gnu)
 		if use mingw; then
+			# CROSSCC is no longer recognized by Wine, but still use for now
+			# (future handling for CROSS* variables is subject to changes)
+			conf+=( ac_cv_prog_${pe_arch}_CC="${CROSSCC}" )
+
+			# use *FLAGS for mingw, but strip unsupported
 			: "${CROSSCFLAGS:=$(
-				filter-flags '-fstack-clash-protection' #758914
+				# >=wine-7.21 configure.ac no longer adds -fno-strict by mistake
+				append-cflags '-fno-strict-aliasing'
 				filter-flags '-fstack-protector*' #870136
 				filter-flags '-mfunction-return=thunk*' #878849
 				CC=${CROSSCC} test-flags-CC ${CFLAGS:--O2})}"
 			: "${CROSSLDFLAGS:=$(
 				filter-flags '-fuse-ld=*'
 				CC=${CROSSCC} test-flags-CCLD ${LDFLAGS})}"
-			export CROSS{CC,{C,LD}FLAGS}
+			export CROSS{C,LD}FLAGS
 		fi
 
 		ECONF_SOURCE=${S} econf "${conf[@]}"
