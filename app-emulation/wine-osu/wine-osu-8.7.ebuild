@@ -187,19 +187,27 @@ src_unpack() {
 		default
 	fi
 
-    unpack 8.7-osu-wine-patch.tar.gz
+	unpack 8.7-osu-wine-patch.tar.gz
 
-    cd ${WORKDIR}/wine-${PV}/dlls/winepulse.drv || die
-    unpack winepulse-513.tar
-    
-    cd ${WORKDIR}/wine-${PV}/dlls/wineoss.drv || die
-    unpack wineoss-revert.tar
-    
-    cd ${WORKDIR}/wine-${PV}/dlls/winecoreaudio.drv || die
-    unpack winecoreaudio-revert.tar
-    
-    cd ${WORKDIR}/wine-${PV}/dlls/winealsa.drv || die
-    unpack winealsa-revert.tar
+	cd ${WORKDIR}/wine-${PV}/dlls/winepulse.drv || die
+	rm ./* || die
+	unpack winepulse-513.tar
+
+	cd ${WORKDIR}/wine-${PV}/dlls/mmdevapi || die
+	rm ./* || die
+	unpack mmdevapi-revert.tar
+
+	cd ${WORKDIR}/wine-${PV}/dlls/wineoss.drv || die
+	rm ./* || die
+	unpack wineoss-revert.tar
+
+	cd ${WORKDIR}/wine-${PV}/dlls/winecoreaudio.drv || die
+	rm ./* || die
+	unpack winecoreaudio-revert.tar
+
+	cd ${WORKDIR}/wine-${PV}/dlls/winealsa.drv || die
+	rm ./* || die
+	unpack winealsa-revert.tar
 }
 
 src_prepare() {
