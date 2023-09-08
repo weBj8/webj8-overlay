@@ -33,83 +33,82 @@ src_unpack() {
 	kernel-2_src_unpack
 
 	mkdir "${WORKDIR}/cachyos" || die
+	cd "${WORKDIR}/cachyos" || die
 
-	mkdir "${WORKDIR}/cachyos/patches" || die
-	cd "${WORKDIR}/cachyos/patches" || die
 	unpack "${P}-patches.tar.gz"
-
-	mkdir "${WORKDIR}/cachyos/config" || die
-	cd "${WORKDIR}/cachyos/config" || die
 	unpack "${P}-config.tar.gz"
 }
 
 src_prepare() {
-	eapply "${WORKDIR}/cachyos/patches/${KV_MAJOR}.${KV_MINOR}/all/0001-cachyos-base-all.patch"
+	CACHY_OS_PATCHES_DIR="${WORKDIR}/cachyos/kernel-patches-${CACHY_OS_KERNEL_PATCHES_COMMIT_HASH}/${KV_MAJOR}.${KV_MINOR}"
+	CACHY_OS_CONFIG_DIR="${WORKDIR}/cachyos/linux-cachyos-${CACHY_OS_PKGBUILD_COMMIT_HASH}"
+
+	eapply "${CACHY_OS_PATCHES_DIR}/all/0001-cachyos-base-all.patch"
 
 	if use eevdf-bore; then
-		eapply "${WORKDIR}/cachyos/patches/${KV_MAJOR}.${KV_MINOR}/sched/0001-EEVDF-cachy.patch"
-		eapply "${WORKDIR}/cachyos/patches/${KV_MAJOR}.${KV_MINOR}/sched/0001-bore-eevdf.patch"
-		cp "${WORKDIR}/cachyos/config/linux-cachyos/config" .config || die
-		sh "${WORKDIR}/cachyos/config/linux-cachyos/auto-cpu-optimization.sh"
+		eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-EEVDF-cachy.patch"
+		eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-bore-eevdf.patch"
+		cp "${CACHY_OS_CONFIG_DIR}linux-cachyos/config" .config || die
+		sh "${CACHY_OS_CONFIG_DIR}linux-cachyos/auto-cpu-optimization.sh"
 	fi
 
 	if use eevdf; then
-		eapply "${WORKDIR}/cachyos/patches/${KV_MAJOR}.${KV_MINOR}/sched/0001-EEVDF-cachy.patch"
-		cp "${WORKDIR}/cachyos/config/linux-cachyos-eevdf/config" .config || die
-		sh "${WORKDIR}/cachyos/config/linux-cachyos-eevdf/auto-cpu-optimization.sh"
+		eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-EEVDF-cachy.patch"
+		cp "${CACHY_OS_CONFIG_DIR}linux-cachyos-eevdf/config" .config || die
+		sh "${CACHY_OS_CONFIG_DIR}linux-cachyos-eevdf/auto-cpu-optimization.sh"
 	fi
 
 	if use pds; then
-		eapply "${WORKDIR}/cachyos/patches/${KV_MAJOR}.${KV_MINOR}/sched/0001-prjc-cachy.patch"
-		cp "${WORKDIR}/cachyos/config/linux-cachyos-pds/config" .config || die
-		sh "${WORKDIR}/cachyos/config/linux-cachyos-pds/auto-cpu-optimization.sh"
+		eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-prjc-cachy.patch"
+		cp "${CACHY_OS_CONFIG_DIR}linux-cachyos-pds/config" .config || die
+		sh "${CACHY_OS_CONFIG_DIR}linux-cachyos-pds/auto-cpu-optimization.sh"
 	fi
 
 	if use bmq; then
-		eapply "${WORKDIR}/cachyos/patches/${KV_MAJOR}.${KV_MINOR}/sched/0001-prjc-cachy.patch"
-		cp "${WORKDIR}/cachyos/config/linux-cachyos-bmq/config" .config || die
-		sh "${WORKDIR}/cachyos/config/linux-cachyos-bmq/auto-cpu-optimization.sh"
+		eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-prjc-cachy.patch"
+		cp "${CACHY_OS_CONFIG_DIR}linux-cachyos-bmq/config" .config || die
+		sh "${CACHY_OS_CONFIG_DIR}linux-cachyos-bmq/auto-cpu-optimization.sh"
 	fi
 
 	if use tt; then
-		eapply "${WORKDIR}/cachyos/patches/${KV_MAJOR}.${KV_MINOR}/sched/0001-tt-cachy.patch"
-		cp "${WORKDIR}/cachyos/config/linux-cachyos-tt/config" .config || die
-		sh "${WORKDIR}/cachyos/config/linux-cachyos-tt/auto-cpu-optimization.sh"
+		eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-tt-cachy.patch"
+		cp "${CACHY_OS_CONFIG_DIR}linux-cachyos-tt/config" .config || die
+		sh "${CACHY_OS_CONFIG_DIR}linux-cachyos-tt/auto-cpu-optimization.sh"
 	fi
 
 	if use bore; then
 		if use tune-bore; then
-			eapply "${WORKDIR}/cachyos/patches/${KV_MAJOR}.${KV_MINOR}/misc/0001-bore-tuning-sysctl.patch"
+			eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-bore-tuning-sysctl.patch"
 		fi
-		eapply "${WORKDIR}/cachyos/patches/${KV_MAJOR}.${KV_MINOR}/sched/0001-bore-cachy.patch"
-		cp "${WORKDIR}/cachyos/config/linux-cachyos-bore/config" .config || die
-		sh "${WORKDIR}/cachyos/config/linux-cachyos-bore/auto-cpu-optimization.sh"
+		eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-bore-cachy.patch"
+		cp "${CACHY_OS_CONFIG_DIR}linux-cachyos-bore/config" .config || die
+		sh "${CACHY_OS_CONFIG_DIR}linux-cachyos-bore/auto-cpu-optimization.sh"
 	fi
 
 	if use aufs; then
-		eapply "${WORKDIR}/cachyos/patches/${KV_MAJOR}.${KV_MINOR}/misc/0001-aufs-6.5-merge-v20230904.patch"
+		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-aufs-6.5-merge-v20230904.patch"
 	fi
 
 	if use bcachefs; then
-		eapply "${WORKDIR}/cachyos/patches/${KV_MAJOR}.${KV_MINOR}/misc/0001-bcachefs.patch"
+		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-bcachefs.patch"
 	fi
 
 	if use high-hz; then
-		eapply "${WORKDIR}/cachyos/patches/${KV_MAJOR}.${KV_MINOR}/misc/0001-high-hz.patch"
+		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-high-hz.patch"
 	fi
 
 	if use lrng; then
-		eapply "${WORKDIR}/cachyos/patches/${KV_MAJOR}.${KV_MINOR}/misc/0001-lrng.patch"
+		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-lrng.patch"
 	fi
 
 	if use spadfs; then
-		eapply "${WORKDIR}/cachyos/patches/${KV_MAJOR}.${KV_MINOR}/misc/0001-spadfs-6.5-merge-v1.0.17.patch"
+		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-spadfs-6.5-merge-v1.0.17.patch"
 	fi
 
 	if use gcc-lto; then
-		eapply "${WORKDIR}/cachyos/patches/${KV_MAJOR}.${KV_MINOR}/misc/gcc-lto/0001-gcc-lto.patch"
+		eapply "${CACHY_OS_PATCHES_DIR}/misc/gcc-lto/0001-gcc-lto.patch"
 		if use gcc-lto-no-pie; then
-			eapply "${WORKDIR}/cachyos/patches/${KV_MAJOR}.${KV_MINOR}/misc/gcc-lto/0002-gcc-lto-no-pie.patch"
+			eapply "${CACHY_OS_PATCHES_DIR}/misc/gcc-lto/0002-gcc-lto-no-pie.patch"
 		fi
 	fi
 
