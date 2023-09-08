@@ -48,32 +48,32 @@ src_prepare() {
 	if use eevdf-bore; then
 		eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-EEVDF-cachy.patch"
 		eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-bore-eevdf.patch"
-		cp "${CACHY_OS_CONFIG_DIR}linux-cachyos/config" .config || die
-		sh "${CACHY_OS_CONFIG_DIR}linux-cachyos/auto-cpu-optimization.sh"
+		cp "${CACHY_OS_CONFIG_DIR}/linux-cachyos/config" .config || die
+		sh "${CACHY_OS_CONFIG_DIR}/linux-cachyos/auto-cpu-optimization.sh"
 	fi
 
 	if use eevdf; then
 		eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-EEVDF-cachy.patch"
-		cp "${CACHY_OS_CONFIG_DIR}linux-cachyos-eevdf/config" .config || die
-		sh "${CACHY_OS_CONFIG_DIR}linux-cachyos-eevdf/auto-cpu-optimization.sh"
+		cp "${CACHY_OS_CONFIG_DIR}/linux-cachyos-eevdf/config" .config || die
+		sh "${CACHY_OS_CONFIG_DIR}/linux-cachyos-eevdf/auto-cpu-optimization.sh"
 	fi
 
 	if use pds; then
 		eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-prjc-cachy.patch"
-		cp "${CACHY_OS_CONFIG_DIR}linux-cachyos-pds/config" .config || die
-		sh "${CACHY_OS_CONFIG_DIR}linux-cachyos-pds/auto-cpu-optimization.sh"
+		cp "${CACHY_OS_CONFIG_DIR}/linux-cachyos-pds/config" .config || die
+		sh "${CACHY_OS_CONFIG_DIR}/linux-cachyos-pds/auto-cpu-optimization.sh"
 	fi
 
 	if use bmq; then
 		eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-prjc-cachy.patch"
-		cp "${CACHY_OS_CONFIG_DIR}linux-cachyos-bmq/config" .config || die
-		sh "${CACHY_OS_CONFIG_DIR}linux-cachyos-bmq/auto-cpu-optimization.sh"
+		cp "${CACHY_OS_CONFIG_DIR}/linux-cachyos-bmq/config" .config || die
+		sh "${CACHY_OS_CONFIG_DIR}/linux-cachyos-bmq/auto-cpu-optimization.sh"
 	fi
 
 	if use tt; then
 		eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-tt-cachy.patch"
-		cp "${CACHY_OS_CONFIG_DIR}linux-cachyos-tt/config" .config || die
-		sh "${CACHY_OS_CONFIG_DIR}linux-cachyos-tt/auto-cpu-optimization.sh"
+		cp "${CACHY_OS_CONFIG_DIR}/linux-cachyos-tt/config" .config || die
+		sh "${CACHY_OS_CONFIG_DIR}/linux-cachyos-tt/auto-cpu-optimization.sh"
 	fi
 
 	if use bore; then
@@ -81,8 +81,8 @@ src_prepare() {
 			eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-bore-tuning-sysctl.patch"
 		fi
 		eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-bore-cachy.patch"
-		cp "${CACHY_OS_CONFIG_DIR}linux-cachyos-bore/config" .config || die
-		sh "${CACHY_OS_CONFIG_DIR}linux-cachyos-bore/auto-cpu-optimization.sh"
+		cp "${CACHY_OS_CONFIG_DIR}/linux-cachyos-bore/config" .config || die
+		sh "${CACHY_OS_CONFIG_DIR}/linux-cachyos-bore/auto-cpu-optimization.sh"
 	fi
 
 	if use aufs; then
