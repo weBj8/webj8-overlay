@@ -5,9 +5,6 @@
     <email>wtz_lasr@outlook.com</email>
     <name>Wtz_LASR</name>
   </maintainer>
-  <longdescription lang="en">
-    A kernel offering several customizations, and unique performance optimization.
-  </longdescription>
   <upstream>
     <remote-id type="github">CachyOS/linux-cachyos</remote-id>
     <bugs-to>https://github.com/CachyOS/linux-cachyos/issues</bugs-to>
