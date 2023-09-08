@@ -26,8 +26,8 @@ SRC_URI="
 
 LICENSE="GPL-3"
 KEYWORDS="~amd64"
-IUSE="+eevdf-bore eevdf pds bmp tt bore tune-bore aufs bcachefs high-hz lrng spadfs gcc-lto gcc-lto-no-pie"
-REQUIRED_USE="^^ ( eevdf-bore eevdf pds bmp tt bore ) tune-bore? ( bore ) gcc-lto-no-pie? ( gcc-lto )"
+IUSE="+eevdf-bore eevdf pds bmq tt bore tune-bore aufs bcachefs high-hz lrng spadfs gcc-lto gcc-lto-no-pie"
+REQUIRED_USE="^^ ( eevdf-bore eevdf pds bmq tt bore ) tune-bore? ( bore ) gcc-lto-no-pie? ( gcc-lto )"
 
 src_unpack() {
 	kernel-2_src_unpack
