@@ -11,7 +11,7 @@ K_GENPATCHES_VER="3"
 inherit kernel-2 optfeature
 detect_version
 
-DESCRIPTION="CachyOS provides enhanced kernels that offer improved performance and other benefits."
+DESCRIPTION="CachyOS kernel sources"
 HOMEPAGE="https://github.com/CachyOS/linux-cachyos"
 
 CACHY_OS_KERNEL_PATCHES_COMMIT_HASH="15789985490a834f78c9e6108d4fdc37e56c865a"
@@ -27,7 +27,7 @@ SRC_URI="
 LICENSE="GPL-3"
 KEYWORDS="~amd64"
 IUSE="+eevdf-bore eevdf pds bmq tt bore tune-bore aufs bcachefs high-hz lrng spadfs gcc-lto gcc-lto-no-pie"
-REQUIRED_USE="^^ ( eevdf-bore eevdf pds bmq tt bore ) tune-bore? ( bore ) gcc-lto-no-pie? ( gcc-lto )"
+REQUIRED_USE="?? ( eevdf-bore eevdf pds bmq tt bore ) tune-bore? ( bore ) gcc-lto-no-pie? ( gcc-lto )"
 
 src_unpack() {
 	kernel-2_src_unpack
