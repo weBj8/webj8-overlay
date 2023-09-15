@@ -9,4 +9,20 @@
     <remote-id type="github">CachyOS/linux-cachyos</remote-id>
     <bugs-to>https://github.com/CachyOS/linux-cachyos/issues</bugs-to>
   </upstream>
+  <use>
+    <flag name="eevdf-bore">Enable Earliest Eligible Virtual Deadline &amp; Burst-Oriented Response Enhancer scheduler</flag>
+    <flag name="eevdf">Enable Earliest Eligible Virtual Deadline scheduler</flag>
+    <flag name="pds">Enable Priority and Deadline based Skiplist multiple queue scheduler</flag>
+    <flag name="bmq">Enable BitMap Queue scheduler</flag>
+    <flag name="tt">Enable Task Type scheduler</flag>
+    <flag name="bore">Enable Burst-Oriented Response Enhancer scheduler</flag>
+    <flag name="tune-bore">Tune BORE scheduler parameters</flag>
+    <flag name="aufs">Enable aufs</flag>
+    <flag name="bcachefs">Enable bcachefs</flag>
+    <flag name="high-hz">Enable high timer freq fix</flag>
+    <flag name="lrng">Enable LRNG</flag>
+    <flag name="spadfs">Enable spadfs</flag>
+    <flag name="gcc-lto">Enable GCC LTO</flag>
+    <flag name="gcc-lto-no-pie">Disable PIE in GCC LTO</flag>
+  </use>
 </pkgmetadata>
