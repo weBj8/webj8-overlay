@@ -1,0 +1,15 @@
+DEFINED_PHASES=compile install postinst postrm preinst prepare setup test unpack
+DESCRIPTION=CachyOS kernel sources
+EAPI=8
+HOMEPAGE=https://github.com/CachyOS/linux-cachyos
+INHERIT=kernel-2 optfeature
+IUSE=+eevdf-bore eevdf pds bmq tt bore tune-bore aufs bcachefs high-hz lrng spadfs gcc-lto gcc-lto-no-pie symlink build
+KEYWORDS=~amd64
+LICENSE=GPL-3
+RDEPEND=!build? ( app-arch/cpio dev-lang/perl sys-devel/bc sys-devel/bison sys-devel/flex sys-devel/make >=sys-libs/ncurses-5.2 virtual/libelf virtual/pkgconfig )
+REQUIRED_USE=?? ( eevdf-bore eevdf pds bmq tt bore ) tune-bore? ( bore ) gcc-lto-no-pie? ( gcc-lto )
+RESTRICT=binchecks strip
+SLOT=6.5.5-r2
+SRC_URI=https://www.kernel.org/pub/linux/kernel/v6.x/linux-6.5.tar.xz https://dev.gentoo.org/~alicef/dist/genpatches/genpatches-6.5-7.base.tar.xz https://dev.gentoo.org/~mpagano/dist/genpatches/genpatches-6.5-7.base.tar.xz https://dev.gentoo.org/~alicef/dist/genpatches/genpatches-6.5-7.extras.tar.xz https://dev.gentoo.org/~mpagano/dist/genpatches/genpatches-6.5-7.extras.tar.xz https://github.com/CachyOS/kernel-patches/archive/2d5f2f93e66e1be96a87d3f7d1ee34af6b2ae561.tar.gz -> cachyos-sources-6.5.5-patches.tar.gz https://github.com/CachyOS/linux-cachyos/archive/bab43da04692868e126afeac5eace0de011f1213.tar.gz -> cachyos-sources-6.5.5-config.tar.gz
+_eclasses_=toolchain-funcs	862d337d98edb576796827be2c6b11ca	multilib	c19072c3cd7ac5cb21de013f7e9832e0	crossdev	f04338ff78f213a4a55c5c37b3c6563e	estack	c61c368a76fdf3a82fdf8dbaebea3804	multiprocessing	b4e253ab22cef7b1085e9b67c7a3b730	kernel-2	a3163a42392ff0db3797c69f4990c38f	optfeature	222cb475c5a4f7ae7cfb0bf510a6fe54
+_md5_=6120c4ec3683e9882d9a4288114b63bb
