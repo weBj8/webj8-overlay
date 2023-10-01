@@ -10,6 +10,6 @@ LICENSE=GPL-3
 RDEPEND=media-libs/libyuv media-video/ffmpeg x11-libs/gtk+:3
 RESTRICT=mirror strip
 SLOT=0
-SRC_URI=https://github.com/Wieku/danser-go/archive/refs/tags/0.8.4.tar.gz -> danser-0.8.4.tar.gz https://github.com/st0nie/gentoo-go-dep/releases/download/danser/danser-0.8.4-deps.tar.xz
+SRC_URI=https://github.com/Wieku/danser-go/archive/refs/tags/0.9.0.tar.gz -> danser-0.9.0.tar.gz https://github.com/st0nie/gentoo-go-dep/releases/download/danser/danser-0.9.0-deps.tar.xz
 _eclasses_=multiprocessing	b4e253ab22cef7b1085e9b67c7a3b730	toolchain-funcs	fbbbc99d10168de2926e06da7169b8dc	multilib	c19072c3cd7ac5cb21de013f7e9832e0	go-module	8624eede24936fd7666e5298e5332f22
 _md5_=a9b2d711ee77229e5e68f492ea5c10fe
