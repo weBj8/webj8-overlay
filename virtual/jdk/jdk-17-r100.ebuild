@@ -4,7 +4,7 @@
 EAPI=8
 
 DESCRIPTION="Virtual for Java Development Kit (JDK)"
-SLOT="21"
+SLOT="17"
 KEYWORDS="~amd64"
 IUSE="headless-awt"
 
@@ -12,4 +12,5 @@ RDEPEND="|| (
 		dev-java/openjdk-bin:${SLOT}[gentoo-vm(+),headless-awt=]
 		dev-java/openjdk:${SLOT}[gentoo-vm(+),headless-awt=]
 		dev-java/zulu-bin:${SLOT}[gentoo-vm(+),headless-awt=]
+		dev-java/graalvm-bin:${SLOT}[gentoo-vm(+),headless-awt=]
 )"

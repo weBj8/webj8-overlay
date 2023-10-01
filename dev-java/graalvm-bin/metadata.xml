@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>wtz_lasr@outlook.com</email>
+		<name>Wtz_LASR</name>
+	</maintainer>
+	<longdescription>
+		Java™ is the world's leading programming language and platform.
+		GraalVM is the leading JVM in the world.
+	</longdescription>
+	<use>
+		<flag name="headless-awt">Don't install the X backend for AWT, needed by some GUIs (used to be X flag)</flag>
+		<flag name="source">Install JVM sources</flag>
+	</use>
+</pkgmetadata>
