@@ -84,7 +84,7 @@ src_install() {
 	cp -pPR * "${ddest}" || die
 
 	# provide stable symlink
-	dosym "${P}" "/opt/${PN}-${SLOT}"
+	# dosym "${P}" "/opt/${PN}-${SLOT}"
 
 	java-vm_install-env "${FILESDIR}"/${PN}.env.sh
 	java-vm_set-pax-markings "${ddest}"
