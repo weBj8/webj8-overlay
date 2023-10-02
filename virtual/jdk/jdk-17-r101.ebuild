@@ -13,4 +13,5 @@ RDEPEND="|| (
 		dev-java/openjdk:${SLOT}[gentoo-vm(+),headless-awt=]
 		dev-java/zulu-bin:${SLOT}[gentoo-vm(+),headless-awt=]
 		dev-java/graalvm-bin:${SLOT}[gentoo-vm(+),headless-awt=]
+		dev-java/zing-bin:${SLOT}[gentoo-vm(+),headless-awt=]
 )"
