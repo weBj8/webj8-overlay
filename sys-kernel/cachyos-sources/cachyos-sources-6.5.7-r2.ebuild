@@ -6,7 +6,7 @@ ETYPE="sources"
 EXTRAVERSION="-cachyos"
 K_EXP_GENPATCHES_NOUSE="1"
 K_WANT_GENPATCHES="base extras"
-K_GENPATCHES_VER="7"
+K_GENPATCHES_VER="9"
 
 inherit kernel-2 optfeature
 detect_version
@@ -14,8 +14,8 @@ detect_version
 DESCRIPTION="CachyOS kernel sources"
 HOMEPAGE="https://github.com/CachyOS/linux-cachyos"
 
-CACHY_OS_KERNEL_PATCHES_COMMIT_HASH="2d5f2f93e66e1be96a87d3f7d1ee34af6b2ae561"
-CACHY_OS_PKGBUILD_COMMIT_HASH="bab43da04692868e126afeac5eace0de011f1213"
+CACHY_OS_KERNEL_PATCHES_COMMIT_HASH="f161d7dc522075a03648f18094568a2e241a0fef"
+CACHY_OS_PKGBUILD_COMMIT_HASH="b0f873c35b7588108b1e253dee638a26b83953bf"
 
 SRC_URI="
 	${KERNEL_URI}
@@ -102,7 +102,7 @@ src_prepare() {
 	fi
 
 	if use spadfs; then
-		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-spadfs-6.5-merge-v1.0.17.patch"
+		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-spadfs-6.5-merge-v1.0.18.patch"
 	fi
 
 	if use gcc-lto; then
