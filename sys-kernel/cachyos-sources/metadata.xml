@@ -10,19 +10,16 @@
     <bugs-to>https://github.com/CachyOS/linux-cachyos/issues</bugs-to>
   </upstream>
   <use>
-    <flag name="eevdf-bore">Enable Earliest Eligible Virtual Deadline &amp; Burst-Oriented Response Enhancer scheduler</flag>
-    <flag name="eevdf">Enable Earliest Eligible Virtual Deadline scheduler</flag>
-    <flag name="pds">Enable Priority and Deadline based Skiplist multiple queue scheduler</flag>
-    <flag name="bmq">Enable BitMap Queue scheduler</flag>
-    <flag name="tt">Enable Task Type scheduler</flag>
     <flag name="bore">Enable Burst-Oriented Response Enhancer scheduler</flag>
-    <flag name="tune-bore">Tune BORE scheduler parameters</flag>
-    <flag name="aufs">Enable aufs</flag>
-    <flag name="bcachefs">Enable bcachefs</flag>
-    <flag name="high-hz">Enable high timer freq fix</flag>
+    <flag name="bore-tuning">Tune BORE scheduler parameters</flag>
+    <flag name="sched-ext">Enable SCX External scheduler</flag>
     <flag name="lrng">Enable LRNG</flag>
     <flag name="spadfs">Enable spadfs</flag>
-    <flag name="gcc-lto">Enable GCC LTO</flag>
-    <flag name="gcc-lto-no-pie">Disable PIE in GCC LTO</flag>
+    <flag name="gcc-extra-flags">Enable Extra GCC Flags</flag>
+    <flag name="intel">Enable Intel Thread Director</flag>
+    <flag name="amd-hdr">Enable AMDGPU HDR support</flag>
+    <flag name="vmap-lock-contention-fix">Fix a vmap lock contention</flag>
+    <flag name="ntsync">Enable NTSync support</flag>
+    <flag name="v4l2-loopback">Enable V4L2 Loopback Support</flag>
   </use>
 </pkgmetadata>
