@@ -6,7 +6,7 @@ ETYPE="sources"
 EXTRAVERSION="-cachyos"
 K_EXP_GENPATCHES_NOUSE="1"
 K_WANT_GENPATCHES="base extras"
-K_GENPATCHES_VER="9"
+K_GENPATCHES_VER="3"
 
 inherit kernel-2 optfeature
 detect_version
@@ -14,8 +14,8 @@ detect_version
 DESCRIPTION="CachyOS kernel sources"
 HOMEPAGE="https://github.com/CachyOS/linux-cachyos"
 
-CACHY_OS_KERNEL_PATCHES_COMMIT_HASH="f161d7dc522075a03648f18094568a2e241a0fef"
-CACHY_OS_PKGBUILD_COMMIT_HASH="b0f873c35b7588108b1e253dee638a26b83953bf"
+CACHY_OS_KERNEL_PATCHES_COMMIT_HASH="e244174aa0c74aa7e3af7347713ade46db17a461"
+CACHY_OS_PKGBUILD_COMMIT_HASH="26ca837ac866a18684000c75e3bf0b56ea376a88"
 
 SRC_URI="
 	${KERNEL_URI}
@@ -26,8 +26,8 @@ SRC_URI="
 
 LICENSE="GPL-3"
 KEYWORDS="~amd64"
-IUSE="+eevdf-bore eevdf pds bmq tt bore tune-bore aufs bcachefs high-hz lrng spadfs gcc-lto gcc-lto-no-pie"
-REQUIRED_USE="?? ( eevdf-bore eevdf pds bmq tt bore ) tune-bore? ( bore ) gcc-lto-no-pie? ( gcc-lto )"
+IUSE="sched-ext +bore bore-tuning lrng gcc-extra-flags intel amd-hdr vmap-lock-contention-fix ntsync spadfs v4l2-loopback"
+REQUIRED_USE="?? ( sched-ext bore ) bore-tuning? ( bore )"
 
 src_unpack() {
 	kernel-2_src_unpack
@@ -45,71 +45,53 @@ src_prepare() {
 
 	eapply "${CACHY_OS_PATCHES_DIR}/all/0001-cachyos-base-all.patch"
 
-	if use eevdf-bore; then
-		eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-EEVDF-cachy.patch"
-		eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-bore-eevdf.patch"
-		cp "${CACHY_OS_CONFIG_DIR}/linux-cachyos/config" .config || die
-		sh "${CACHY_OS_CONFIG_DIR}/linux-cachyos/auto-cpu-optimization.sh" || die
-	fi
-
-	if use eevdf; then
-		eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-EEVDF-cachy.patch"
-		cp "${CACHY_OS_CONFIG_DIR}/linux-cachyos-eevdf/config" .config || die
-		sh "${CACHY_OS_CONFIG_DIR}/linux-cachyos-eevdf/auto-cpu-optimization.sh" || die
-	fi
-
-	if use pds; then
-		eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-prjc-cachy.patch"
-		cp "${CACHY_OS_CONFIG_DIR}/linux-cachyos-pds/config" .config || die
-		sh "${CACHY_OS_CONFIG_DIR}/linux-cachyos-pds/auto-cpu-optimization.sh" || die
-	fi
-
-	if use bmq; then
-		eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-prjc-cachy.patch"
-		cp "${CACHY_OS_CONFIG_DIR}/linux-cachyos-bmq/config" .config || die
-		sh "${CACHY_OS_CONFIG_DIR}/linux-cachyos-bmq/auto-cpu-optimization.sh" || die
-	fi
-
-	if use tt; then
-		eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-tt-cachy.patch"
-		cp "${CACHY_OS_CONFIG_DIR}/linux-cachyos-tt/config" .config || die
-		sh "${CACHY_OS_CONFIG_DIR}/linux-cachyos-tt/auto-cpu-optimization.sh" || die
+	if use sched-ext; then
+		eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-sched-ext.patch"
+		cp "${CACHY_OS_CONFIG_DIR}/linux-cachyos-sched-ext/config" .config || die
+		sh "${CACHY_OS_CONFIG_DIR}/linux-cachyos-bore/auto-cpu-optimization.sh" || die
 	fi
 
 	if use bore; then
-		if use tune-bore; then
-			eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-bore-tuning-sysctl.patch"
+		if use bore-tuning; then
+			eapply "${CACHY_OS_PATCHES_DIR}/misc/bore-tuning-sysctl.patch"
 		fi
 		eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-bore-cachy.patch"
 		cp "${CACHY_OS_CONFIG_DIR}/linux-cachyos-bore/config" .config || die
 		sh "${CACHY_OS_CONFIG_DIR}/linux-cachyos-bore/auto-cpu-optimization.sh" || die
 	fi
 
-	if use aufs; then
-		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-aufs-6.5-merge-v20230925.patch"
-	fi
-
-	if use bcachefs; then
-		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-bcachefs.patch"
-	fi
-
-	if use high-hz; then
-		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-high-hz.patch"
-	fi
-
 	if use lrng; then
 		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-lrng.patch"
 	fi
 
-	if use spadfs; then
-		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-spadfs-6.5-merge-v1.0.18.patch"
+	if use gcc-extra-flags; then
+		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-Add-extra-GCC-optimization-flags.patch"
 	fi
 
-	if use gcc-lto; then
-		eapply "${CACHY_OS_PATCHES_DIR}/misc/gcc-lto/0001-gcc-lto.patch"
-		if use gcc-lto-no-pie; then
-			eapply "${CACHY_OS_PATCHES_DIR}/misc/gcc-lto/0002-gcc-lto-no-pie.patch"
-		fi
+	if use intel; then
+		eapply "${CACHY_OS_PATCHES_DIR}/intel/0001-intel-thread-director.patch"
+		eapply "${CACHY_OS_PATCHES_DIR}/intel/0002-avoid-recalculations.patch"
+		eapply "${CACHY_OS_PATCHES_DIR}/intel/0003-pcores-fair.patch"
+	fi
+
+	if use amd-hdr; then
+		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-amd-hdr.patch"
+	fi
+
+	if use vmap-lock-contention-fix; then
+		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-mm-Mitigate-a-vmap-lock-contention-v3.patch"
+	fi
+
+	if use ntsync; then
+		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-ntsync.patch"
+	fi
+
+	if use v4l2-loopback; then
+		eapply "${CACHY_OS_PATCHES_DIR}/misc/v4l2loopback.patch"
+	fi
+	
+	if use spadfs; then
+		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-spadfs-6.7-merge-v1.0.18.patch"
 	fi
 
 	eapply_user
@@ -121,27 +103,13 @@ src_prepare() {
 	# Enable CachyOS tweaks
 	scripts/config -e CACHY || die
 
-	# Enable PDS
-	if use pds; then
-		scripts/config -e SCHED_ALT -d SCHED_BMQ -e SCHED_PDS -e PSI_DEFAULT_DISABLED || die
-	fi
-
-	# Enable BMQ
-	if use bmq; then
-		scripts/config -e SCHED_ALT -e SCHED_BMQ -d SCHED_PDS -e PSI_DEFAULT_DISABLED || die
-	fi
-
-	# Enable TT
-	if use tt; then
-		scripts/config -e TT_SCHED -e TT_ACCOUNTING_STATS || die
+	# Enable SCX
+	if use sched-ext; then
+		scripts/config -e SCHED_CLASS_EXT || die
 	fi
 
 	# Enable BORE
 	if use bore; then
-		scripts/config -e SCHED_BORE || die
-	fi
-
-	if use eevdf-bore; then
 		scripts/config -e SCHED_BORE || die
 	fi
 
@@ -157,7 +125,7 @@ src_prepare() {
 		-d LTO_CLANG_FULL -e LTO_CLANG_THIN -e HAVE_GCC_PLUGINS || die
 
 	# Use 500 hz
-	scripts/config -e HZ_500 --set-val HZ 500
+	scripts/config -e HZ_500 --set-val HZ 500 || die
 
 	# Disable NUMA
 	scripts/config -d NUMA \
@@ -295,24 +263,9 @@ src_prepare() {
 			-d LRNG_RUNTIME_FORCE_SEEDING_DISABLE || die
 	fi
 
-	# Disable DEBUG
-	scripts/config -d DEBUG_INFO \
-		-d DEBUG_INFO_BTF \
-		-d DEBUG_INFO_DWARF4 \
-		-d DEBUG_INFO_DWARF5 \
-		-d PAHOLE_HAS_SPLIT_BTF \
-		-d DEBUG_INFO_BTF_MODULES \
-		-d SLUB_DEBUG \
-		-d PM_DEBUG \
-		-d PM_ADVANCED_DEBUG \
-		-d PM_SLEEP_DEBUG \
-		-d ACPI_DEBUG \
-		-d SCHED_DEBUG \
-		-d LATENCYTOP \
-		-d DEBUG_PREEMPT || die
-
 	# Enable USER_NS_UNPRIVILEGED
 	scripts/config -e USER_NS || die
+
 	mv .config cachyos-config || die
 }
 
