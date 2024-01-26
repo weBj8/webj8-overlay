@@ -6,7 +6,7 @@ ETYPE="sources"
 EXTRAVERSION="-cachyos"
 K_EXP_GENPATCHES_NOUSE="1"
 K_WANT_GENPATCHES="base extras"
-K_GENPATCHES_VER="3"
+K_GENPATCHES_VER="4"
 
 inherit kernel-2 optfeature
 detect_version
@@ -14,8 +14,8 @@ detect_version
 DESCRIPTION="CachyOS kernel sources"
 HOMEPAGE="https://github.com/CachyOS/linux-cachyos"
 
-CACHY_OS_KERNEL_PATCHES_COMMIT_HASH="e244174aa0c74aa7e3af7347713ade46db17a461"
-CACHY_OS_PKGBUILD_COMMIT_HASH="26ca837ac866a18684000c75e3bf0b56ea376a88"
+CACHY_OS_KERNEL_PATCHES_COMMIT_HASH="c43e7415c4fd0dd8cc7f8b023be36fd50182fd56"
+CACHY_OS_PKGBUILD_COMMIT_HASH="61e2f30833b4391a1d991cb38409a0af4ca214a0"
 
 SRC_URI="
 	${KERNEL_URI}
@@ -26,8 +26,8 @@ SRC_URI="
 
 LICENSE="GPL-3"
 KEYWORDS="~amd64"
-IUSE="sched-ext +bore bore-tuning lrng gcc-extra-flags intel amd-hdr vmap-lock-contention-fix ntsync spadfs v4l2-loopback"
-REQUIRED_USE="?? ( sched-ext bore ) bore-tuning? ( bore )"
+IUSE="+sched-ext +bore bore-tuning lrng gcc-extra-flags intel amd-hdr vmap ntsync spadfs v4l2-loopback"
+REQUIRED_USE="bore-tuning? ( bore )"
 
 src_unpack() {
 	kernel-2_src_unpack
@@ -45,20 +45,27 @@ src_prepare() {
 
 	eapply "${CACHY_OS_PATCHES_DIR}/all/0001-cachyos-base-all.patch"
 
+	# Apply scheduler patches
+	use sched-ext && eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-sched-ext.patch"
+	use bore && eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-bore-cachy.patch"
+	use bore-tuning && eapply "${CACHY_OS_PATCHES_DIR}/misc/bore-tuning-sysctl.patch"
+
 	if use sched-ext; then
-		eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-sched-ext.patch"
-		cp "${CACHY_OS_CONFIG_DIR}/linux-cachyos-sched-ext/config" .config || die
-		sh "${CACHY_OS_CONFIG_DIR}/linux-cachyos-bore/auto-cpu-optimization.sh" || die
+		if use bore; then
+			CACHY_OS_PROFILE="linux-cachyos"
+		else
+			CACHY_OS_PROFILE="linux-cachyos-sched-ext"
+		fi
+	else
+		if use bore; then
+			CACHY_OS_PROFILE="linux-cachyos-bore"
+		else
+			CACHY_OS_PROFILE="linux-cachyos-eevdf"
+		fi
 	fi
 
-	if use bore; then
-		if use bore-tuning; then
-			eapply "${CACHY_OS_PATCHES_DIR}/misc/bore-tuning-sysctl.patch"
-		fi
-		eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-bore-cachy.patch"
-		cp "${CACHY_OS_CONFIG_DIR}/linux-cachyos-bore/config" .config || die
-		sh "${CACHY_OS_CONFIG_DIR}/linux-cachyos-bore/auto-cpu-optimization.sh" || die
-	fi
+	cp "${CACHY_OS_CONFIG_DIR}/${CACHY_OS_PROFILE}/config" .config || die
+	sh "${CACHY_OS_CONFIG_DIR}/${CACHY_OS_PROFILE}/auto-cpu-optimization.sh" || die
 
 	if use lrng; then
 		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-lrng.patch"
@@ -78,7 +85,7 @@ src_prepare() {
 		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-amd-hdr.patch"
 	fi
 
-	if use vmap-lock-contention-fix; then
+	if use vmap; then
 		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-mm-Mitigate-a-vmap-lock-contention-v3.patch"
 	fi
 
@@ -116,15 +123,10 @@ src_prepare() {
 	# Change hostname
 	scripts/config --set-str DEFAULT_HOSTNAME "gentoo" || die
 
-	# Enable kCFI
-	scripts/config -e ARCH_SUPPORTS_CFI_CLANG -e CFI_CLANG || die
+	# LTO
+	scripts/config -e LTO_NONE || die
 
-	# Use LLVM Thin LTO
-	scripts/config -e LTO -e LTO_CLANG -e ARCH_SUPPORTS_LTO_CLANG \
-		-e ARCH_SUPPORTS_LTO_CLANG_THIN -d LTO_NONE -e HAS_LTO_CLANG \
-		-d LTO_CLANG_FULL -e LTO_CLANG_THIN -e HAVE_GCC_PLUGINS || die
-
-	# Use 500 hz
+	# 500 Hz
 	scripts/config -e HZ_500 --set-val HZ 500 || die
 
 	# Disable NUMA
@@ -162,15 +164,9 @@ src_prepare() {
 	# Enable bbr3
 	scripts/config -m TCP_CONG_CUBIC \
 		-d DEFAULT_CUBIC \
-		-e TCP_CONG_BBR \
-		-e DEFAULT_BBR \
-		--set-str DEFAULT_TCP_CONG bbr || die
-
-	scripts/config -m NET_SCH_FQ_CODEL \
-		-e NET_SCH_FQ \
-		-d DEFAULT_FQ_CODEL \
-		-e DEFAULT_FQ \
-		--set-str DEFAULT_NET_SCH fq || die
+	    -e TCP_CONG_BBR \
+        -e DEFAULT_BBR \
+        --set-str DEFAULT_TCP_CONG bbr || die
 
 	# Enable MultiGen LRU
 	scripts/config -e LRU_GEN -e LRU_GEN_ENABLED -d LRU_GEN_STATS || die
@@ -261,6 +257,23 @@ src_prepare() {
 			-e LRNG_SELFTEST \
 			-d LRNG_SELFTEST_PANIC \
 			-d LRNG_RUNTIME_FORCE_SEEDING_DISABLE || die
+	fi
+
+	if ! use sched-ext; then
+		scripts/config -d DEBUG_INFO \
+            -d DEBUG_INFO_BTF \
+            -d DEBUG_INFO_DWARF4 \
+            -d DEBUG_INFO_DWARF5 \
+            -d PAHOLE_HAS_SPLIT_BTF \
+            -d DEBUG_INFO_BTF_MODULES \
+            -d SLUB_DEBUG \
+            -d PM_DEBUG \
+            -d PM_ADVANCED_DEBUG \
+            -d PM_SLEEP_DEBUG \
+            -d ACPI_DEBUG \
+            -d SCHED_DEBUG \
+            -d LATENCYTOP \
+            -d DEBUG_PREEMPT || die
 	fi
 
 	# Enable USER_NS_UNPRIVILEGED
