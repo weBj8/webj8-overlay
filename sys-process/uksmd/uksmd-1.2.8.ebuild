@@ -16,7 +16,7 @@ SLOT="0"
 KEYWORDS="~amd64 ~x86"
 
 DEPEND="sys-libs/libcap-ng
-	sys-process/procps:="
+	>=sys-process/procps-4:="
 RDEPEND="${DEPEND}"
 
 CONFIG_CHECK="~KSM"
