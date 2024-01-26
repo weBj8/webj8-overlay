@@ -3,7 +3,7 @@ DESCRIPTION=CachyOS kernel sources
 EAPI=8
 HOMEPAGE=https://github.com/CachyOS/linux-cachyos
 INHERIT=kernel-2 optfeature
-IUSE=+sched-ext +bore bore-tuning lrng gcc-extra-flags intel amd-hdr vmap ntsync spadfs v4l2-loopback symlink build
+IUSE=+sched-ext +bore bore-tuning lrng intel amd-hdr vmap ntsync spadfs v4l2-loopback symlink build
 KEYWORDS=~amd64
 LICENSE=GPL-3
 RDEPEND=!build? ( app-alternatives/cpio dev-lang/perl app-alternatives/bc app-alternatives/yacc app-alternatives/lex dev-build/make >=sys-libs/ncurses-5.2 virtual/libelf virtual/pkgconfig )
@@ -12,4 +12,4 @@ RESTRICT=binchecks strip
 SLOT=6.7.2-r1
 SRC_URI=https://www.kernel.org/pub/linux/kernel/v6.x/linux-6.7.tar.xz https://dev.gentoo.org/~alicef/dist/genpatches/genpatches-6.7-4.base.tar.xz https://dev.gentoo.org/~mpagano/dist/genpatches/genpatches-6.7-4.base.tar.xz https://dev.gentoo.org/~alicef/dist/genpatches/genpatches-6.7-4.extras.tar.xz https://dev.gentoo.org/~mpagano/dist/genpatches/genpatches-6.7-4.extras.tar.xz https://github.com/CachyOS/kernel-patches/archive/c43e7415c4fd0dd8cc7f8b023be36fd50182fd56.tar.gz -> cachyos-sources-6.7.2-patches.tar.gz https://github.com/CachyOS/linux-cachyos/archive/61e2f30833b4391a1d991cb38409a0af4ca214a0.tar.gz -> cachyos-sources-6.7.2-config.tar.gz
 _eclasses_=toolchain-funcs	e56c7649b804f051623c8bc1a1c44084	multilib	c19072c3cd7ac5cb21de013f7e9832e0	crossdev	f04338ff78f213a4a55c5c37b3c6563e	estack	c61c368a76fdf3a82fdf8dbaebea3804	multiprocessing	30ead54fa2e2b5f9cd4e612ffc34d0fe	kernel-2	1c6b8977e581e4db92fc0f6ee99babd9	optfeature	222cb475c5a4f7ae7cfb0bf510a6fe54
-_md5_=5ba9dc45db4433f7c4dec8833b0b3b12
+_md5_=98637bebd54492cbc5f6636136052ab7
