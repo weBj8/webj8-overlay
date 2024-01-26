@@ -19,8 +19,6 @@ KEYWORDS="~amd64"
 DEPEND="virtual/udev
 	sys-apps/hdparm
 	sys-process/procps
-    dev-lang/lua
-    dev-lua/luv
 	zram? (
 		sys-apps/zram-generator
 		app-arch/zstd
@@ -61,9 +59,9 @@ src_install() {
 	udev_dorules "${S}/udev/rules.d/99-cpu-dma-latency.rules"
     dobin "${SUSRBIN}/amdpstate-epp"
     dobin "${SUSRBIN}/amdpstate-guided"
-    dobin "${SUSRBIN}/le9uo"
+    # dobin "${SUSRBIN}/le9uo"
     dobin "${SUSRBIN}/pci-latency"
-    dobin "${SUSRBIN}/topmem"
+    # dobin "${SUSRBIN}/topmem"
 }
 
 pkg_postinst() {
