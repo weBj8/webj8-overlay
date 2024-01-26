@@ -1,4 +1,4 @@
-BDEPEND=kde-frameworks/extra-cmake-modules >=dev-util/ninja-1.8.2 >=dev-util/cmake-3.20.5
+BDEPEND=kde-frameworks/extra-cmake-modules app-alternatives/ninja >=dev-build/cmake-3.20.5
 DEFINED_PHASES=compile configure install prepare test
 DEPEND=dev-qt/qtcore:5 dev-qt/qtwayland:5 gui-libs/wlroots gui-libs/greetd
 DESCRIPTION=Qt based greeter for greetd
@@ -11,5 +11,5 @@ RDEPEND=dev-qt/qtcore:5 dev-qt/qtwayland:5 gui-libs/wlroots gui-libs/greetd
 RESTRICT=mirror
 SLOT=0
 SRC_URI=https://gitlab.com/marcusbritanicus/QtGreet/-/archive/v1.0.0/QtGreet-v1.0.0.tar.bz2
-_eclasses_=toolchain-funcs	fbbbc99d10168de2926e06da7169b8dc	multilib	c19072c3cd7ac5cb21de013f7e9832e0	flag-o-matic	be27a904c614cb93ae037762dc69bcc2	multiprocessing	b4e253ab22cef7b1085e9b67c7a3b730	ninja-utils	f3010c780f65d1bb5aea15a9af1adc9c	xdg-utils	baea6080dd821f5562d715887954c9d3	cmake	fc2f89084f590ac95c004ea95b0d2f80
+_eclasses_=toolchain-funcs	e56c7649b804f051623c8bc1a1c44084	multilib	c19072c3cd7ac5cb21de013f7e9832e0	flag-o-matic	78cf3cc2d5572fddf5e5e10c70f7c81a	multiprocessing	30ead54fa2e2b5f9cd4e612ffc34d0fe	ninja-utils	2df4e452cea39a9ec8fb543ce059f8d6	xdg-utils	baea6080dd821f5562d715887954c9d3	cmake	c7c9a62d6232cac66d4ea32d575c3e7c
 _md5_=bbc73ea6eac421482d8c6f0d279b762d
