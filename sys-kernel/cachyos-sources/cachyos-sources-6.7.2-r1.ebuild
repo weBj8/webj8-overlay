@@ -26,7 +26,7 @@ SRC_URI="
 
 LICENSE="GPL-3"
 KEYWORDS="~amd64"
-IUSE="+sched-ext +bore bore-tuning lrng gcc-extra-flags intel amd-hdr vmap ntsync spadfs v4l2-loopback"
+IUSE="+sched-ext +bore bore-tuning lrng intel amd-hdr vmap ntsync spadfs v4l2-loopback"
 REQUIRED_USE="bore-tuning? ( bore )"
 
 src_unpack() {
@@ -71,10 +71,6 @@ src_prepare() {
 		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-lrng.patch"
 	fi
 
-	if use gcc-extra-flags; then
-		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-Add-extra-GCC-optimization-flags.patch"
-	fi
-
 	if use intel; then
 		eapply "${CACHY_OS_PATCHES_DIR}/intel/0001-intel-thread-director.patch"
 		eapply "${CACHY_OS_PATCHES_DIR}/intel/0002-avoid-recalculations.patch"
@@ -96,7 +92,7 @@ src_prepare() {
 	if use v4l2-loopback; then
 		eapply "${CACHY_OS_PATCHES_DIR}/misc/v4l2loopback.patch"
 	fi
-	
+
 	if use spadfs; then
 		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-spadfs-6.7-merge-v1.0.18.patch"
 	fi
