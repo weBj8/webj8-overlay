@@ -20,6 +20,7 @@ DEPEND="virtual/udev
 	sys-apps/hdparm
 	sys-process/procps
     dev-lang/lua
+    dev-lua/luv
 	zram? (
 		sys-apps/zram-generator
 		app-arch/zstd
