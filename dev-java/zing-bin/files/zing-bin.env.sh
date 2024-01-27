@@ -1,4 +1,4 @@
-VERSION="Azul Zulu JDK ${PV}"
+VERSION="Azul Zing JDK ${PV}"
 JAVA_HOME="${EPREFIX}/opt/${P}"
 JDK_HOME="${EPREFIX}/opt/${P}"
 JAVAC="\${JAVA_HOME}/bin/javac"

@@ -5,13 +5,14 @@ EAPI=8
 
 inherit java-vm-2 toolchain-funcs
 
-SLOT="21"
-MY_PV="21+35.1"
+SLOT="17"
 
-SRC_URI="https://download.oracle.com/graalvm/${SLOT}/archive/graalvm-jdk-${PV}_linux-x64_bin.tar.gz"
+MY_PV="17.48.15-ca-jdk17.0.10"
 
-DESCRIPTION="Prebuilt Java JDK binaries provided by GraalVM"
-HOMEPAGE="https://www.graalvm.org/"
+SRC_URI="https://cdn.azul.com/zulu/bin/zulu${MY_PV}-linux_x64.tar.gz"
+
+DESCRIPTION="Prebuilt Java JDK binaries provided by Azul Zulu"
+HOMEPAGE="https://www.azul.com/products/core/"
 LICENSE="GPL-2-with-classpath-exception"
 KEYWORDS="~amd64"
 IUSE="+alsa cups headless-awt selinux source"
@@ -39,7 +40,7 @@ RDEPEND="
 RESTRICT="preserve-libs splitdebug"
 QA_PREBUILT="*"
 
-S="${WORKDIR}/graalvm-jdk-${MY_PV}"
+S="${WORKDIR}/zulu${MY_PV}-linux_x64"
 
 pkg_pretend() {
 	if [[ "$(tc-is-softfloat)" != "no" ]]; then
@@ -84,7 +85,7 @@ src_install() {
 	cp -pPR * "${ddest}" || die
 
 	# provide stable symlink
-	# dosym "${P}" "/opt/${PN}-${SLOT}"
+	dosym "${P}" "/opt/${PN}-${SLOT}"
 
 	java-vm_install-env "${FILESDIR}"/${PN}.env.sh
 	java-vm_set-pax-markings "${ddest}"

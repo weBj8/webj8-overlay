@@ -5,14 +5,12 @@ EAPI=8
 
 inherit java-vm-2 toolchain-funcs
 
-SLOT="17"
+SLOT="21"
 
-MY_PV="17.44.53-ca-jdk17.0.8.1"
+SRC_URI="https://cdn.azul.com/zing-zvm/ZVM23.12.0.0/zing23.12.0.0-4-jdk21.0.1-linux_x64.tar.gz"
 
-SRC_URI="https://cdn.azul.com/zulu/bin/zulu${MY_PV}-linux_x64.tar.gz"
-
-DESCRIPTION="Prebuilt Java JDK binaries provided by Azul Zulu"
-HOMEPAGE="https://www.azul.com/products/core/"
+DESCRIPTION="Prebuilt Java JDK binaries provided by Azul Zing"
+HOMEPAGE="https://www.azul.com/products/prime/"
 LICENSE="GPL-2-with-classpath-exception"
 KEYWORDS="~amd64"
 IUSE="+alsa cups headless-awt selinux source"
@@ -40,7 +38,7 @@ RDEPEND="
 RESTRICT="preserve-libs splitdebug"
 QA_PREBUILT="*"
 
-S="${WORKDIR}/zulu${MY_PV}-linux_x64"
+S="${WORKDIR}/zing23.12.0.0-4-jdk21.0.1-linux_x64"
 
 pkg_pretend() {
 	if [[ "$(tc-is-softfloat)" != "no" ]]; then
