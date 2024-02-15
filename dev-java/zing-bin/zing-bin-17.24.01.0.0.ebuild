@@ -7,7 +7,7 @@ inherit java-vm-2 toolchain-funcs
 
 SLOT="17"
 
-SRC_URI="https://cdn.azul.com/zing-zvm/ZVM23.12.0.0/zing23.12.0.0-4-jdk17.0.9-linux_x64.tar.gz"
+SRC_URI="https://cdn.azul.com/zing-zvm/ZVM24.01.0.0/zing24.01.0.0-4-jdk17.0.10-linux_x64.tar.gz"
 
 DESCRIPTION="Prebuilt Java JDK binaries provided by Azul Zing"
 HOMEPAGE="https://www.azul.com/products/prime/"
@@ -38,7 +38,7 @@ RDEPEND="
 RESTRICT="preserve-libs splitdebug"
 QA_PREBUILT="*"
 
-S="${WORKDIR}/zing23.12.0.0-4-jdk17.0.9-linux_x64"
+S="${WORKDIR}/zing24.01.0.0-4-jdk17.0.10-linux_x64"
 
 pkg_pretend() {
 	if [[ "$(tc-is-softfloat)" != "no" ]]; then
