@@ -6,7 +6,7 @@ ETYPE="sources"
 EXTRAVERSION="-cachyos"
 K_EXP_GENPATCHES_NOUSE="1"
 K_WANT_GENPATCHES="base extras"
-K_GENPATCHES_VER="9"
+K_GENPATCHES_VER="10"
 
 inherit kernel-2 optfeature
 detect_version
@@ -14,8 +14,8 @@ detect_version
 DESCRIPTION="CachyOS kernel sources"
 HOMEPAGE="https://github.com/CachyOS/linux-cachyos"
 
-CACHY_OS_KERNEL_PATCHES_COMMIT_HASH="7411756fb2f849f8388ce5521f55addf02ada309"
-CACHY_OS_PKGBUILD_COMMIT_HASH="8739eff6c50c5ef92fa09fac5563951585908095"
+CACHY_OS_KERNEL_PATCHES_COMMIT_HASH="10ed86207d93c531b8d720356907f027352287c3"
+CACHY_OS_PKGBUILD_COMMIT_HASH="4642e6bdae449c745076d86bf2add46ff6db4f31"
 
 SRC_URI="
 	${KERNEL_URI}
@@ -26,8 +26,8 @@ SRC_URI="
 
 LICENSE="GPL-3"
 KEYWORDS="~amd64"
-IUSE="sched-ext bore intel amd-hdr vmap ntsync spadfs v4l2-loopback le9uo"
-REQUIRED_USE="?? ( sched-ext bore )"
+IUSE="sched-ext +bore intel amd-hdr vmap ntsync spadfs v4l2-loopback le9uo"
+REQUIRED_USE=""
 
 src_unpack() {
 	kernel-2_src_unpack
