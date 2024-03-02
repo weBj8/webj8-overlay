@@ -10,8 +10,8 @@ inherit prefix python-any-r1 toolchain-funcs wrapper
 
 WINE_GECKO=2.47.4
 WINE_MONO=8.1.0
-_P=${PV/_/-}
-WINE_P=wine-${_P}
+_PV=${PV/_/-}
+WINE_P=wine-${_PV}
 
 if [[ ${PV} == *9999 ]]; then
 	inherit git-r3
@@ -221,12 +221,12 @@ src_unpack() {
 	unpack 9.0-rc1-patchset-v3.tar
 
 	mv ${WORKDIR}/9.0-rc1-patchset-v3/* . || die
-	mv audio-revert.tar ${WORKDIR}/wine-${_P}/dlls || die
+	mv audio-revert.tar ${WORKDIR}/wine-${_PV}/dlls || die
 
-	cd ${WORKDIR}/wine-${_P}/dlls || die
-	unpack ${WORKDIR}/wine-${_P}/dlls/audio-revert.tar
+	cd ${WORKDIR}/wine-${_PV}/dlls || die
+	unpack ${WORKDIR}/wine-${_PV}/dlls/audio-revert.tar
 
-	rm ${WORKDIR}/wine-${_P}/dlls/audio-revert.tar || die
+	rm ${WORKDIR}/wine-${_PV}/dlls/audio-revert.tar || die
 }
 
 src_prepare() {
