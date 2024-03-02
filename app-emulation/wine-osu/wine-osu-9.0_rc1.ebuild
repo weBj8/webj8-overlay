@@ -10,8 +10,8 @@ inherit prefix python-any-r1 toolchain-funcs wrapper
 
 WINE_GECKO=2.47.4
 WINE_MONO=8.1.0
-WINE_P=wine-9.0-rc1
-_P=9.0-rc1
+_P=${PV/_/-}
+WINE_P=wine-${_P}
 
 if [[ ${PV} == *9999 ]]; then
 	inherit git-r3
@@ -22,7 +22,7 @@ else
 	SRC_URI="
 		https://dl.winehq.org/wine/source/${WINE_SDIR}/${WINE_P}.tar.xz
 		https://github.com/wine-staging/wine-staging/archive/v9.0-rc1.tar.gz -> v9.0-rc1.tar.gz
-        https://github.com/NelloKudo/WineBuilder/raw/master/osu-misc/patchsets/9.0-rc1-patchset-v3.tar -> 9.0-rc1-patchset-v3.tar"
+		https://github.com/NelloKudo/WineBuilder/raw/master/osu-misc/patchsets/9.0-rc1-patchset-v3.tar -> 9.0-rc1-patchset-v3.tar"
 	KEYWORDS="-* ~amd64 ~x86"
 fi
 S="${WORKDIR}/${WINE_P}"
@@ -218,13 +218,13 @@ src_unpack() {
 		default
 	fi
 
-    unpack 9.0-rc1-patchset-v3.tar
+	unpack 9.0-rc1-patchset-v3.tar
 
-    mv ${WORKDIR}/9.0-rc1-patchset-v3/* . || die
-    mv audio-revert.tar ${WORKDIR}/wine-${_P}/dlls || die
+	mv ${WORKDIR}/9.0-rc1-patchset-v3/* . || die
+	mv audio-revert.tar ${WORKDIR}/wine-${_P}/dlls || die
 
-    cd ${WORKDIR}/wine-${_P}/dlls || die
-    unpack ${WORKDIR}/wine-${_P}/dlls/audio-revert.tar
+	cd ${WORKDIR}/wine-${_P}/dlls || die
+	unpack ${WORKDIR}/wine-${_P}/dlls/audio-revert.tar
 
 	rm ${WORKDIR}/wine-${_P}/dlls/audio-revert.tar || die
 }
@@ -270,10 +270,10 @@ src_prepare() {
 		fi
 	fi
 
-    for i in "${WORKDIR}"/*patch; do
-        [ ! -f "$i" ] && continue
-        eapply "$i"
-    done
+	for i in "${WORKDIR}"/*patch; do
+		[ ! -f "$i" ] && continue
+		eapply "$i"
+	done
 
 	# ensure .desktop calls this variant + slot
 	sed -i "/^Exec=/s/wine /wine-osu-9.0-rc1 /" loader/wine.desktop || die
@@ -290,13 +290,13 @@ src_prepare() {
 }
 
 src_configure() {
-	WINE_PREFIX=/usr/lib/${_P}
-	WINE_DATADIR=/usr/share/${_P}
+	WINE_PREFIX=/usr/lib/${P}
+	WINE_DATADIR=/usr/share/${P}
 
 	local conf=(
 		--prefix="${EPREFIX}"${WINE_PREFIX}
 		--datadir="${EPREFIX}"${WINE_DATADIR}
-		--includedir="${EPREFIX}"/usr/include/${_P}
+		--includedir="${EPREFIX}"/usr/include/${P}
 		--libdir="${EPREFIX}"${WINE_PREFIX}
 		--mandir="${EPREFIX}"${WINE_DATADIR}/man
 
