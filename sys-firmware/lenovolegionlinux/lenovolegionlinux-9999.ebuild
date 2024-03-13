@@ -43,7 +43,7 @@ DEPEND="${RDEPEND}"
 
 LICENSE="GPL-2"
 SLOT="0"
-IUSE="+gui downgrade-nvidia"
+IUSE="+gui downgrade-nvidia elogind"
 
 MODULES_KERNEL_MIN=5.10
 
@@ -79,6 +79,13 @@ src_install() {
 		cd "${WORKDIR}/${P}/extra" || die
 
 		systemd_dounit service/legiond.service service/legiond-onresume.service
+		newinitd "${FILESDIR}/legiond.initd" legiond
+
+		if use elogind; then
+			exeinto /lib64/elogind/system-sleep/
+			doexe "${FILESDIR}/legiond-onresume.sh"
+		fi
+
 		insinto /etc/acpi/events
 		doins acpi/events/{legion_ppd,legion_ac}
 		dobin service/legiond/legiond
