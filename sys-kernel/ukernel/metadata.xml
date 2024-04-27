@@ -5,7 +5,4 @@
     <email>ston.jia@outlook.com</email>
     <name>ston</name>
   </maintainer>
-  <upstream>
-    <remote-id type="github">graysky2/modprobed-db</remote-id>
-  </upstream>
 </pkgmetadata>
