@@ -15,7 +15,7 @@ DESCRIPTION="CachyOS kernel sources"
 HOMEPAGE="https://github.com/CachyOS/linux-cachyos"
 
 CACHY_OS_KERNEL_PATCHES_COMMIT_HASH="af0a0661d7ca863978a617dc118d093319e1123e"
-CACHY_OS_PKGBUILD_COMMIT_HASH="37578fd0d9f7cf54380d4e2f6797a9f0f5f152d4"
+CACHY_OS_PKGBUILD_COMMIT_HASH="e973bc80ce671155bbacb89ea39d1fd90906ec8f"
 
 SRC_URI="
 ${KERNEL_URI}
@@ -26,7 +26,7 @@ https://github.com/CachyOS/linux-cachyos/archive/${CACHY_OS_PKGBUILD_COMMIT_HASH
 
 LICENSE="GPL-3"
 KEYWORDS="~amd64"
-IUSE="+sched-ext +bore intel amd-hdr ntsync spadfs v4l2-loopback le9uo i2c nvidia aufs hardened lrng rt"
+IUSE="+sched-ext +bore intel amd-hdr ntsync spadfs v4l2-loopback le9uo i2c aufs hardened lrng rt"
 REQUIRED_USE=""
 
 src_unpack() {
@@ -57,7 +57,9 @@ src_prepare() {
 		eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-sched-ext.patch"
 		eapply "${CACHY_OS_PATCHES_DIR}/sched/0002-tunable-sched-slice.patch"
 		if use bore; then
-			eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-bore-cachy-ext.patch"
+			# entity_lag(u64 avruntime, struct sched_entity *se) <= this cause patch failure
+			# eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-bore-cachy-ext.patch" 
+			eapply "${FILESDIR}/${KV_MAJOR}.${KV_MINOR}/sched/0001-bore-cachy-ext.patch"
 			CACHY_OS_PROFILE="linux-cachyos"
 		else
 			CACHY_OS_PROFILE="linux-cachyos-sched-ext"
@@ -76,19 +78,19 @@ src_prepare() {
 
 	# intel specific
 	if use intel; then
-		eapply "${CACHY_OS_PATCHES_DIR}/intel/0001-intel-thread-director.patch"
-		eapply "${CACHY_OS_PATCHES_DIR}/intel/0002-pcores-fair.patch"
+		eapply "${CACHY_OS_PATCHES_DIR}/misc/intel/0001-intel-thread-director.patch"
+		eapply "${CACHY_OS_PATCHES_DIR}/misc/intel/0002-pcores-fair.patch"
 	fi
 
-	# nvidia specific patch
-	if use nvidia; then
-		eapply "${CACHY_OS_PATCHES_DIR}/intel/0001-NVIDIA-Fixup-GPL-issue.patch"
-		eapply "${CACHY_OS_PATCHES_DIR}/intel/0001-NVIDIA-take-modeset-ownership-early.patch"
-		eapply "${CACHY_OS_PATCHES_DIR}/intel/0001-nvidia-545.patch"
-		eapply "${CACHY_OS_PATCHES_DIR}/intel/make-modeset-fbdev-default.patch"
-		eapply "${CACHY_OS_PATCHES_DIR}/intel/nvidia-drm-hotplug-workqueue.patch"
-		eapply "${CACHY_OS_PATCHES_DIR}/intel/nvidia-open-gcc-ibt-sls.patch"
-	fi
+	# nvidia specific patch (I don't have gpu for testing this...)
+	# if use nvidia; then
+	# 	eapply "${CACHY_OS_PATCHES_DIR}/misc/nvidia/0001-NVIDIA-Fixup-GPL-issue.patch"
+	# 	eapply "${CACHY_OS_PATCHES_DIR}/misc/nvidia/0001-NVIDIA-take-modeset-ownership-early.patch"
+	# 	eapply "${CACHY_OS_PATCHES_DIR}/misc/nvidia/0001-nvidia-545.patch"
+	# 	eapply "${CACHY_OS_PATCHES_DIR}/misc/nvidia/make-modeset-fbdev-default.patch"
+	# 	eapply "${CACHY_OS_PATCHES_DIR}/misc/nvidia/nvidia-drm-hotplug-workqueue.patch"
+	# 	eapply "${CACHY_OS_PATCHES_DIR}/misc/nvidia/nvidia-open-gcc-ibt-sls.patch"
+	# fi
 
 	# misc patch
 	if use aufs; then
@@ -111,7 +113,7 @@ src_prepare() {
 		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-le9uo.patch"
 	fi
 
-	# 0009-ntsync.patch cause this patch failed 
+	# seems 0009-ntsync.patch cause this patch failed 
 	# if use ntsync; then
 	# 	eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-ntsync.patch"
 	# fi
@@ -120,7 +122,7 @@ src_prepare() {
 		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-rt.patch"
 	fi
 
-	# 0005-cachy.patch cause this patch failed
+	# seems 0005-cachy.patch cause this patch failed
 	# if use v4l2-loopback; then
 	# 	eapply "${CACHY_OS_PATCHES_DIR}/misc/v4l2loopback.patch"
 	# fi
@@ -129,9 +131,10 @@ src_prepare() {
 		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-spadfs-6.7-merge-v1.0.18.patch"
 	fi
 
-	if use i2c; then
-		eapply "${CACHY_OS_PATCHES_DIR}/misc/ddcci.patch"
-	fi
+	# Patch modify need
+	# if use i2c; then
+	# 	eapply "${CACHY_OS_PATCHES_DIR}/misc/ddcci.patch"
+	# fi
 
 	eapply_user
 
