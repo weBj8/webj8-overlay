@@ -223,7 +223,7 @@ src_unpack() {
 	mkdir ${WORKDIR}/patch || die
 
 	# THIS THING RUIN MY DATE
-	# rm "./0003-pending-mrs-and-backports/0001-vulkan-OPWR/0007-winex11-Create-a-window-surface-even-when-there-is-c.patch"
+	rm "./9.11-staging/0005-proton-fsync/0002-ntdll-loader-add-support-for-overriding-IMAGE_FILE_L.patch" || die
 	for dir in ./9.11-staging/**; do
     	mv "$dir" ${WORKDIR}/patch/.
 	done
