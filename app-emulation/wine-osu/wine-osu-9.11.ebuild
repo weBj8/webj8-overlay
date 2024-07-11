@@ -22,7 +22,8 @@ else
 	SRC_URI="
 		https://dl.winehq.org/wine/source/${WINE_SDIR}/${WINE_P}.tar.xz
 		https://github.com/wine-staging/wine-staging/archive/v${PV}.tar.gz -> ${_P}.tar.gz
-		https://github.com/NelloKudo/WineBuilder/raw/master/osu-misc/patchsets/9.11-staging-2-patchset.tar.xz -> 9.11-staging-2-patchset.tar.xz"
+		https://github.com/NelloKudo/WineBuilder/raw/fa08b2dc27f9b04f8321582f8b8c3b2a6370308c/osu-misc/patchsets/9.11-staging.tar -> 9.11-staging.tar
+		https://github.com/NelloKudo/WineBuilder/raw/fa08b2dc27f9b04f8321582f8b8c3b2a6370308c/osu-misc/patchsets/9.11-staging-2-patchset.tar.xz -> 9.11-staging-2-patchset.tar.xz"
 	KEYWORDS="-* ~amd64 ~x86"
 fi
 
@@ -220,10 +221,17 @@ src_unpack() {
 	fi
 
 	mkdir ${WORKDIR}/patch || die
-	
-	for dir in [0-9][0-9][0-9][0-9]-*; do
+
+	# THIS THING RUIN MY DATE
+	# rm "./0003-pending-mrs-and-backports/0001-vulkan-OPWR/0007-winex11-Create-a-window-surface-even-when-there-is-c.patch"
+	for dir in ./9.11-staging/**; do
     	mv "$dir" ${WORKDIR}/patch/.
 	done
+
+	mv "./0003-pending-mrs-and-backports/0002-shared-memory-hooks-staging-v2" ${WORKDIR}/patch/0000-pending-mrs-and-backports/.  || die
+	mv "./0003-pending-mrs-and-backports/0004-opengl32-wglChoosePixelFormatARB" ${WORKDIR}/patch/0000-pending-mrs-and-backports/.  || die
+	mv "./0003-pending-mrs-and-backports/0007-ps2044-ntoskrnl.exe-Implement-acquiring-and-releasing-guarded-mutexes.patch" ${WORKDIR}/patch/0000-pending-mrs-and-backports/. || die
+	mv "./0003-pending-mrs-and-backports/0008-ps5907-ntdll-Optimize-NtQueryVirtualMemory.patch" ${WORKDIR}/patch/0000-pending-mrs-and-backports/. || die
 }
 
 src_prepare() {
@@ -263,7 +271,7 @@ src_prepare() {
 	fi
 
 
-	for i in "${WORKDIR}"/patch/**/*.patch; do
+	for i in "${WORKDIR}"/patch/**/*patch; do
 		[ ! -f "$i" ] && continue
 		eapply "$i"
 	done
