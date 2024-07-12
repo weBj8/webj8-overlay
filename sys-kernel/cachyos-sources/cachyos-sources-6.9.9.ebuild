@@ -26,7 +26,7 @@ SRC_URI="
 
 LICENSE="GPL-3"
 KEYWORDS="~amd64"
-IUSE="sched-ext +bore intel acpi-call aufs le9uo ntsync spadfs slab steam-deck-oled"
+IUSE="sched-ext +bore intel acpi-call aufs le9uo spadfs slab steam-deck-oled"
 REQUIRED_USE=""
 
 src_unpack() {
@@ -82,10 +82,6 @@ src_prepare() {
 
 	if use le9uo; then
 		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-le9uo.patch"
-	fi
-
-	if use ntsync; then
-		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-ntsync.patch"
 	fi
 
 	if use spadfs; then
