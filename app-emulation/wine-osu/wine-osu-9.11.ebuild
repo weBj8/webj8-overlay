@@ -10,7 +10,8 @@ inherit prefix python-any-r1 toolchain-funcs wrapper
 
 WINE_GECKO=2.47.4
 WINE_MONO=9.1.0
-WINE_P=wine-$(ver_cut 1-2)
+_PV=${PV/_/-}
+WINE_P=wine-${_PV}
 _P=wine-staging-${PV}
 
 if [[ ${PV} == *9999 ]]; then
@@ -21,7 +22,7 @@ else
 	(( $(ver_cut 2) )) && WINE_SDIR=$(ver_cut 1).x || WINE_SDIR=$(ver_cut 1).0
 	SRC_URI="
 		https://dl.winehq.org/wine/source/${WINE_SDIR}/${WINE_P}.tar.xz
-		https://github.com/wine-staging/wine-staging/archive/v${PV}.tar.gz -> ${_P}.tar.gz
+		https://github.com/wine-staging/wine-staging/archive/v${PV}.tar.gz -> v9.11.tar.gz
 		https://github.com/NelloKudo/WineBuilder/raw/fa08b2dc27f9b04f8321582f8b8c3b2a6370308c/osu-misc/patchsets/9.11-staging.tar -> 9.11-staging.tar
 		https://github.com/NelloKudo/WineBuilder/raw/fa08b2dc27f9b04f8321582f8b8c3b2a6370308c/osu-misc/patchsets/9.11-staging-2-patchset.tar.xz -> 9.11-staging-2-patchset.tar.xz"
 	KEYWORDS="-* ~amd64 ~x86"
@@ -277,7 +278,7 @@ src_prepare() {
 	done
 
 	# ensure .desktop calls this variant + slot
-	sed -i "/^Exec=/s/wine /${_P} /" loader/wine.desktop || die
+	sed -i "/^Exec=/s/wine /wine-osu-9.11 /" loader/wine.desktop || die
 
 	# datadir is not where wine-mono is installed, so prefixy alternate paths
 	hprefixify -w /get_mono_path/ dlls/mscoree/metahost.c
@@ -291,13 +292,13 @@ src_prepare() {
 }
 
 src_configure() {
-	WINE_PREFIX=/usr/lib/${_P}
-	WINE_DATADIR=/usr/share/${_P}
+	WINE_PREFIX=/usr/lib/${P}
+	WINE_DATADIR=/usr/share/${P}
 
 	local conf=(
 		--prefix="${EPREFIX}"${WINE_PREFIX}
 		--datadir="${EPREFIX}"${WINE_DATADIR}
-		--includedir="${EPREFIX}"/usr/include/${_P}
+		--includedir="${EPREFIX}"/usr/include/${P}
 		--libdir="${EPREFIX}"${WINE_PREFIX}
 		--mandir="${EPREFIX}"${WINE_DATADIR}/man
 
