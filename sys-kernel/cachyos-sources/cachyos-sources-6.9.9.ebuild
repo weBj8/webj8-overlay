@@ -80,7 +80,7 @@ src_prepare() {
 		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-aufs-6.9-merge-v20240701.patch"
 	fi
 
-	if use le9u0; then
+	if use le9uo; then
 		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-le9uo.patch"
 	fi
 
