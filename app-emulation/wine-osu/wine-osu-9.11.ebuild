@@ -222,7 +222,7 @@ src_unpack() {
 
 	mkdir ${WORKDIR}/patch || die
 
-	# THIS THING RUIN MY DATE
+	# THIS THING RUIN MY DAY
 	rm "./9.11-staging/0005-proton-fsync/0002-ntdll-loader-add-support-for-overriding-IMAGE_FILE_L.patch" || die
 	for dir in ./9.11-staging/**; do
     	mv "$dir" ${WORKDIR}/patch/.
