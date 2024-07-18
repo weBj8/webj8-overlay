@@ -5,8 +5,8 @@ EAPI=8
 
 inherit java-vm-2 toolchain-funcs
 
-SLOT="21"
-MY_PV="21.0.2+13.1"
+SLOT="17"
+MY_PV="17.0.12+8.1"
 
 SRC_URI="https://download.oracle.com/graalvm/${SLOT}/archive/graalvm-jdk-${PV}_linux-x64_bin.tar.gz"
 
@@ -14,7 +14,7 @@ DESCRIPTION="Prebuilt Java JDK binaries provided by GraalVM"
 HOMEPAGE="https://www.graalvm.org/"
 LICENSE="GPL-2-with-classpath-exception"
 KEYWORDS="~amd64"
-IUSE="+alsa cups headless-awt selinux source"
+IUSE="+alsa cups headless-awt selinux +source"
 
 RDEPEND="
 	>=sys-apps/baselayout-java-0.1.0-r1
