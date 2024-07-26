@@ -6,7 +6,7 @@ ETYPE="sources"
 EXTRAVERSION="-cachyos"
 K_EXP_GENPATCHES_NOUSE="1"
 K_WANT_GENPATCHES="base extras"
-K_GENPATCHES_VER="10"
+K_GENPATCHES_VER="3"
 
 inherit kernel-2 optfeature
 detect_version
@@ -14,19 +14,19 @@ detect_version
 DESCRIPTION="CachyOS kernel sources"
 HOMEPAGE="https://github.com/CachyOS/linux-cachyos"
 
-CACHY_OS_KERNEL_PATCHES_COMMIT_HASH="af0a0661d7ca863978a617dc118d093319e1123e"
-CACHY_OS_PKGBUILD_COMMIT_HASH="e973bc80ce671155bbacb89ea39d1fd90906ec8f"
+CACHY_OS_KERNEL_PATCHES_COMMIT_HASH="de482bd5ac6c0eb1671169d9a5cd5484e12226fb"
+CACHY_OS_PKGBUILD_COMMIT_HASH="f504b4ad8d1775215ece427183adc6b2892b905d"
 
 SRC_URI="
-${KERNEL_URI}
-${GENPATCHES_URI}
-https://github.com/CachyOS/kernel-patches/archive/${CACHY_OS_KERNEL_PATCHES_COMMIT_HASH}.tar.gz -> ${P}-patches.tar.gz
-https://github.com/CachyOS/linux-cachyos/archive/${CACHY_OS_PKGBUILD_COMMIT_HASH}.tar.gz -> ${P}-config.tar.gz
+	${KERNEL_URI}
+	${GENPATCHES_URI}
+	https://github.com/CachyOS/kernel-patches/archive/${CACHY_OS_KERNEL_PATCHES_COMMIT_HASH}.tar.gz -> ${P}-patches.tar.gz
+	https://github.com/CachyOS/linux-cachyos/archive/${CACHY_OS_PKGBUILD_COMMIT_HASH}.tar.gz -> ${P}-config.tar.gz
 "
 
 LICENSE="GPL-3"
 KEYWORDS="~amd64"
-IUSE="+sched-ext +bore intel amd-hdr ntsync spadfs v4l2-loopback le9uo i2c aufs hardened lrng rt"
+IUSE="sched-ext +bore acpi-call aufs spadfs handheld"
 REQUIRED_USE=""
 
 src_unpack() {
@@ -46,27 +46,18 @@ src_prepare() {
 	eapply "${CACHY_OS_PATCHES_DIR}/all/0001-cachyos-base-all.patch"
 
 	# Apply scheduler patches
-	# use sched-ext && eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-sched-ext.patch"
-	# if use sched-ext; then
-	# 	eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-sched-ext.patch"
-	# 	eapply "${CACHY_OS_PATCHES_DIR}/sched/0002-tunable-sched-slice.patch"
-	# fi
-	# use bore && eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-bore.patch"
-
 	if use sched-ext; then
-		eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-sched-ext.patch"
-		eapply "${CACHY_OS_PATCHES_DIR}/sched/0002-tunable-sched-slice.patch"
 		if use bore; then
-			# entity_lag(u64 avruntime, struct sched_entity *se) <= this cause patch failure
-			# eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-bore-cachy-ext.patch" 
-			eapply "${FILESDIR}/${KV_MAJOR}.${KV_MINOR}/sched/0001-bore-cachy-ext.patch"
+            eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-sched-ext.patch"
+            eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-bore-cachy-ext.patch"
 			CACHY_OS_PROFILE="linux-cachyos"
 		else
+            eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-sched-ext.patch"
 			CACHY_OS_PROFILE="linux-cachyos-sched-ext"
 		fi
 	else
 		if use bore; then
-			eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-bore-cachy.patch"
+            eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-bore-cachy.patch"
 			CACHY_OS_PROFILE="linux-cachyos-bore"
 		else
 			CACHY_OS_PROFILE="linux-cachyos-eevdf"
@@ -76,65 +67,22 @@ src_prepare() {
 	cp "${CACHY_OS_CONFIG_DIR}/${CACHY_OS_PROFILE}/config" .config || die
 	sh "${CACHY_OS_CONFIG_DIR}/${CACHY_OS_PROFILE}/auto-cpu-optimization.sh" || die
 
-	# intel specific
-	if use intel; then
-		eapply "${CACHY_OS_PATCHES_DIR}/misc/intel/0001-intel-thread-director.patch"
-		eapply "${CACHY_OS_PATCHES_DIR}/misc/intel/0002-pcores-fair.patch"
+	if use acpi-call; then
+		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-acpi-call.patch"
 	fi
 
-	# nvidia specific patch (I don't have gpu for testing this...)
-	# if use nvidia; then
-	# 	eapply "${CACHY_OS_PATCHES_DIR}/misc/nvidia/0001-NVIDIA-Fixup-GPL-issue.patch"
-	# 	eapply "${CACHY_OS_PATCHES_DIR}/misc/nvidia/0001-NVIDIA-take-modeset-ownership-early.patch"
-	# 	eapply "${CACHY_OS_PATCHES_DIR}/misc/nvidia/0001-nvidia-545.patch"
-	# 	eapply "${CACHY_OS_PATCHES_DIR}/misc/nvidia/make-modeset-fbdev-default.patch"
-	# 	eapply "${CACHY_OS_PATCHES_DIR}/misc/nvidia/nvidia-drm-hotplug-workqueue.patch"
-	# 	eapply "${CACHY_OS_PATCHES_DIR}/misc/nvidia/nvidia-open-gcc-ibt-sls.patch"
-	# fi
-
-	# misc patch
 	if use aufs; then
-		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-aufs-6.8-merge-v20240318.patch"
+		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-aufs-6.10-merge-v20240701.patch"
 	fi
-
-	if use hardened; then
-		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-hardened.patch"
-	fi
-
-	if use lrng; then
-		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-lrng.patch"
-	fi
-
-	if use amd-hdr; then
-		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-amd-hdr.patch"
-	fi
-
-	if use le9uo; then
-		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-le9uo.patch"
-	fi
-
-	# seems 0009-ntsync.patch cause this patch failed 
-	# if use ntsync; then
-	# 	eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-ntsync.patch"
-	# fi
-
-	if use rt; then
-		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-rt.patch"
-	fi
-
-	# seems 0005-cachy.patch cause this patch failed
-	# if use v4l2-loopback; then
-	# 	eapply "${CACHY_OS_PATCHES_DIR}/misc/v4l2loopback.patch"
-	# fi
 
 	if use spadfs; then
-		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-spadfs-6.7-merge-v1.0.18.patch"
+		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-spadfs-6.10-merge-v1.0.19.patch"
 	fi
 
-	# Patch modify need
-	# if use i2c; then
-	# 	eapply "${CACHY_OS_PATCHES_DIR}/misc/ddcci.patch"
-	# fi
+    if use handheld; then
+		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-handheld.patch"
+        eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-wifi-ath11k-Rename-QCA2066-fw-dir-to-QCA206X.patch"
+    fi
 
 	eapply_user
 
@@ -145,14 +93,16 @@ src_prepare() {
 	# Enable CachyOS tweaks
 	scripts/config -e CACHY || die
 
-	# Enable SCX
 	if use sched-ext; then
-		scripts/config -e SCHED_CLASS_EXT || die
-	fi
-
-	# Enable BORE
-	if use bore; then
-		scripts/config -e SCHED_BORE || die
+		if use bore; then
+            scripts/config -e SCHED_CLASS_EXT -e SCHED_BORE --set-val MIN_BASE_SLICE_NS 1000000 || die
+		else
+            scripts/config -e SCHED_CLASS_EXT || die
+		fi
+	else
+		if use bore; then
+            scripts/config -e SCHED_BORE --set-val MIN_BASE_SLICE_NS 1000000 || die
+		fi
 	fi
 
 	# Change hostname
