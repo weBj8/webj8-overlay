@@ -6,7 +6,7 @@ ETYPE="sources"
 EXTRAVERSION="-cachyos"
 K_EXP_GENPATCHES_NOUSE="1"
 K_WANT_GENPATCHES="base extras"
-K_GENPATCHES_VER="10"
+K_GENPATCHES_VER="6"
 
 inherit kernel-2 optfeature
 detect_version
@@ -14,8 +14,8 @@ detect_version
 DESCRIPTION="CachyOS kernel sources"
 HOMEPAGE="https://github.com/CachyOS/linux-cachyos"
 
-CACHY_OS_KERNEL_PATCHES_COMMIT_HASH="d1c68190ff202755f11516678e9bf68afbf7f469"
-CACHY_OS_PKGBUILD_COMMIT_HASH="bf423f60f777d1082d101e0944dcd19a64e4afa3"
+CACHY_OS_KERNEL_PATCHES_COMMIT_HASH="7fa46ba88bb42eb52a32892332d143ef4bfcc708"
+CACHY_OS_PKGBUILD_COMMIT_HASH="e06468d3604c062285b481a31215ea7d3b6f0b77"
 
 SRC_URI="
 	${KERNEL_URI}
@@ -26,7 +26,7 @@ SRC_URI="
 
 LICENSE="GPL-3"
 KEYWORDS="~amd64"
-IUSE="sched-ext +bore intel acpi-call aufs le9uo spadfs slab steam-deck-oled"
+IUSE="sched-ext +bore acpi-call aufs spadfs handheld"
 REQUIRED_USE=""
 
 src_unpack() {
@@ -67,32 +67,20 @@ src_prepare() {
 	cp "${CACHY_OS_CONFIG_DIR}/${CACHY_OS_PROFILE}/config" .config || die
 	sh "${CACHY_OS_CONFIG_DIR}/${CACHY_OS_PROFILE}/auto-cpu-optimization.sh" || die
 
-
-	if use intel; then
-		eapply "${CACHY_OS_PATCHES_DIR}/intel/0001-intel-thread-director.patch"
-	fi
-
 	if use acpi-call; then
 		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-acpi-call.patch"
 	fi
 
 	if use aufs; then
-		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-aufs-6.9-merge-v20240701.patch"
-	fi
-
-	if use le9uo; then
-		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-le9uo.patch"
+		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-aufs-6.10-merge-v20240701.patch"
 	fi
 
 	if use spadfs; then
-		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-spadfs-6.9-merge-v1.0.19.patch"
+		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-spadfs-6.10-merge-v1.0.19.patch"
 	fi
 
-	if use slab; then
-		eapply "${CACHY_OS_PATCHES_DIR}/misc/0002-slab.patch"
-	fi
-
-    if use steam-deck-oled; then
+    if use handheld; then
+		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-handheld.patch"
         eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-wifi-ath11k-Rename-QCA2066-fw-dir-to-QCA206X.patch"
     fi
 
