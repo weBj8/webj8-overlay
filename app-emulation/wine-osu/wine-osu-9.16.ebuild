@@ -226,7 +226,10 @@ src_unpack() {
     rm "./wine-osu-patches-08-27-2024-b01131ce-8999a04f/9000-misc-additions/cursor-clip-hack.patch" || die
     # WE LUV GECKO (WHAT?)
 	rm "./wine-osu-patches-08-27-2024-b01131ce-8999a04f/9000-misc-additions/gecko-mono-skip-default-envvar.patch" || die
-
+    # HOW IT CRASH?
+    rm "./wine-osu-patches-08-27-2024-b01131ce-8999a04f/0013-server-optimization/0003-qpc/1001-ntdll-Add-__wine_get_tsc_calibration-internal-functi.patch" || die
+	rm "./wine-osu-patches-08-27-2024-b01131ce-8999a04f/0007-proton-fsync/0002-ntdll-loader-add-support-for-overriding-IMAGE_FILE_L.patch" || die
+ 
     for dir in ./wine-osu-patches-08-27-2024-b01131ce-8999a04f/**; do
     	mv "$dir" ${WORKDIR}/patch/. || die
 	done
