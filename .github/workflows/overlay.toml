@@ -1,0 +1,1181 @@
+[__config__]
+oldver = "old_ver.json"
+newver = "new_ver.json"
+
+["app-admin/rbw"]
+source = "github"
+github = "doy/rbw"
+use_latest_release = true
+github_account = "liangyongxiang"
+
+["app-admin/zenmonitor3"]
+source = "git"
+git = "https://git.exozy.me/a/zenmonitor3"
+prefix = "v"
+github_account = "liuyujielol"
+
+#["app-alternatives/v2ray-geoip"]
+
+#["app-alternatives/v2ray-geosite"]
+
+["app-arch/zchunk"]
+source = "github"
+github = "zchunk/zchunk"
+use_latest_tag = true
+github_account = "HougeLangley"
+
+#["app-backup/btrfs-assistant"]
+
+# only live package in gentoo-zh
+#["app-backup/snapper-gui"]
+
+#["app-containers/distrobox-boost"]
+
+["app-backup/restic-rest-server"]
+source = "github"
+github = "restic/rest-server"
+use_latest_release = true
+prefix = "v"
+github_account = "liangyongxiang"
+
+["app-crypt/archlinux-keyring"]
+source = "git"
+git = "https://gitlab.archlinux.org/archlinux/archlinux-keyring.git"
+github_account = "HougeLangley"
+
+["app-crypt/cfssl"]
+source = "github"
+github = "cloudflare/cfssl"
+use_latest_release = true
+prefix = "v"
+github_account = "peeweep"
+
+#["app-dicts/fcitx-pinyin-moegirl"]
+
+#["app-dicts/fcitx-pinyin-zhwiki"]
+
+["app-editors/appflowy-bin"]
+source = "github"
+github = "AppFlowy-IO/AppFlowy"
+use_latest_release = true
+
+["app-editors/marktext-bin"]
+source = "github"
+github = "marktext/marktext"
+use_latest_release = true
+prefix = "v"
+github_account = "Schroedingersdoraemon"
+
+["app-editors/typora"]
+source = "regex"
+url = "https://typora.io/#linu://typora.io/releases/stable.html"
+regex = "typora_([\\d.]+)_amd64.deb"
+github_account = "CHN-beta"
+
+["app-editors/zed"]
+source = "github"
+github = "zed-industries/zed"
+use_latest_release = true
+prefix = "v"
+github_account = "liuyujielol"
+
+#["app-emulation/deepin-udis86"]
+
+#["app-emulation/deepin-wine-helper"]
+
+#["app-emulation/deepin-wine-plugin"]
+
+#["app-emulation/deepin-wine5"]
+
+#["app-emulation/deepin-wine6-stable"]
+
+#["app-emulation/la-ow-syscall"]
+
+#["app-emulation/liblol"]
+
+#["app-emulation/looking-glass"]
+
+#["app-emulation/winetricks-zh"]
+
+#["app-i18n/dvp"]
+
+#["app-i18n/fcitx"]
+
+#["app-i18n/fcitx-anthy"]
+
+#["app-i18n/fcitx-bamboo"]
+
+["app-i18n/fcitx-chewing"]
+source = "github"
+github = "fcitx/fcitx5-chewing"
+use_latest_tag = true
+github_account = "liangyongxiang"
+
+#["app-i18n/fcitx-chinese-addons"]
+
+#["app-i18n/fcitx-configtool"]
+
+#["app-i18n/fcitx-gtk"]
+
+#["app-i18n/fcitx-hangul"]
+
+#["app-i18n/fcitx-lua"]
+
+#["app-i18n/fcitx-m17n"]
+
+# virtual package
+#["app-i18n/fcitx-meta"]
+
+#["app-i18n/fcitx-qt"]
+
+#["app-i18n/fcitx-rime"]
+
+["app-i18n/fcitx-skk"]
+source = "github"
+github = "fcitx/fcitx5-skk"
+use_latest_tag = true
+github_account = "liuyujielol"
+
+#["app-i18n/ibus-rime"]
+
+#["app-i18n/libime"]
+
+["app-i18n/libime-jyutping"]
+source = "github"
+github = "fcitx/libime-jyutping"
+use_latest_tag = true
+github_account = "liuyujielol"
+
+#["app-i18n/librime"]
+
+#["app-i18n/librime-octagram"]
+
+["app-i18n/lunar"]
+source = "debianpkg"
+debianpkg = "lunar"
+from_pattern = "-(\\d+)"
+to_pattern = ""
+github_account = "liangyongxiang"
+
+# TODO: only old data tag
+#["app-i18n/mozc"]
+
+["app-i18n/zh-autoconvert"]
+source = "regex"
+url = "https://packages.debian.org/stable/source/zh-autoconvert"
+regex = "Source Package: zh-autoconvert \\(([\\d.]+)-[\\d.]+\\)"
+
+["app-misc/bcompare"]
+source = "regex"
+url = "https://www.scootersoftware.com/kb/linux_install"
+regex = "bcompare-([\\d.]+).x86_64.tar.gz"
+
+["app-misc/ccal"]
+source = "regex"
+url = "https://ccal.chinesebay.com/ccal/ccal.htm"
+regex = "<title>ccal-([\\d.]+)</title>"
+github_account = "aieu"
+
+["app-misc/gpick"]
+source = "github"
+github = "thezbyg/gpick"
+use_latest_tag = true
+prefix = "v"
+github_account = "ArchFeh"
+
+["app-misc/joshuto"]
+source = "github"
+github = "kamiyaa/joshuto"
+use_latest_tag = true
+prefix = "v"
+github_account = "oatiz"
+
+# live package only
+#["app-misc/jshon"]
+#source = "github"
+#github = "keenerd/jshon"
+#use_latest_tag = true
+
+#["app-misc/keyd"]
+
+["app-misc/rmtrash"]
+source = "github"
+github = "PhrozenByte/rmtrash"
+use_latest_release = true
+prefix = "v"
+github_account = "CHN-beta"
+
+["app-misc/spark"]
+source = "github"
+github = "holman/spark"
+use_latest_tag = true
+prefix = "v"
+
+#["app-misc/xmind"]
+
+["app-misc/go-yq-bin"]
+source = "github"
+github = "mikefarah/yq"
+use_latest_release = true
+prefix = "v"
+github_account = "gouwazi"
+
+["app-office/anytype-bin"]
+source = "github"
+github = "anyproto/anytype-ts"
+prefix = "v"
+use_max_tag = true
+exclude_regex = ".*-(alpha|beta)"
+github_account = "xz-dev"
+
+#["app-office/bytedance-feishu"]
+
+["app-office/freeoffice"]
+source = "regex"
+url = "https://www.freeoffice.com/de/download/programme"
+regex = "softmaker-freeoffice-[\\d.]{4}-([\\d.]+)-amd64.tgz"
+github_account = "zozx"
+
+["app-office/wps-office"]
+source = "regex"
+url = "https://linux.wps.cn/wpslinuxlog"
+regex = "wps-office_([\\d.]+)_amd64.deb"
+github_account = "Universebenzene"
+
+#["app-pda/ipadcharge"]
+
+["app-shells/gitstatus"]
+source = "github"
+github = "romkatv/gitstatus"
+use_latest_release = true
+prefix = "v"
+github_account = "OriPoin"
+
+["app-shells/zsh-theme-powerlevel10k"]
+source = "github"
+github = "romkatv/powerlevel10k"
+use_latest_release = true
+prefix = "v"
+github_account = "OriPoin"
+
+["app-text/cajviewer"]
+source = "regex"
+url = "https://cajviewer.cnki.net/"
+regex = "cajviewer_([\\d.]+)_amd64.deb"
+github_account = "123485k"
+
+#["app-text/groff-utf8"]
+
+#["app-text/master-pdf-editor"]
+
+["app-vim/easymotion"]
+source = "github"
+github = "easymotion/vim-easymotion"
+use_latest_release = true
+prefix = "v"
+
+#["app-vim/powerline"]
+
+#["dev-build/gyp"]
+
+#["dev-cpp/cppcoro"]
+
+["dev-cpp/date"]
+source = "github"
+github = "HowardHinnant/date"
+use_latest_release = true
+prefix = "v"
+github_account = "CHN-beta"
+
+["dev-cpp/nameof"]
+source = "github"
+github = "Neargye/nameof"
+use_latest_release = true
+prefix = "v"
+github_account = "CHN-beta"
+
+#["dev-cpp/reproc"]
+
+["dev-cpp/tgbot-cpp"]
+source = "github"
+github = "reo7sp/tgbot-cpp"
+use_latest_release = true
+prefix = "v"
+github_account = "CHN-beta"
+
+#["dev-cpp/tl-expected"]
+
+["dev-db/dbeaver-bin"]
+source = "github"
+github = "dbeaver/dbeaver"
+use_latest_release = true
+github_account = "gouwazi"
+
+#["dev-db/mongodb"]
+
+#["dev-debug/lldb-mi"]
+
+#["dev-java/oraclejdk-bin"]
+
+#["dev-lang/quickjs"]
+
+["dev-libs/libdatrie"]
+source = "github"
+github = "tlwg/libdatrie"
+use_latest_release = true
+prefix = "v"
+
+#["dev-libs/libratbag"]
+
+["dev-libs/libthai"]
+source = "github"
+github = "tlwg/libthai"
+use_latest_release= true
+prefix = "v"
+github_account = "vowstar"
+
+#["dev-libs/lunar-calendar"]
+
+["dev-libs/lunar-date"]
+source = "github"
+github = "yetist/lunar-date"
+use_latest_release = true
+prefix = "v"
+github_account = "microcai"
+
+# live package
+#["dev-libs/tdlib"]
+#source = "github"
+#github = "tdlib/td"
+#use_latest_tag = true
+#prefix = "v"
+
+#["dev-libs/v2ray-domain-list-community"]
+#source = "github"
+#github = "v2fly/domain-list-community"
+#use_latest_tag = true
+
+#["dev-libs/v2ray-domain-list-community-bin"]
+#source = "github"
+#github = "v2fly/domain-list-community"
+#use_latest_release = true
+
+#["dev-libs/v2ray-geoip-bin"]
+#source = "github"
+#github = "v2fly/geoip"
+#use_latest_release = true
+
+#["dev-libs/v2ray-rules-dat-bin"]
+
+#["dev-python/archspec"]
+
+["dev-python/conda"]
+source = "github"
+github = "conda/conda"
+use_latest_release = true
+github_account = "OriPoin"
+
+#["dev-python/conda-libmamba-solver"]
+
+["dev-python/conda-package-handling"]
+source = "github"
+github = "conda/conda-package-handling"
+use_latest_release = true
+github_account = "OriPoin"
+
+#["dev-python/conda-package-streaming"]
+
+#["dev-python/daff"]
+
+["dev-python/fuo-bilibili"]
+source = "pypi"
+pypi = "fuo-bilibili"
+github_account = "wgjak47"
+
+["dev-python/fuo-kuwo"]
+source = "pypi"
+pypi = "fuo_kuwo"
+github_account = "wgjak47"
+
+["dev-python/fuo-netease"]
+source = "pypi"
+pypi = "fuo-netease"
+github_account = "wgjak47"
+
+["dev-python/fuo-qqmusic"]
+source = "pypi"
+pypi = "fuo-qqmusic"
+github_account = "wgjak47"
+
+["dev-python/fuo-ytmusic"]
+source = "pypi"
+pypi = "fuo-ytmusic"
+github_account = "wgjak47"
+
+["dev-python/janus"]
+source = "github"
+github = "aio-libs/janus"
+use_latest_release = true
+prefix = "v"
+github_account = "wgjak47"
+
+["dev-python/nvchecker"]
+source = "github"
+github = "lilydjwg/nvchecker"
+use_latest_tag = true
+prefix = "v"
+github_account = "liangyongxiang"
+
+["dev-python/pycosat"]
+source = "github"
+github = "ContinuumIO/pycosat"
+use_latest_tag = true
+github_account = "OriPoin"
+
+#["dev-python/pytube"]
+
+["dev-python/qasync"]
+source = "pypi"
+pypi = "qasync"
+github_account = "wgjak47"
+
+["dev-util/arch-install-scripts"]
+source = "github"
+github = "archlinux/arch-install-scripts"
+use_latest_tag = true
+prefix = "v"
+
+["dev-util/android-studio"]
+source = "aur"
+aur = "android-studio"
+use_last_modified = true
+from_pattern="-\\d+$"
+to_pattern=""
+
+#["dev-util/jetbrains-toolbox"]
+
+#["dev-util/mamba"]
+
+#["dev-util/mongodb-compass-bin"]
+
+#["dev-util/pacstrap"]
+
+["dev-util/tailspin"]
+source = "github"
+github = "bensadeh/tailspin"
+use_latest_release = true
+github_account = "liangyongxiang"
+
+["dev-util/tauri-cli"]
+source = "github"
+github = "tauri-apps/tauri"
+use_latest_tag = true
+prefix = "cli.rs-v"
+github_account = "123485k"
+
+#["dev-util/zprint-bin"]
+
+["dev-vcs/gitoxide"]
+source = "github"
+github = "Byron/gitoxide"
+use_max_tag = true
+prefix = "v"
+github_account = "peeweep"
+
+["dev-vcs/sourcegit-bin"]
+source = "github"
+github = "sourcegit-scm/sourcegit"
+use_latest_release = true
+prefix = "v"
+github_account = "gouwazi"
+
+#["games-arcade/osu-lazer"]
+
+["games-board/othello"]
+source = "regex"
+url = "http://othello-game.sourceforge.net/en/Download.html"
+regex = "([\\d.]+) is the latest stable version."
+
+#["games-fps/source-engine"]
+
+#["games-misc/oh-my-git-bin"]
+
+#["games-roguelike/nethack"]
+
+["games-util/winegame-client-bin"]
+source = "regex"
+url = "https://winegame.net/downloads/"
+regex = "net.winegame.client_([\\d.]+)_amd64.deb"
+
+#["gui-libs/libdecor"]
+
+["kde-misc/plasma-applet-netspeed-widget"]
+source = "github"
+github = "dfaust/plasma-applet-netspeed-widget"
+use_latest_tag = true
+prefix = "v"
+github_account = "liuyujielol"
+
+["media-fonts/Plangothic"]
+source = "github"
+github = "Fitzgerald-Porthmouth-Koenigsegg/Plangothic"
+use_latest_release = true
+prefix = "V"
+github_account = "st0nie"
+
+["media-fonts/iansui"]
+source = "github"
+github = "ButTaiwan/iansui"
+use_latest_release = true
+prefix = "v"
+github_account = "Linerre"
+
+["media-fonts/jf-openhuninn"]
+source = "github"
+github = "justfont/open-huninn-font"
+use_latest_release = true
+prefix = "v"
+
+["media-fonts/lxgw-neo-xihei"]
+source = "github"
+github = "lxgw/LxgwNeoXiHei"
+use_latest_release = true
+prefix = "v"
+github_account = "Linerre"
+
+#["media-fonts/lxgw-neo-zhisong"]
+
+["media-fonts/nerd-fonts"]
+source = "github"
+github = "ryanoasis/nerd-fonts"
+use_latest_release = true
+prefix = "v"
+
+["media-fonts/sarasa-gothic"]
+source = "github"
+github = "be5invis/sarasa-gothic"
+use_latest_release = true
+prefix = "v"
+github_account = "zozx"
+
+["media-fonts/sarasa-term-sc-nerd"]
+source = "github"
+github = "laishulu/Sarasa-Term-SC-Nerd"
+use_latest_release = true
+prefix = "v"
+github_account = "oatiz"
+
+["media-fonts/smiley-sans"]
+source = "github"
+github = "atelier-anchor/smiley-sans"
+use_latest_release = true
+prefix = "v"
+github_account = "Linerre"
+
+# TODO: version not found: https://sites.google.com/view/jtfoundry/zh-tw/downloads
+#["media-fonts/taipei-sans-tc"]
+
+["media-fonts/tiejili"]
+source = "github"
+github = "Buernia/Tiejili"
+use_latest_release = true
+prefix = "v"
+github_account = "Linerre"
+
+# no release and no tag
+#["media-fonts/ttf-wps-fonts"]
+
+# TODO: error: The Google Code Archive requires JavaScript to be enabled in your browser.
+#["media-fonts/wangfonts"]
+#source = "regex"
+#url = "https://code.google.com/archive/p/wangfonts/downloads"
+#regex = "wangfonts-([\\d.]+).zip"
+
+["media-fonts/zhudou"]
+source = "github"
+github = "Buernia/Zhudou-Sans"
+use_latest_release = true
+prefix = "v"
+github_account = "Linerre"
+
+# TODO: very old package
+#["media-gfx/scangearmp"]
+
+#["media-gfx/tgs2png"]
+
+["media-gfx/tifig-bin"]
+source = "github"
+github = "monostream/tifig"
+use_latest_release = true
+prefix = "v"
+
+#["media-gfx/unityhub"]
+
+#["media-gfx/zw3d"]
+
+#["media-gfx/zwcad"]
+
+#["media-libs/openslide"]
+
+["media-plugins/osdlyrics"]
+source = "github"
+github = "osdlyrics/osdlyrics"
+use_latest_release = true
+
+["media-plugins/waylyrics"]
+source = "github"
+github = "waylyrics/waylyrics"
+prefix = "v"
+use_latest_release = true
+github_account = "liuyujielol"
+
+#["media-sound/barva"]
+
+["media-sound/feeluown"]
+source = "github"
+github = "feeluown/FeelUOwn"
+use_latest_tag = true
+prefix = "v"
+
+["media-sound/go-musicfox"]
+source = "github"
+github = "anhoder/go-musicfox"
+use_latest_release = true
+prefix = "v"
+github_account = "st0nie"
+
+["media-sound/listen1_desktop-bin"]
+source = "github"
+github = "listen1/listen1_desktop"
+use_latest_tag = true
+prefix = "v"
+
+#["media-sound/lx-music-desktop-bin"]
+
+#["media-sound/netease-cloud-music"]
+
+["media-sound/netease-cloud-music-gtk"]
+source = "github"
+github = "gmg137/netease-cloud-music-gtk"
+use_latest_release = true
+github_account = "liuyujielol"
+
+#["media-sound/qqmusic"]
+
+#["media-sound/spotube-bin"]
+
+["media-sound/termusic"]
+source = "github"
+github = "tramhao/termusic"
+use_latest_release = true
+prefix = "v"
+github_account = "liuyujielol"
+
+["media-sound/yesplaymusic-bin"]
+source = "github"
+github = "qier222/YesPlayMusic"
+use_latest_release = true
+prefix = "v"
+github_account = "zozx"
+
+#["media-sound/youtube-music-bin"]
+
+#["media-video/amdgpu-pro-amf"]
+
+#["media-video/avplayer"]
+
+#["media-video/bilibili"]
+
+["media-video/mpv-handler"]
+source = "github"
+github = "akiirui/mpv-handler"
+use_latest_release = true
+prefix = "v"
+github_account = "st0nie"
+
+#["media-video/tenvideo"]
+
+["net-analyzer/nali"]
+source = "github"
+github = "zu1k/nali"
+use_latest_tag = true
+prefix = "v"
+github_account = "peeweep"
+
+#["net-analyzer/realitlscanner"]
+
+["net-dns/ddns-go"]
+source = "github"
+github = "jeessy2/ddns-go"
+use_latest_tag = true
+prefix = "v"
+github_account = "Puqns67"
+
+["net-dns/dnslookup"]
+source = "github"
+github = "ameshkov/dnslookup"
+use_latest_tag = true
+prefix = "v"
+github_account = "peeweep"
+
+#["net-dns/dnsmasq-china-list"]
+
+["net-dns/dog"]
+source = "github"
+github = "ogham/dog"
+use_latest_tag = true
+prefix = "v"
+github_account = "peeweep"
+
+#["net-dns/libidn11"]
+
+#["net-dns/mosdns"]
+
+#["net-dns/mosdns-cn-bin"]
+
+["net-dns/q"]
+source = "github"
+github = "natesales/q"
+use_latest_tag = true
+prefix = "v"
+github_account = "peeweep"
+
+["net-fs/mc"]
+source = "github"
+github = "minio/mc"
+use_latest_release = true
+from_pattern = 'RELEASE\.(\d{4})-(\d{2})-(\d{2})T(\d{2})-(\d{2})-(\d{2})Z'
+to_pattern = '\1.\2.\3.\4.\5.\6'
+github_account = "peeweep"
+
+#["net-im/deepin-wine-qq"]
+
+#["net-im/deepin-wine-wechat"]
+
+#["net-im/deepin-wine-wecom"]
+
+#["net-im/dingtalk"]
+
+#["net-im/tencent-qq"]
+
+["net-im/weixin-uos"]
+source = "aur"
+aur = "wechat-uos"
+from_pattern = "([\\d.]+):([\\d.]+)-([\\d.]+)"
+to_pattern = "\\2"
+
+["net-im/wemeet"]
+source = "regex"
+url = "https://aur.archlinux.org/packages/wemeet-bin"
+regex = "Package Details: wemeet-bin ([\\d.]+)-"
+
+#["net-libs/jzmq"]
+
+["net-misc/aliyundrive-webdav"]
+source = "github"
+github = "messense/aliyundrive-webdav"
+use_latest_release = true
+prefix = "v"
+github_account = "123485k"
+
+["net-misc/alist"]
+source = "github"
+github = "alist-org/alist"
+use_latest_release = true
+prefix = "v"
+github_account = "liangyongxiang"
+
+["net-misc/aliyunpan"]
+source = "github"
+github = "tickstep/aliyunpan"
+use_latest_release = true
+prefix = "v"
+github_account = "123485k"
+
+#["net-misc/apifox"]
+
+#["net-misc/baidunetdisk"]
+
+["net-misc/baidupcs-go"]
+source = "github"
+github = "qjfoidnh/BaiduPCS-Go"
+use_latest_release = true
+prefix = "v"
+github_account = "123485k"
+
+#["net-misc/bbdown-bin"]
+
+["net-misc/biliup-app"]
+source = "github"
+github = "ForgQi/biliup-app"
+use_latest_release = true
+prefix = "app-v"
+github_account = "123485k"
+
+#["net-misc/biliup-app-bin"]
+
+["net-misc/biliup-rs"]
+source = "github"
+github = "ForgQi/biliup-rs"
+use_latest_release = true
+prefix = "v"
+github_account = "123485k"
+
+#["net-misc/networkmanager-l2tp"]
+
+["net-misc/ntpd-rs"]
+source = "github"
+github = "pendulum-project/ntpd-rs"
+use_latest_tag = true
+prefix = "v"
+github_account = "peeweep"
+
+["net-misc/pcmanx-gtk2"]
+source = "github"
+github = "pcman-bbs/pcmanx"
+use_latest_release = true
+
+["net-misc/prips"]
+source = "regex"
+url = "https://devel.ringlet.net/sysutils/prips/"
+regex = "The current version of <strong>prips</strong> is <strong>([\\d.]+)</strong>"
+
+#["net-misc/remmina-plugin-rustdesk"]
+
+#["net-misc/rustdesk"]
+
+#["net-misc/you-get"]
+
+#["net-p2p/amule-dlp"]
+
+#["net-p2p/amule-dlp-antileech"]
+
+["net-p2p/n2n"]
+source = "github"
+github = "ntop/n2n"
+use_latest_release = true
+github_account = "st0nie"
+
+["net-p2p/qbittorrent-enhanced"]
+source = "github"
+github = "c0re100/qBittorrent-Enhanced-Edition"
+use_latest_release = true
+prefix = "release-"
+github_action = "OriPoin"
+
+#["net-print/epson-inkjet-printer_201207w"]
+
+["net-proxy/Xray"]
+source = "github"
+github = "XTLS/Xray-core"
+use_latest_release = true
+prefix = "v"
+github_account = "Puqns67"
+
+#["net-proxy/cgproxy"]
+
+["net-proxy/clash-nyanpasu"]
+source = "github"
+github = "keiko233/clash-nyanpasu"
+use_latest_release = true
+prefix = "v"
+github_account = "liuyujielol"
+
+["net-proxy/clash-rs"]
+source = "github"
+github = "Watfaq/clash-rs"
+use_latest_release = true
+prefix = "v"
+github_account = "liuyujielol"
+
+["net-proxy/dae"]
+source = "github"
+github = "daeuniverse/dae"
+use_latest_release = true
+prefix = "v"
+github_account = "st0nie"
+
+["net-proxy/daed"]
+source = "github"
+github = "daeuniverse/daed"
+use_latest_tag = true
+prefix = "v"
+github_account = "st0nie"
+
+["net-proxy/hysteria"]
+source = "github"
+github = "apernet/hysteria"
+use_latest_release = true
+prefix = "app/v"
+github_account = "oatiz"
+
+#["net-proxy/juicity"]
+
+["net-proxy/mihomo"]
+source = "github"
+github = "MetaCubeX/mihomo"
+use_latest_release = true
+prefix = "v"
+github_account = ["st0nie", "peeweep"]
+
+#["net-proxy/proxy-server"]
+
+#["net-proxy/shadowsocks-rust"]
+
+["net-proxy/sing-box"]
+source = "github"
+github = "SagerNet/sing-box"
+use_latest_release = true
+prefix = "v"
+github_account = ["Puqns67"]
+
+["net-proxy/smartproxy"]
+source = "github"
+github = "microcai/smartproxy"
+use_latest_tag = true
+prefix = "v"
+
+["net-proxy/v2ray"]
+source = "github"
+github = "v2fly/v2ray-core"
+use_latest_release = true
+prefix = "v"
+
+["net-proxy/v2ray-bin"]
+source = "github"
+github = "v2fly/v2ray-core"
+use_latest_release = true
+prefix = "v"
+
+["net-proxy/v2rayA"]
+source = "github"
+github = "v2rayA/v2rayA"
+use_latest_release = true
+prefix = "v"
+github_account = "liuyujielol"
+
+#["net-proxy/yacd-meta"]
+
+["net-proxy/yass"]
+source = "github"
+github = "Chilledheart/yass"
+use_latest_tag = true
+github_account = "Chilledheart"
+
+#["net-vpn/sstp-server"]
+
+#["net-wireless/linux-wifi-hotspot"]
+
+["sci-chemistry/vesta"]
+source = "regex"
+url = "https://jp-minerals.org/vesta/en/download.html"
+regex = "ver. ([\\d.]+), built on"
+github_account = "CHN-beta"
+
+#["sci-electronics/circuitjs1-bin"]
+
+["sci-electronics/jlc-assistant-bin"]
+source = "regex"
+url = "https://www.jlc.com/portal/appDownloadsWithConfig.html"
+regex = "FJLCPcAssit-linux-x64-([\\d.]+).zip"
+github_account = "123485k"
+
+["sci-electronics/lceda"]
+source = "regex"
+url = "https://lceda.cn/page/download?src=index"
+regex = "lceda-linux-x64-([\\d.]+).zip"
+github_account = "123485k"
+
+["sci-electronics/lceda-pro"]
+source = "regex"
+url = "https://lceda.cn/page/download?src=index"
+regex = "lceda-pro-linux-x64-([\\d.]+).zip"
+github_account = "123485k"
+
+["sci-electronics/openfpgaloader"]
+source = "github"
+github = "trabucayre/openFPGALoader"
+use_latest_release = true
+prefix = "v"
+github_account = "liangyongxiang"
+
+#["sec-policy/apparmor-profile-deepinwine"]
+
+["sys-apps/aptly"]
+source = "github"
+github = "aptly-dev/aptly"
+use_latest_release = true
+prefix = "v"
+
+#["sys-apps/mdp"]
+
+["sys-apps/pacman"]
+source = "git"
+git = "https://gitlab.archlinux.org/pacman/pacman.git"
+prefix = "v"
+
+#["sys-apps/pacman-mirrorlist"]
+
+#["sys-apps/pnpm"]
+
+#["sys-apps/wait-online"]
+
+["sys-boot/ventoy-bin"]
+source = "github"
+github = "ventoy/Ventoy"
+use_latest_release = true
+prefix = "v"
+github_account = "st0nie"
+
+#["sys-fs/erofs-utils"]
+
+["sys-fs/jmtpfs"]
+source = "github"
+github = "JasonFerrara/jmtpfs"
+use_latest_tag = true
+prefix = "v"
+
+#["sys-fs/ltfs"]
+
+#["sys-fs/spadfs-utils"]
+
+#["sys-fs/ssdfs-tools"]
+
+#["sys-fs/systemd-zpool-scrub"]
+
+["sys-kernel/liquorix-sources"]
+source = "github"
+github = "zen-kernel/zen-kernel"
+use_latest_release = true
+from_pattern = "v(.*)-lqx(.*)"
+to_pattern = "\\1"
+github_account = "zozx"
+
+["sys-kernel/mkinitcpio"]
+source = "github"
+github = "archlinux/mkinitcpio"
+use_latest_release = true
+prefix = "v"
+
+["sys-kernel/xanmod-kernel"]
+source = "github"
+github = "xanmod/linux"
+use_latest_release = true
+from_pattern = "(.*)-xanmod(.*)"
+to_pattern = "\\1"
+
+#["sys-kernel/xanmod-rt"]
+
+["sys-kernel/xanmod-sources"]
+source = "github"
+github = "xanmod/linux"
+use_latest_release = true
+from_pattern = "(.*)-xanmod(.*)"
+to_pattern = "\\1"
+
+["sys-kernel/zenpower3"]
+source = "git"
+git = "https://git.exozy.me/a/zenpower3"
+prefix = "v"
+github_account = "liuyujielol"
+
+#["sys-libs/elog-functions"]
+
+#["sys-libs/libsolv"]
+
+#["sys-power/tlpui"]
+
+# virtual, do nothing
+#["virtual/dist-kernel"]
+
+#["virtual/linux-sources"]
+
+#["virtual/loong-ow-compat"]
+
+["www-apps/chatgpt-desktop"]
+source = "github"
+github = "lencx/ChatGPT"
+use_latest_release = true
+github_account = "oatiz"
+prefix = "v"
+
+["www-client/brave-bin"]
+source = "github"
+github = "brave/brave-browser"
+use_latest_release = true
+github_account = "irort"
+prefix = "v"
+
+["www-servers/darkhttpd"]
+source = "github"
+github = "emikulic/darkhttpd"
+use_latest_tag = true
+prefix = "v"
+
+# only live package in gentoo-zh
+#["www-servers/woof"]
+
+#["x11-libs/glbinding"]
+
+["x11-misc/9menu"]
+source = "debianpkg"
+debianpkg = "9menu"
+from_pattern = "-(\\d+)"
+to_pattern = ""
+
+#["x11-misc/extramaus"]
+
+#["x11-misc/flatpak-xdg-utils"]
+
+["x11-misc/fqterm"]
+source = "github"
+github = "mytbk/fqterm"
+use_latest_release = true
+
+#["x11-misc/i3lock-color"]
+
+#["x11-misc/i3lock-fancy"]
+
+["x11-misc/ly"]
+source = "github"
+github = "nullgemm/ly"
+use_latest_tag = true
+prefix = "v"
+
+["x11-misc/picom-jonaburg"]
+source = "github"
+github = "jonaburg/picom"
+use_latest_tag = true
+prefix = "v"
+
+# only live package in gentoo-zh
+#["x11-misc/sddm"]
+
+#["x11-misc/snapd-xdg-open"]
+
+#["x11-misc/xwaylandvideobridge"]
+
+["x11-terms/wezterm-bin"]
+source = "github"
+github = "wez/wezterm"
+use_latest_release = true
+from_pattern = "(.*)-(.*)-(.*)"
+to_pattern = "\\1"
+github_account = "oatiz"
+
+#["x11-themes/fcitx-breeze"]
+
+#["x11-themes/klassy"]
+
+#["x11-themes/nordic"]
+
+#["x11-themes/nordzy-cursors"]
+
+#["x11-themes/nordzy-icon"]
+
+# TODO: may be here: https://github.com/smplayer-dev/smplayer-themes
+#["x11-themes/smplayer-themes-nonfree"]
+
+#["x11-wm/chamferwm"]
+
+#["x11-wm/hypr"]
