@@ -230,15 +230,7 @@ src_unpack() {
 	mkdir ${WORKDIR}/patch || die	
 	
 	## THESE PATCH CAN'T APPLY TO SOURCE CODE
-	# rm "./wine-osu-patches-${OSU_PATCHES_TAGS}/0013-server-optimization/0001-misc/ps0023-ntoskrnl-server-Support-referencing-section-objects.patch" || die
-	# rm "./wine-osu-patches-${OSU_PATCHES_TAGS}/0013-server-optimization/0001-misc/ps0344-p0002-server-Relax-memory-order-constraints-in-ato.patch" || die
-	# rm "./wine-osu-patches-${OSU_PATCHES_TAGS}/0013-server-optimization/0005-writewatches/0004-ntdll-HACK-Add-WINE_RAM_REPORTING_BIAS-option.patch" || die
-	# rm "./wine-osu-patches-${OSU_PATCHES_TAGS}/0013-server-optimization/0006-futex/0004-ntdll-Track-active-keyed-events-on-the-client-side.patch" || die
-	# rm "./wine-osu-patches-${OSU_PATCHES_TAGS}/0013-server-optimization/0006-futex/0005-ntdll-Implement-client-side-keyed-events-on-top-of-f.patch" || die
-	## THESE PATCH CAN APPLY BUT BOOM THE COMPILE STAGE
-	# rm "./wine-osu-patches-${OSU_PATCHES_TAGS}/0013-server-optimization/0003-qpc/1001-ntdll-Add-__wine_get_tsc_calibration-internal-functi.patch" || die
-	# rm "./wine-osu-patches-${OSU_PATCHES_TAGS}/0013-server-optimization/0001-misc/ps0427-ntdll-loader-add-support-for-overriding-IMAGE_FILE_L.patch" || die
-	# rm "./wine-osu-patches-${OSU_PATCHES_TAGS}/0013-server-optimization/0003-qpc/9300-qpc-support-hardcode-with-old-kernel-check.patch" || die
+	cp "${FILESDIR}/${PN}-patch/9.19/ps0344-p0002-server-Relax-memory-order-constraints-in-ato.patch" "./wine-osu-patches-${OSU_PATCHES_TAGS}/0013-server-optimization/0001-misc/ps0344-p0002-server-Relax-memory-order-constraints-in-ato.patch"
 
     for dir in ./wine-osu-patches-${OSU_PATCHES_TAGS}/**; do
     	mv "$dir" ${WORKDIR}/patch/. || die
@@ -256,19 +248,6 @@ src_prepare() {
 
     printf "\nOverrode all staging patches matching those in staging-overrides/*.spatch\n\n" >> "${WORKDIR}"/patchlog.txt
 	edo "${PYTHON}" ../${_P}/staging/patchinstall.py "${patchinstallargs[@]}" &>> "${WORKDIR}"/patchlog.txt
-
-  	printf "\nApplying other patches\n\n" >> "${WORKDIR}"/patchlog.txt
-	mapfile -t patchlist < <(find "${WORKDIR}/patch/" -type f -regex ".*\.patch" | LC_ALL=C sort -f) || die
-
-	for patch in "${patchlist[@]}"; do
-		shortname="${patch#"${WORKDIR}/"}"
-		printf "\nApplying %s\n\n" "${shortname}" >> "${WORKDIR}"/patchlog.txt
-		echo "Applying '${shortname}'"
-		# git apply --ignore-whitespace --verbose "${patch}" &>> "${WORKDIR}"/patchlog.txt || \
-		# patch -Np1 <"${patch}" &>> "${WORKDIR}"/patchlog.txt || \
-		# 	_failure "An error occurred applying ${shortname}, check patchlog.txt for info." || die
-		eapply -Np1 "$patch" >> "${WORKDIR}"/patchlog.txt
-  	done
 
 	# git config commit.gpgsign false || die
 	# git config user.email "wine@build.dev" || die
@@ -302,6 +281,19 @@ src_prepare() {
 				die "building ${PN} with clang is only supported with USE=mingw"
 		fi
 	fi
+
+  	printf "\nApplying other patches\n\n" >> "${WORKDIR}"/patchlog.txt
+	mapfile -t patchlist < <(find "${WORKDIR}/patch/" -type f -regex ".*\.patch" | LC_ALL=C sort -f) || die
+
+	for patch in "${patchlist[@]}"; do
+		shortname="${patch#"${WORKDIR}/"}"
+		printf "\nApplying %s\n\n" "${shortname}" >> "${WORKDIR}"/patchlog.txt
+		echo "Applying '${shortname}'"
+		# git apply --ignore-whitespace --verbose "${patch}" &>> "${WORKDIR}"/patchlog.txt || \
+		# patch -Np1 <"${patch}" &>> "${WORKDIR}"/patchlog.txt || \
+		# 	_failure "An error occurred applying ${shortname}, check patchlog.txt for info." || die
+		eapply --ignore-whitespace -Np1 "$patch" >> "${WORKDIR}"/patchlog.txt
+  	done
 
 	# ensure .desktop calls this variant + slot
 	sed -i "/^Exec=/s/wine /${P} /" loader/wine.desktop || die
@@ -393,6 +385,23 @@ src_configure() {
 
 		# CROSSCC was formerly recognized by wine, thus been using similar
 		# variables (subject to change, esp. if ever make a mingw.eclass).
+		local common_flags="-fomit-frame-pointer -Wno-error=incompatible-pointer-types -Wno-error=implicit-function-declaration -Wno-error=int-conversion -w"
+		local _native_common_cflags="-fuse-linker-plugin -fdevirtualize-at-ltrans -flto-partition=one -flto -Wl,-flto"
+  		export CPPFLAGS="-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0 -DNDEBUG -D_NDEBUG"
+		local _GCC_FLAGS="${_common_cflags} ${_native_common_cflags:-} ${CPPFLAGS}"
+		local _LD_FLAGS="${_GCC_FLAGS} -Wl,-O2,--sort-common,--as-needed"
+
+		local _CROSS_FLAGS="${_common_cflags} ${CPPFLAGS}"
+		local _CROSS_LD_FLAGS="${_CROSS_FLAGS} -Wl,-O2,--sort-common,--as-needed,--file-alignment=4096"
+
+		export CFLAGS="${CFLAGS} ${_GCC_FLAGS}"
+		export CXXFLAGS="${CXXFLAGS} ${_GCC_FLAGS}"
+		export CROSSCFLAGS="${CROSSCFLAGS} ${_CROSS_FLAGS}"
+		export CROSSCXXFLAGS="${CROSSCXXFLAGS} ${_CROSS_FLAGS}"
+
+		export LDFLAGS="${LDFLAGS} ${_LD_FLAGS}"
+		export CROSSLDFLAGS="${CROSSLDFLAGS} ${_CROSS_LD_FLAGS}"
+
 		local mingwcc_amd64=${CROSSCC:-${CROSSCC_amd64:-x86_64-w64-mingw32-gcc}}
 		local mingwcc_x86=${CROSSCC:-${CROSSCC_x86:-i686-w64-mingw32-gcc}}
 		local -n mingwcc=mingwcc_$(usex abi_x86_64 amd64 x86)
@@ -408,13 +417,12 @@ src_configure() {
 				# some bashrc-mv users tend to do CFLAGS="${LDFLAGS}" and then
 				# strip-unsupported-flags miss these during compile-only tests
 				# (primarily done for 23.0 profiles'' -z, not full coverage)
-				filter-flags '-Wl,-z,*'
+				# filter-flags '-Wl,-z,*'
 
-				CC=${mingwcc} test-flags-CC ${CFLAGS:--O2}
+				CC=${mingwcc} test-flags-CC ${CFLAGS}
 			)}"
 
 			CROSSLDFLAGS="${CROSSLDFLAGS:-$(
-				filter-flags '-fuse-ld=*'
 
 				CC=${mingwcc} test-flags-CCLD ${LDFLAGS}
 			)}"
