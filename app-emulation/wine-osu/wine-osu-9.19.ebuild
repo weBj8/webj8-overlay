@@ -43,7 +43,7 @@ SLOT="${PV}"
 IUSE="
 	+X +abi_x86_32 +abi_x86_64 +alsa capi crossdev-mingw cups dos
 	llvm-libunwind custom-cflags ffmpeg +fontconfig +gecko gphoto2
-	+gstreamer kerberos +mingw +mono netapi nls odbc opencl +opengl
+	gstreamer kerberos +mingw +mono netapi nls odbc opencl +opengl
 	osmesa pcap perl pulseaudio samba scanner +sdl selinux smartcard
 	+ssl +strip +truetype udev udisks +unwind usb v4l +vulkan wayland
 	wow64 +xcomposite xinerama
@@ -368,7 +368,7 @@ src_configure() {
 
 	# filter-lto # build failure
 	# filter-flags -Wl,--gc-sections # runtime issues (bug #931329)
-	# use custom-cflags || strip-flags # can break in obscure ways at runtime
+	use custom-cflags || strip-flags # can break in obscure ways at runtime
 
 	# wine uses linker tricks unlikely to work with non-bfd/lld (bug #867097)
 	# (do self test until https://github.com/gentoo/gentoo/pull/28355)
@@ -385,7 +385,7 @@ src_configure() {
 
 		# CROSSCC was formerly recognized by wine, thus been using similar
 		# variables (subject to change, esp. if ever make a mingw.eclass).
-		local common_flags="-fomit-frame-pointer -Wno-error=incompatible-pointer-types -Wno-error=implicit-function-declaration -Wno-error=int-conversion -w"
+		local common_flags="-march=native -mtune=native -fomit-frame-pointer -Wno-error=incompatible-pointer-types -Wno-error=implicit-function-declaration -Wno-error=int-conversion -w"
 		local _native_common_cflags="-fuse-linker-plugin -fdevirtualize-at-ltrans -flto-partition=one -flto -Wl,-flto"
   		export CPPFLAGS="-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0 -DNDEBUG -D_NDEBUG"
 		local _GCC_FLAGS="${_common_cflags} ${_native_common_cflags:-} ${CPPFLAGS}"
