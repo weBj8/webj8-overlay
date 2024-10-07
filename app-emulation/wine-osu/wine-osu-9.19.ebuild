@@ -387,12 +387,13 @@ src_configure() {
 		# variables (subject to change, esp. if ever make a mingw.eclass).
 		local common_flags="-march=native -mtune=native -fomit-frame-pointer -Wno-error=incompatible-pointer-types -Wno-error=implicit-function-declaration -Wno-error=int-conversion -w"
 		local _native_common_cflags="-fuse-linker-plugin -fdevirtualize-at-ltrans -flto-partition=one -flto -Wl,-flto"
+		local _extra_native_flags="-floop-nest-optimize -fgraphite-identity -floop-strip-mine"
   		export CPPFLAGS="-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0 -DNDEBUG -D_NDEBUG"
 		local _GCC_FLAGS="${_common_cflags} ${_native_common_cflags:-} ${CPPFLAGS}"
-		local _LD_FLAGS="${_GCC_FLAGS} -Wl,-O2,--sort-common,--as-needed"
+		local _LD_FLAGS="${_GCC_FLAGS} -Wl,-O3,--sort-common,--as-needed"
 
 		local _CROSS_FLAGS="${_common_cflags} ${CPPFLAGS}"
-		local _CROSS_LD_FLAGS="${_CROSS_FLAGS} -Wl,-O2,--sort-common,--as-needed,--file-alignment=4096"
+		local _CROSS_LD_FLAGS="${_CROSS_FLAGS} -Wl,-O3,--sort-common,--as-needed,--file-alignment=4096"
 
 		export CFLAGS="${CFLAGS} ${_GCC_FLAGS}"
 		export CXXFLAGS="${CXXFLAGS} ${_GCC_FLAGS}"
