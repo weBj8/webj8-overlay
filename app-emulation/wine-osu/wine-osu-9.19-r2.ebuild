@@ -9,10 +9,13 @@ inherit autotools edo flag-o-matic multilib multilib-build optfeature
 inherit prefix python-any-r1 toolchain-funcs wrapper
 
 WINE_GECKO=2.47.4
-WINE_MONO=9.2.0
+WINE_MONO=9.3.0
 _PV=${PV/_/-}
 WINE_P=wine-${_PV}
 _P=wine-staging-${PV}
+STAGING_COMMIT="858bf979a1c177ae7b43a8ea697032e09059d553"
+WINE_COMMIT="7ce580d1fa0bb3acf98edbc4171ddbcd83867db8"
+OSU_PATCHES_TAGS="10-12-2024-7ce580d1-858bf979"
 
 if [[ ${PV} == *9999 ]]; then
 	inherit git-r3
@@ -21,9 +24,9 @@ if [[ ${PV} == *9999 ]]; then
 else
 	(( $(ver_cut 2) )) && WINE_SDIR=$(ver_cut 1).x || WINE_SDIR=$(ver_cut 1).0
 	SRC_URI="
-		https://dl.winehq.org/wine/source/${WINE_SDIR}/${WINE_P}.tar.xz
-		https://github.com/wine-staging/wine-staging/archive/v${PV}.tar.gz -> ${P}.tar.gz
-        https://github.com/NelloKudo/WineBuilder/raw/1b8ab85a8102089971bf1496343a64cf97f4e680/osu-misc/patchsets/9.14-patchset.tar.xz -> 9.14-patchset.tar.xz"
+		https://github.com/wine-mirror/wine/archive/${WINE_COMMIT}.tar.gz -> ${P}-${WINE_COMMIT}.tar.gz
+		https://github.com/wine-staging/wine-staging/archive/${STAGING_COMMIT}.tar.gz -> ${P}-${STAGING_COMMIT}-staging.tar.gz
+        https://github.com/whrvt/wine-osu-patches/archive/refs/tags/${OSU_PATCHES_TAGS}.tar.gz -> ${OSU_PATCHES_TAGS}-patch.tar.gz"
 	KEYWORDS="-* ~amd64 ~x86"
 fi
 
@@ -39,11 +42,11 @@ LICENSE="LGPL-2.1+ BSD-2 IJG MIT OPENLDAP ZLIB gsm libpng2 libtiff"
 SLOT="${PV}"
 IUSE="
 	+X +abi_x86_32 +abi_x86_64 +alsa capi crossdev-mingw cups dos
-	llvm-libunwind custom-cflags +fontconfig +gecko gphoto2 +gstreamer
-	kerberos +mingw +mono netapi nls odbc opencl +opengl osmesa pcap
-	perl pulseaudio samba scanner +sdl selinux smartcard +ssl +strip
-	+truetype udev udisks +unwind usb v4l +vulkan wayland wow64
-	+xcomposite xinerama
+	llvm-libunwind custom-cflags ffmpeg +fontconfig +gecko gphoto2
+	gstreamer kerberos +mingw +mono netapi nls odbc opencl +opengl
+	osmesa pcap perl pulseaudio samba scanner +sdl selinux smartcard
+	+ssl +strip +truetype udev udisks +unwind usb v4l +vulkan wayland
+	wow64 +xcomposite xinerama
 "
 # bug #551124 for truetype
 # TODO: wow64 can be done without mingw if using clang (needs bug #912237)
@@ -77,6 +80,7 @@ WINE_DLOPEN_DEPEND="
 	fontconfig? ( media-libs/fontconfig[${MULTILIB_USEDEP}] )
 	kerberos? ( virtual/krb5[${MULTILIB_USEDEP}] )
 	netapi? ( net-fs/samba[${MULTILIB_USEDEP}] )
+	odbc? ( dev-db/unixODBC[${MULTILIB_USEDEP}] )
 	sdl? ( media-libs/libsdl2[haptic,joystick,${MULTILIB_USEDEP}] )
 	ssl? ( net-libs/gnutls:=[${MULTILIB_USEDEP}] )
 	truetype? ( media-libs/freetype[${MULTILIB_USEDEP}] )
@@ -92,13 +96,13 @@ WINE_COMMON_DEPEND="
 	)
 	alsa? ( media-libs/alsa-lib[${MULTILIB_USEDEP}] )
 	capi? ( net-libs/libcapi:=[${MULTILIB_USEDEP}] )
+	ffmpeg? ( media-video/ffmpeg:=[${MULTILIB_USEDEP}] )
 	gphoto2? ( media-libs/libgphoto2:=[${MULTILIB_USEDEP}] )
 	gstreamer? (
 		dev-libs/glib:2[${MULTILIB_USEDEP}]
 		media-libs/gst-plugins-base:1.0[${MULTILIB_USEDEP}]
 		media-libs/gstreamer:1.0[${MULTILIB_USEDEP}]
 	)
-	odbc? ( dev-db/unixODBC[${MULTILIB_USEDEP}] )
 	opencl? ( virtual/opencl[${MULTILIB_USEDEP}] )
 	pcap? ( net-libs/libpcap[${MULTILIB_USEDEP}] )
 	pulseaudio? ( media-libs/libpulse[${MULTILIB_USEDEP}] )
@@ -143,21 +147,16 @@ DEPEND="
 	sys-kernel/linux-headers
 	X? ( x11-base/xorg-proto )
 "
-# gitapply.sh prefers git but can fallback to patch+extras
+# gitapply.sh "can" work without git but that is hardly tested
+# and known failing with some versions, so force real git
 BDEPEND="
 	${PYTHON_DEPS}
-	|| (
-		dev-vcs/git
-		(
-			sys-apps/gawk
-			sys-apps/util-linux
-		)
-	)
 	|| (
 		sys-devel/binutils
 		sys-devel/lld
 	)
 	dev-lang/perl
+	dev-vcs/git
 	sys-devel/bison
 	sys-devel/flex
 	virtual/pkgconfig
@@ -177,9 +176,11 @@ QA_CONFIG_IMPL_DECL_SKIP=(
 QA_TEXTRELS="usr/lib/*/wine/i386-unix/*.so" # uses -fno-PIC -Wl,-z,notext
 
 PATCHES=(
-	"${FILESDIR}"/${PN}-7.17-noexecstack.patch
-	"${FILESDIR}"/${PN}-7.20-unwind.patch
-	"${FILESDIR}"/${PN}-8.13-rpath.patch
+		"${FILESDIR}/${PN}-7.17-noexecstack.patch"
+		"${FILESDIR}/${PN}-7.20-unwind.patch"
+		"${FILESDIR}/${PN}-8.13-rpath.patch"
+		"${FILESDIR}/lto-fixup.patch"
+		"${FILESDIR}/mingw-gcc-float-precision-fix.patch"
 )
 
 pkg_pretend() {
@@ -220,12 +221,18 @@ src_unpack() {
 		default
 	fi
 
-	mkdir ${WORKDIR}/patch || die
+	# Currently don't have a better solution on this
+	mkdir ${WORKDIR}/${WINE_P} || die
+	mv ${WORKDIR}/wine-${WINE_COMMIT}/* ${WORKDIR}/${WINE_P} || die
+	mkdir ${WORKDIR}/${_P} || die
+	mv ${WORKDIR}/wine-staging-${STAGING_COMMIT}/* ${WORKDIR}/${_P} || die
 
-	# HOW???
-	rm "./9.14-patchset/0008-renderer/0002-winex11-HACK-Disable-vulkan-window-clipping.patch" || die
+	mkdir ${WORKDIR}/patch || die	
 	
-    for dir in ./9.14-patchset/**; do
+	## THESE PATCH CAN'T APPLY TO SOURCE CODE
+	cp "${FILESDIR}/${PN}-patch/9.19/ps0344-p0002-server-Relax-memory-order-constraints-in-ato.patch" "./wine-osu-patches-${OSU_PATCHES_TAGS}/0013-server-optimization/0001-misc/ps0344-p0002-server-Relax-memory-order-constraints-in-ato.patch"
+
+    for dir in ./wine-osu-patches-${OSU_PATCHES_TAGS}/**; do
     	mv "$dir" ${WORKDIR}/patch/. || die
 	done
 }
@@ -234,10 +241,19 @@ src_prepare() {
 	local patchinstallargs=(
 		--all
 		--no-autoconf
+		# No need esync fsync for using NTSync
+		-W eventfd_synchronization
 		${MY_WINE_STAGING_CONF}
 	)
 
-	edo "${PYTHON}" ../${_P}/staging/patchinstall.py "${patchinstallargs[@]}"
+    printf "\nOverrode all staging patches matching those in staging-overrides/*.spatch\n\n" >> "${WORKDIR}"/patchlog.txt
+	edo "${PYTHON}" ../${_P}/staging/patchinstall.py "${patchinstallargs[@]}" &>> "${WORKDIR}"/patchlog.txt
+
+	# git config commit.gpgsign false || die
+	# git config user.email "wine@build.dev" || die
+	# git config user.name "winebuild" || die
+	# git add --all || true
+	# git commit --allow-empty -m "makepkg" || die
 
 	# sanity check, bumping these has a history of oversights
 	local geckomono=$(sed -En '/^#define (GECKO|MONO)_VER/{s/[^0-9.]//gp}' \
@@ -266,10 +282,18 @@ src_prepare() {
 		fi
 	fi
 
-	for i in "${WORKDIR}"/patch/**/*patch; do
-		[ ! -f "$i" ] && continue
-		eapply -p1 "$i"
-	done
+  	printf "\nApplying other patches\n\n" >> "${WORKDIR}"/patchlog.txt
+	mapfile -t patchlist < <(find "${WORKDIR}/patch/" -type f -regex ".*\.patch" | LC_ALL=C sort -f) || die
+
+	for patch in "${patchlist[@]}"; do
+		shortname="${patch#"${WORKDIR}/"}"
+		printf "\nApplying %s\n\n" "${shortname}" >> "${WORKDIR}"/patchlog.txt
+		echo "Applying '${shortname}'"
+		# git apply --ignore-whitespace --verbose "${patch}" &>> "${WORKDIR}"/patchlog.txt || \
+		# patch -Np1 <"${patch}" &>> "${WORKDIR}"/patchlog.txt || \
+		# 	_failure "An error occurred applying ${shortname}, check patchlog.txt for info." || die
+		eapply --ignore-whitespace -Np1 "$patch" >> "${WORKDIR}"/patchlog.txt
+  	done
 
 	# ensure .desktop calls this variant + slot
 	sed -i "/^Exec=/s/wine /${P} /" loader/wine.desktop || die
@@ -279,7 +303,11 @@ src_prepare() {
 
 	# always update for patches (including user's wrt #432348)
 	eautoreconf
+  	# tools/make_makefiles || die # perl
 	tools/make_requests || die # perl
+	if [ -e tools/make_specfiles ]; then
+		tools/make_specfiles || die # perl
+	fi
 	# tip: if need more for user patches, with portage can e.g. do
 	# echo "post_src_prepare() { tools/make_specfiles || die; }" \
 	#     > /etc/portage/env/app-emulation/wine-staging
@@ -306,6 +334,7 @@ src_configure() {
 		$(use_with alsa)
 		$(use_with capi)
 		$(use_with cups)
+		$(use_with ffmpeg)
 		$(use_with fontconfig)
 		$(use_with gphoto2 gphoto)
 		$(use_with gstreamer)
@@ -314,7 +343,6 @@ src_configure() {
 		$(use_with mingw)
 		$(use_with netapi)
 		$(use_with nls gettext)
-		$(use_with odbc)
 		$(use_with opencl)
 		$(use_with opengl)
 		$(use_with osmesa)
@@ -335,11 +363,12 @@ src_configure() {
 		$(use_with wayland)
 		$(use_with xcomposite)
 		$(use_with xinerama)
+		$(usev !odbc ac_cv_lib_soname_odbc=)
 	)
 
-	filter-lto # build failure
-	filter-flags -Wl,--gc-sections # runtime issues (bug #931329)
-	use custom-cflags || strip-flags # can break in obscure ways at runtime
+	# filter-lto # build failure
+	# filter-flags -Wl,--gc-sections # runtime issues (bug #931329)
+	# use custom-cflags || strip-flags # can break in obscure ways at runtime
 
 	# wine uses linker tricks unlikely to work with non-bfd/lld (bug #867097)
 	# (do self test until https://github.com/gentoo/gentoo/pull/28355)
@@ -351,11 +380,6 @@ src_configure() {
 		strip-unsupported-flags
 	fi
 
-	# >=wine-vanilla-9 has proper fixes and builds with gcc-14, but
-	# staging patchset is messier and would rather not have to worry
-	# about it (try to remove on bump now and then, bug #919758)
-	append-cflags $(test-flags-CC -Wno-error=incompatible-pointer-types)
-
 	if use mingw; then
 		use crossdev-mingw || PATH=${BROOT}/usr/lib/mingw64-toolchain/bin:${PATH}
 
@@ -365,28 +389,30 @@ src_configure() {
 		local mingwcc_x86=${CROSSCC:-${CROSSCC_x86:-i686-w64-mingw32-gcc}}
 		local -n mingwcc=mingwcc_$(usex abi_x86_64 amd64 x86)
 
+		# From https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=wine-osu-spectator-wow64
+		local _common_cflags="-march=native -mtune=native -O3 -pipe -funroll-loops -fomit-frame-pointer -Wno-error=incompatible-pointer-types -Wno-error=implicit-function-declaration -Wno-error=int-conversion -w"
+		local _native_common_cflags="-fuse-linker-plugin -fdevirtualize-at-ltrans -flto-partition=one -flto -Wl,-flto"
+		local _extra_native_flags="-floop-nest-optimize -fgraphite-identity -floop-strip-mine" # graphite opts
+  		export CPPFLAGS="-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0 -DNDEBUG -D_NDEBUG"
+		local _GCC_FLAGS="${_common_cflags} ${_native_common_cflags} ${_extra_native_flags} ${CPPFLAGS}"
+		local _LD_FLAGS="${_GCC_FLAGS} -Wl,-O3,--sort-common,--as-needed"
+
+		local _CROSS_FLAGS="${_common_cflags} ${CPPFLAGS}"
+		local _CROSS_LD_FLAGS="${_CROSS_FLAGS} -Wl,-O3,--sort-common,--as-needed,--file-alignment=4096"
+
 		conf+=(
 			ac_cv_prog_x86_64_CC="${mingwcc_amd64}"
 			ac_cv_prog_i386_CC="${mingwcc_x86}"
 
-			CROSSCFLAGS="${CROSSCFLAGS:-$(
-				filter-flags '-fstack-protector*' #870136
-				filter-flags '-mfunction-return=thunk*' #878849
-
-				# some bashrc-mv users tend to do CFLAGS="${LDFLAGS}" and then
-				# strip-unsupported-flags miss these during compile-only tests
-				# (primarily done for 23.0 profiles'' -z, not full coverage)
-				filter-flags '-Wl,-z,*'
-
-				CC=${mingwcc} test-flags-CC ${CFLAGS:--O2}
-			)}"
-
-			CROSSLDFLAGS="${CROSSLDFLAGS:-$(
-				filter-flags '-fuse-ld=*'
-
-				CC=${mingwcc} test-flags-CCLD ${LDFLAGS}
-			)}"
+			CPPFLAGS="${CPPFLAGS}"
+			CFLAGS="${CFLAGS} ${_GCC_FLAGS}"
+			CXXFLAGS="${CXXFLAGS} ${_GCC_FLAGS}"
+			CROSSCFLAGS="${CROSSCFLAGS} ${_CROSS_FLAGS}"
+			CROSSCXXFLAGS="${CROSSCXXFLAGS} ${_CROSS_FLAGS}"
+			LDFLAGS="${LDFLAGS} ${_LD_FLAGS}"
+			CROSSLDFLAGS="${CROSSLDFLAGS} ${_CROSS_LD_FLAGS}"
 		)
+
 	fi
 
 	# order matters with multilib: configure+compile 64->32, install 32->64

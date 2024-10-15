@@ -179,8 +179,8 @@ PATCHES=(
 		"${FILESDIR}/${PN}-7.17-noexecstack.patch"
 		"${FILESDIR}/${PN}-7.20-unwind.patch"
 		"${FILESDIR}/${PN}-8.13-rpath.patch"
-		"${FILESDIR}/${PN}-patch/9.17/lto-fixup.patch"
-		"${FILESDIR}/${PN}-patch/9.17/mingw-gcc-float-precision-fix.patch"
+		"${FILESDIR}/lto-fixup.patch"
+		"${FILESDIR}/mingw-gcc-float-precision-fix.patch"
 )
 
 pkg_pretend() {
@@ -368,7 +368,7 @@ src_configure() {
 
 	# filter-lto # build failure
 	# filter-flags -Wl,--gc-sections # runtime issues (bug #931329)
-	use custom-cflags || strip-flags # can break in obscure ways at runtime
+	# use custom-cflags || strip-flags # can break in obscure ways at runtime
 
 	# wine uses linker tricks unlikely to work with non-bfd/lld (bug #867097)
 	# (do self test until https://github.com/gentoo/gentoo/pull/28355)
@@ -385,49 +385,34 @@ src_configure() {
 
 		# CROSSCC was formerly recognized by wine, thus been using similar
 		# variables (subject to change, esp. if ever make a mingw.eclass).
-		local common_flags="-march=native -mtune=native -fomit-frame-pointer -Wno-error=incompatible-pointer-types -Wno-error=implicit-function-declaration -Wno-error=int-conversion -w"
+		local mingwcc_amd64=${CROSSCC:-${CROSSCC_amd64:-x86_64-w64-mingw32-gcc}}
+		local mingwcc_x86=${CROSSCC:-${CROSSCC_x86:-i686-w64-mingw32-gcc}}
+		local -n mingwcc=mingwcc_$(usex abi_x86_64 amd64 x86)
+
+		# From https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=wine-osu-spectator-wow64
+		local _common_cflags="-march=native -mtune=native -O3 -pipe -funroll-loops -fomit-frame-pointer -Wno-error=incompatible-pointer-types -Wno-error=implicit-function-declaration -Wno-error=int-conversion -w"
 		local _native_common_cflags="-fuse-linker-plugin -fdevirtualize-at-ltrans -flto-partition=one -flto -Wl,-flto"
-		local _extra_native_flags="-floop-nest-optimize -fgraphite-identity -floop-strip-mine"
+		local _extra_native_flags="-floop-nest-optimize -fgraphite-identity -floop-strip-mine" # graphite opts
   		export CPPFLAGS="-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0 -DNDEBUG -D_NDEBUG"
-		local _GCC_FLAGS="${_common_cflags} ${_native_common_cflags:-} ${CPPFLAGS}"
+		local _GCC_FLAGS="${_common_cflags} ${_native_common_cflags} ${_extra_native_flags} ${CPPFLAGS}"
 		local _LD_FLAGS="${_GCC_FLAGS} -Wl,-O3,--sort-common,--as-needed"
 
 		local _CROSS_FLAGS="${_common_cflags} ${CPPFLAGS}"
 		local _CROSS_LD_FLAGS="${_CROSS_FLAGS} -Wl,-O3,--sort-common,--as-needed,--file-alignment=4096"
 
-		export CFLAGS="${CFLAGS} ${_GCC_FLAGS}"
-		export CXXFLAGS="${CXXFLAGS} ${_GCC_FLAGS}"
-		export CROSSCFLAGS="${CROSSCFLAGS} ${_CROSS_FLAGS}"
-		export CROSSCXXFLAGS="${CROSSCXXFLAGS} ${_CROSS_FLAGS}"
-
-		export LDFLAGS="${LDFLAGS} ${_LD_FLAGS}"
-		export CROSSLDFLAGS="${CROSSLDFLAGS} ${_CROSS_LD_FLAGS}"
-
-		local mingwcc_amd64=${CROSSCC:-${CROSSCC_amd64:-x86_64-w64-mingw32-gcc}}
-		local mingwcc_x86=${CROSSCC:-${CROSSCC_x86:-i686-w64-mingw32-gcc}}
-		local -n mingwcc=mingwcc_$(usex abi_x86_64 amd64 x86)
-
 		conf+=(
 			ac_cv_prog_x86_64_CC="${mingwcc_amd64}"
 			ac_cv_prog_i386_CC="${mingwcc_x86}"
 
-			CROSSCFLAGS="${CROSSCFLAGS:-$(
-				filter-flags '-fstack-protector*' #870136
-				filter-flags '-mfunction-return=thunk*' #878849
-
-				# some bashrc-mv users tend to do CFLAGS="${LDFLAGS}" and then
-				# strip-unsupported-flags miss these during compile-only tests
-				# (primarily done for 23.0 profiles'' -z, not full coverage)
-				# filter-flags '-Wl,-z,*'
-
-				CC=${mingwcc} test-flags-CC ${CFLAGS}
-			)}"
-
-			CROSSLDFLAGS="${CROSSLDFLAGS:-$(
-
-				CC=${mingwcc} test-flags-CCLD ${LDFLAGS}
-			)}"
+			CPPFLAGS="${CPPFLAGS}"
+			CFLAGS="${CFLAGS} ${_GCC_FLAGS}"
+			CXXFLAGS="${CXXFLAGS} ${_GCC_FLAGS}"
+			CROSSCFLAGS="${CROSSCFLAGS} ${_CROSS_FLAGS}"
+			CROSSCXXFLAGS="${CROSSCXXFLAGS} ${_CROSS_FLAGS}"
+			LDFLAGS="${LDFLAGS} ${_LD_FLAGS}"
+			CROSSLDFLAGS="${CROSSLDFLAGS} ${_CROSS_LD_FLAGS}"
 		)
+
 	fi
 
 	# order matters with multilib: configure+compile 64->32, install 32->64
