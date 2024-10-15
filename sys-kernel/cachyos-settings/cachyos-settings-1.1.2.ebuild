@@ -3,11 +3,11 @@
 
 EAPI=8
 inherit udev tmpfiles
-SETTINGS_COMMIT="5545b278a67601adab33d3b6c243c51b2cb48a3c"
+SETTINGS_COMMIT="bb822b2f19e9cb1740f6a3c7e2a96c9565284b9c"
 DESCRIPTION="Configuration files that tweak sysctl values, add udev rules to automatically set schedulers, and provide additional optimizations."
 HOMEPAGE="https://github.com/CachyOS/CachyOS-Settings"
 SRC_URI="https://github.com/CachyOS/CachyOS-Settings/archive/${SETTINGS_COMMIT}.tar.gz -> ${P}.tar.gz"
-S="${WORKDIR}/CachyOS-Settings-${SETTINGS_COMMIT}/etc/"
+S="${WORKDIR}/CachyOS-Settings-${SETTINGS_COMMIT}/usr/lib"
 SUSRBIN="${WORKDIR}/CachyOS-Settings-${SETTINGS_COMMIT}/usr/bin"
 IUSE="systemd zram"
 REQUIRED_USE="zram? ( systemd )"
@@ -32,7 +32,6 @@ if ! use zram; then rm -f "${S}/systemd/zram-generator.conf"
 fi
 
 if ! use systemd; then
-	rm -f "${S}/security/limits.d/99-esync.conf"
 	rm -rf "${S}/systemd/journald.conf.d"
 	rm -rf "${S}/systemd/system.conf.d"
 	rm -rf "${S}/systemd/system"
@@ -43,13 +42,13 @@ eapply_user
 }
 
 src_install() {
-	insinto /etc
-	doins -r "${S}/modprobe.d"
-	doins -r "${S}/security"
-	doins -r "${S}/sysctl.d"
-	doins -r "${S}/systemd"
 	insinto /usr/lib
 	doins -r "${S}/tmpfiles.d"
+	doins -r "${S}/NetworkManager/conf.d"
+	doins -r "${S}/modprobe.d"
+	doins -r "${S}/sysctl.d"
+	doins -r "${S}/systemd"
+
 	udev_dorules "${S}/udev/rules.d/30-zram.rules"
 	udev_dorules "${S}/udev/rules.d/40-hpet-permissions.rules"
 	udev_dorules "${S}/udev/rules.d/50-sata.rules"
@@ -57,11 +56,17 @@ src_install() {
 	udev_dorules "${S}/udev/rules.d/69-hdparm.rules"
 	udev_dorules "${S}/udev/rules.d/71-nvidia.rules"
 	udev_dorules "${S}/udev/rules.d/99-cpu-dma-latency.rules"
-    dobin "${SUSRBIN}/amdpstate-epp"
+	udev_dorules "${S}/udev/rules.d/99-ntsync.rules"
+
     dobin "${SUSRBIN}/amdpstate-guided"
-    # dobin "${SUSRBIN}/le9uo"
+    dobin "${SUSRBIN}/game-performance"
+    dobin "${SUSRBIN}/kerver"
+    dobin "${SUSRBIN}/ksmctl"
+    dobin "${SUSRBIN}/ksmstats"
+    dobin "${SUSRBIN}/ksmstats"
     dobin "${SUSRBIN}/pci-latency"
-    # dobin "${SUSRBIN}/topmem"
+    dobin "${SUSRBIN}/sbctl-batch-sign"
+    dobin "${SUSRBIN}/topmem"
 }
 
 pkg_postinst() {
