@@ -1,3 +1,13 @@
 [__config__]
 oldver = "old_ver.json"
 newver = "new_ver.json"
+
+["sys-kernel/cachyos-settings"]
+source = "github"
+github = "CachyOS/CachyOS-Settings"
+use_latest_release = true
+
+["sys-kernel/cachyos-sources"]
+source = "github"
+github = "CachyOS/linux-cachyos"
+use_latest_release = true
