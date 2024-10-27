@@ -273,8 +273,8 @@ src_prepare() {
 				die "building ${PN} with clang is only supported with USE=mingw"
 		fi
 	fi
-	mapfile -t patchlist < <(find "${WORKDIR}/patch/" -type f -regex ".*\.patch" | LC_ALL=C sort -f) || die
 
+	mapfile -t patchlist < <(find "${WORKDIR}/patch/" -type f -regex ".*\.patch" | LC_ALL=C sort -f) || die
 	for patch in "${patchlist[@]}"; do
 		shortname="${patch#"${WORKDIR}/"}"
 		# git apply --ignore-whitespace --verbose "${patch}" &>> "${WORKDIR}"/patchlog.txt || \
@@ -291,7 +291,11 @@ src_prepare() {
 
 	# always update for patches (including user's wrt #432348)
 	eautoreconf
+	# tools/make_requests || die # perl
 	tools/make_requests || die # perl
+	if [ -e tools/make_specfiles ]; then
+		tools/make_specfiles || die # perl
+	fi
 	# tip: if need more for user patches, with portage can e.g. do
 	# echo "post_src_prepare() { tools/make_specfiles || die; }" \
 	#     > /etc/portage/env/app-emulation/wine-staging
@@ -373,12 +377,12 @@ src_configure() {
 		local mingwcc_x86=${CROSSCC:-${CROSSCC_x86:-i686-w64-mingw32-gcc}}
 		local -n mingwcc=mingwcc_$(usex abi_x86_64 amd64 x86)
 
-		# From https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=wine-osu-spectator-wow64
-		local _common_cflags="-march=native -mtune=native -O3 -pipe -fomit-frame-pointer -Wno-error=incompatible-pointer-types -Wno-error=implicit-function-declaration -Wno-error=int-conversion -w"
+		# # From https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=wine-osu-spectator-wow64
+		local _common_cflags="-march=native -mtune=native -O3 -pipe -mfpmath=sse -mno-avx -mno-avx2 -fno-strict-aliasing -fomit-frame-pointer -Wno-error=incompatible-pointer-types -Wno-error=implicit-function-declaration -Wno-error=int-conversion -w"
 		local _native_common_cflags="-fuse-linker-plugin -fdevirtualize-at-ltrans -flto-partition=one -flto -Wl,-flto"
 		local _extra_native_flags="-floop-nest-optimize -fgraphite-identity -floop-strip-mine" # graphite opts
   		export CPPFLAGS="-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0 -DNDEBUG -D_NDEBUG"
-		local _GCC_FLAGS="${_common_cflags} ${_extra_native_flags} ${CPPFLAGS}"
+		local _GCC_FLAGS="${_common_cflags} ${_native_common_cflags} ${_extra_native_flags} ${CPPFLAGS}"
 		local _LD_FLAGS="${_GCC_FLAGS} -Wl,-O3,--sort-common,--as-needed"
 
 		local _CROSS_FLAGS="${_common_cflags} ${CPPFLAGS}"
