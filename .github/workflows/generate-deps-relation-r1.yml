@@ -16,11 +16,11 @@ jobs:
         with:
           ref: deps-table
           fetch-depth: 5
-      - name: Fetch gentoo-zh repo
+      - name: Fetch webj8-overlay repo
         uses: actions/checkout@v4
         with:
           ref: master
-          path: gentoo-zh
+          path: webj8-overlay
       - name: Update packages relation
         id: update_relation
         shell: bash
