@@ -17,7 +17,7 @@ function randomSort(a, b) {
 
 module.exports = async ({ github, context, core }) => {
   // hardcode gentoo-zh official repo name
-  var gentoo_zh_official_repo_name = "microcai/gentoo-zh";
+  var gentoo_zh_official_repo_name = "weBj8/webj8-overlay";
   var repo_name = process.env.GITHUB_REPOSITORY;
   var repo_is_gentoo_zh_official = repo_name == gentoo_zh_official_repo_name;
 
