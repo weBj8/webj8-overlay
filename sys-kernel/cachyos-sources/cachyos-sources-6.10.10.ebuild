@@ -22,7 +22,6 @@ SRC_URI="
 	${GENPATCHES_URI}
 	https://github.com/CachyOS/kernel-patches/archive/${CACHY_OS_KERNEL_PATCHES_COMMIT_HASH}.tar.gz -> ${P}-patches.tar.gz
 	https://github.com/CachyOS/linux-cachyos/archive/${CACHY_OS_PKGBUILD_COMMIT_HASH}.tar.gz -> ${P}-config.tar.gz
-	https://github.com/CachyOS/linux-cachyos/releases/download/${P}/0001-cachyos-base-all.tar.gz -> ${P}-0001-cachyos-base-all.tar.gz
 "
 
 LICENSE="GPL-3"
@@ -38,14 +37,13 @@ src_unpack() {
 
 	unpack "${P}-patches.tar.gz"
 	unpack "${P}-config.tar.gz"
-	unpack "${P}-0001-cachyos-base-all.tar.gz"
 }
 
 src_prepare() {
 	CACHY_OS_PATCHES_DIR="${WORKDIR}/cachyos/kernel-patches-${CACHY_OS_KERNEL_PATCHES_COMMIT_HASH}/${KV_MAJOR}.${KV_MINOR}"
 	CACHY_OS_CONFIG_DIR="${WORKDIR}/cachyos/linux-cachyos-${CACHY_OS_PKGBUILD_COMMIT_HASH}"
 
-	eapply --ignore-whitespace  "${WORKDIR}/cachyos/0001-cachyos-base-all.patch"
+	eapply --ignore-whitespace  "${CACHY_OS_PATCHES_DIR}/all/0001-cachyos-base-all.patch"
 
 	# Apply scheduler patches
 	if use sched-ext; then
