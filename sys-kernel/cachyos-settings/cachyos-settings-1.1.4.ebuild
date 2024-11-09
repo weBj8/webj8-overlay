@@ -3,7 +3,7 @@
 
 EAPI=8
 inherit udev tmpfiles
-SETTINGS_COMMIT="bb822b2f19e9cb1740f6a3c7e2a96c9565284b9c"
+SETTINGS_COMMIT="e3d1c8313167705273750eb708291812056e0030"
 DESCRIPTION="Configuration files that tweak sysctl values, add udev rules to automatically set schedulers, and provide additional optimizations."
 HOMEPAGE="https://github.com/CachyOS/CachyOS-Settings"
 SRC_URI="https://github.com/CachyOS/CachyOS-Settings/archive/${SETTINGS_COMMIT}.tar.gz -> ${P}.tar.gz"
@@ -42,7 +42,7 @@ eapply_user
 }
 
 src_install() {
-	insinto /usr/lib
+	insinto /etc
 	doins -r "${S}/tmpfiles.d"
 	doins -r "${S}/NetworkManager/conf.d"
 	doins -r "${S}/modprobe.d"
@@ -62,7 +62,6 @@ src_install() {
     dobin "${SUSRBIN}/game-performance"
     dobin "${SUSRBIN}/kerver"
     dobin "${SUSRBIN}/ksmctl"
-    dobin "${SUSRBIN}/ksmstats"
     dobin "${SUSRBIN}/ksmstats"
     dobin "${SUSRBIN}/pci-latency"
     dobin "${SUSRBIN}/sbctl-batch-sign"
