@@ -9,7 +9,7 @@ MY_PV=${PV/_p/_}
 _QQDownSite="https://dldir1.qq.com/qqfile/qq/QQNT/Linux"
 _QQFileName="QQ"
 _QQFileSuffix="_01.deb"
-_LiteLoader_PV="1.2.2"
+_LiteLoader_PV="1.2.3"
 DESCRIPTION="The new version of the official linux-qq"
 HOMEPAGE="https://im.qq.com/linuxqq/index.shtml"
 
