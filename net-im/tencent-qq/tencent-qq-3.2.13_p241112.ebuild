@@ -123,7 +123,7 @@ src_install() {
 		insinto /opt/LiteLoader
 		doins -r "${WORKDIR}"/*
 		cp "${WORKDIR}/../files/liteloader.js" "${D}/opt/QQ/resources/app/app_launcher/liteloader.js"
-		sed 's!./application/app_launcher/index.js!./app_launcher/liteloader.js!' -i "${D}"/opt/QQ/resources/app/package.json || die
+		sed 's!./application.asar/app_launcher/index.js!./app_launcher/liteloader.js!' -i "${D}"/opt/QQ/resources/app/package.json || die
 	fi
 }
 
