@@ -13,9 +13,9 @@ WINE_MONO=9.3.0
 _PV=${PV/_/-}
 WINE_P=wine-${_PV}
 _P=wine-staging-${PV}
-STAGING_COMMIT="32abf9fc9756ad912b39acb93bcf60f448942a20"
-WINE_COMMIT="60ddc9613b0a48b20fd1180409bea849f02961ef"
-OSU_PATCHES_TAGS="11-12-2024-60ddc961-32abf9fc"
+STAGING_COMMIT="7ba8823e57e0a32c1373e5c304542c7ce578699c"
+WINE_COMMIT="51ccd95c49c2c61ad41960b25a01f834601d70c0"
+OSU_PATCHES_TAGS="11-22-2024-51ccd95c-7ba8823e"
 
 if [[ ${PV} == *9999 ]]; then
 	inherit git-r3
@@ -179,7 +179,7 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-7.17-noexecstack.patch
 	"${FILESDIR}"/${PN}-7.20-unwind.patch
 	"${FILESDIR}"/${PN}-8.13-rpath.patch
-		"${FILESDIR}/lto-fixup.patch"
+	"${FILESDIR}/lto-fixup.patch"
 )
 
 pkg_pretend() {
@@ -227,9 +227,6 @@ src_unpack() {
 	mv ${WORKDIR}/wine-staging-${STAGING_COMMIT}/* ${WORKDIR}/${_P} || die
 
 	mkdir ${WORKDIR}/patch || die	
-	
-	## THESE PATCH CAN'T APPLY TO SOURCE CODE
-	cp "${FILESDIR}/${PN}-patch/9.19/ps0344-p0002-server-Relax-memory-order-constraints-in-ato.patch" "./wine-osu-patches-${OSU_PATCHES_TAGS}/0013-server-optimization/0001-misc/ps0344-p0002-server-Relax-memory-order-constraints-in-ato.patch"
 
     for dir in ./wine-osu-patches-${OSU_PATCHES_TAGS}/**; do
     	mv "$dir" ${WORKDIR}/patch/. || die
@@ -356,6 +353,9 @@ src_configure() {
 	# filter-lto # build failure
 	# filter-flags -Wl,--gc-sections # runtime issues (bug #931329)
 	# use custom-cflags || strip-flags # can break in obscure ways at runtime
+
+	# broken with gcc-15's c23 default (TODO: try w/o occasionally, bug #943849)
+	# append-cflags -std=gnu17
 
 	# wine uses linker tricks unlikely to work with non-bfd/lld (bug #867097)
 	# (do self test until https://github.com/gentoo/gentoo/pull/28355)
