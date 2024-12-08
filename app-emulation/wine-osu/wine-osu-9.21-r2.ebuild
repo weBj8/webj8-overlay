@@ -3,8 +3,8 @@
 
 EAPI=8
 
-MULTILIB_COMPAT=(abi_x86_{32,64})
-PYTHON_COMPAT=(python3_{10..13})
+MULTILIB_COMPAT=( abi_x86_{32,64} )
+PYTHON_COMPAT=( python3_{10..13} )
 inherit autotools edo flag-o-matic multilib multilib-build optfeature
 inherit prefix python-any-r1 toolchain-funcs wrapper
 
@@ -13,16 +13,16 @@ WINE_MONO=9.3.0
 _PV=${PV/_/-}
 WINE_P=wine-${_PV}
 _P=wine-staging-${PV}
-STAGING_COMMIT="7ba8823e57e0a32c1373e5c304542c7ce578699c"
-WINE_COMMIT="51ccd95c49c2c61ad41960b25a01f834601d70c0"
-OSU_PATCHES_TAGS="11-22-2024-51ccd95c-7ba8823e"
+STAGING_COMMIT="32abf9fc9756ad912b39acb93bcf60f448942a20"
+WINE_COMMIT="60ddc9613b0a48b20fd1180409bea849f02961ef"
+OSU_PATCHES_TAGS="11-12-2024-60ddc961-32abf9fc"
 
 if [[ ${PV} == *9999 ]]; then
 	inherit git-r3
 	EGIT_REPO_URI="https://gitlab.winehq.org/wine/wine-staging.git"
 	WINE_EGIT_REPO_URI="https://gitlab.winehq.org/wine/wine.git"
 else
-	(($(ver_cut 2))) && WINE_SDIR=$(ver_cut 1).x || WINE_SDIR=$(ver_cut 1).0
+	(( $(ver_cut 2) )) && WINE_SDIR=$(ver_cut 1).x || WINE_SDIR=$(ver_cut 1).0
 	SRC_URI="
 		https://github.com/wine-mirror/wine/archive/${WINE_COMMIT}.tar.gz -> ${P}-${WINE_COMMIT}.tar.gz
 		https://github.com/wine-staging/wine-staging/archive/${STAGING_COMMIT}.tar.gz -> ${P}-${STAGING_COMMIT}-staging.tar.gz
@@ -170,7 +170,7 @@ BDEPEND="
 IDEPEND=">=app-eselect/eselect-wine-2"
 
 QA_CONFIG_IMPL_DECL_SKIP=(
-	__clear_cache  # unused on amd64+x86 (bug #900334)
+	__clear_cache # unused on amd64+x86 (bug #900334)
 	res_getservers # false positive
 )
 QA_TEXTRELS="usr/lib/*/wine/i386-unix/*.so" # uses -fno-PIC -Wl,-z,notext
@@ -179,7 +179,7 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-7.17-noexecstack.patch
 	"${FILESDIR}"/${PN}-7.20-unwind.patch
 	"${FILESDIR}"/${PN}-8.13-rpath.patch
-	"${FILESDIR}/lto-fixup.patch"
+		"${FILESDIR}/lto-fixup.patch"
 )
 
 pkg_pretend() {
@@ -226,10 +226,13 @@ src_unpack() {
 	mkdir ${WORKDIR}/${_P} || die
 	mv ${WORKDIR}/wine-staging-${STAGING_COMMIT}/* ${WORKDIR}/${_P} || die
 
-	mkdir ${WORKDIR}/patch || die
+	mkdir ${WORKDIR}/patch || die	
+	
+	## THESE PATCH CAN'T APPLY TO SOURCE CODE
+	# cp "${FILESDIR}/${PN}-patch/9.19/ps0344-p0002-server-Relax-memory-order-constraints-in-ato.patch" "./wine-osu-patches-${OSU_PATCHES_TAGS}/0013-server-optimization/0001-misc/ps0344-p0002-server-Relax-memory-order-constraints-in-ato.patch"
 
-	for dir in ./wine-osu-patches-${OSU_PATCHES_TAGS}/**; do
-		mv "$dir" ${WORKDIR}/patch/. || die
+    for dir in ./wine-osu-patches-${OSU_PATCHES_TAGS}/**; do
+    	mv "$dir" ${WORKDIR}/patch/. || die
 	done
 }
 
@@ -242,7 +245,7 @@ src_prepare() {
 		${MY_WINE_STAGING_CONF}
 	)
 
-	edo "${PYTHON}" ../${_P}/staging/patchinstall.py "${patchinstallargs[@]}" &>>"${WORKDIR}"/patchlog.txt
+	edo "${PYTHON}" ../${_P}/staging/patchinstall.py "${patchinstallargs[@]}" &>> "${WORKDIR}"/patchlog.txt
 
 	# sanity check, bumping these has a history of oversights
 	local geckomono=$(sed -En '/^#define (GECKO|MONO)_VER/{s/[^0-9.]//gp}' \
@@ -278,7 +281,7 @@ src_prepare() {
 		# patch -Np1 <"${patch}" &>> "${WORKDIR}"/patchlog.txt || \
 		# 	_failure "An error occurred applying ${shortname}, check patchlog.txt for info." || die
 		eapply --ignore-whitespace -Np1 "$patch"
-	done
+  	done
 
 	# ensure .desktop calls this variant + slot
 	sed -i "/^Exec=/s/wine /${P} /" loader/wine.desktop || die
@@ -354,17 +357,15 @@ src_configure() {
 	# filter-flags -Wl,--gc-sections # runtime issues (bug #931329)
 	# use custom-cflags || strip-flags # can break in obscure ways at runtime
 
-	# broken with gcc-15's c23 default (TODO: try w/o occasionally, bug #943849)
-	# append-cflags -std=gnu17
-
 	# wine uses linker tricks unlikely to work with non-bfd/lld (bug #867097)
 	# (do self test until https://github.com/gentoo/gentoo/pull/28355)
-	# if [[ $(LC_ALL=C $(tc-getCC) ${LDFLAGS} -Wl,--version 2>/dev/null) != @(LLD|GNU\ ld)* ]]; then
-	# 	has_version -b sys-devel/binutils &&
-	# 		append-ldflags -fuse-ld=bfd ||
-	# 		append-ldflags -fuse-ld=lld
-	# 	strip-unsupported-flags
-	# fi
+	if [[ $(LC_ALL=C $(tc-getCC) ${LDFLAGS} -Wl,--version 2>/dev/null) != @(LLD|GNU\ ld)* ]]
+	then
+		has_version -b sys-devel/binutils &&
+			append-ldflags -fuse-ld=bfd ||
+			append-ldflags -fuse-ld=lld
+		strip-unsupported-flags
+	fi
 
 	if use mingw; then
 		use crossdev-mingw || PATH=${BROOT}/usr/lib/mingw64-toolchain/bin:${PATH}
@@ -376,28 +377,26 @@ src_configure() {
 		local -n mingwcc=mingwcc_$(usex abi_x86_64 amd64 x86)
 
 		# # From https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=wine-osu-spectator-wow64
-		local _common_cflags="-pipe -O3 -march=native -fomit-frame-pointer -fwrapv -fno-strict-aliasing \
-		-ffunction-sections -fdata-sections \
-		-Wno-error=incompatible-pointer-types -Wno-error=implicit-function-declaration -w"
-		local _native_common_cflags="-fuse-linker-plugin -fdevirtualize-at-ltrans -flto-partition=one -flto -Wl,-flto"
+		local _common_cflags="-march=native -mtune=native -O3 -pipe -fomit-frame-pointer -fno-semantic-interposition -fwrapv -fno-strict-aliasing \
+                  -Wno-error=incompatible-pointer-types -Wno-error=implicit-function-declaration -Wno-error=int-conversion -w"
+		local _native_common_cflags="-static-libgcc -fuse-linker-plugin -fdevirtualize-at-ltrans -flto-partition=one -flto -Wl,-flto"
 		local _extra_native_flags="-floop-nest-optimize -fgraphite-identity -floop-strip-mine" # graphite opts
-		local _lto_error_flags="-Werror=odr -Werror=lto-type-mismatch -Werror=strict-aliasing"
-		export CPPFLAGS="-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0 -DNDEBUG -D_NDEBUG"
-		local _GCC_FLAGS="${_common_cflags} ${_extra_native_flags} ${CPPFLAGS}"
-		local _LD_FLAGS="${_GCC_FLAGS} -Wl,-O3,--sort-common,--as-needed,--gc-sections -static-libgcc -fuse-ld=mold"
+  		export CPPFLAGS="-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0 -DNDEBUG -D_NDEBUG"
+		local _GCC_FLAGS="${_common_cflags} ${_native_common_cflags} ${_extra_native_flags} ${CPPFLAGS}"
+		local _LD_FLAGS="${_GCC_FLAGS} -Wl,-O3,--sort-common,--as-needed -fuse-ld=mold"
 
 		local _CROSS_FLAGS="${_common_cflags} ${CPPFLAGS}"
-		local _CROSS_LD_FLAGS="${_CROSS_FLAGS} -Wl,-O3,--sort-common,--as-needed,--file-alignment=4096,--gc-sections"
+		local _CROSS_LD_FLAGS="${_CROSS_FLAGS} -Wl,-O3,--sort-common,--as-needed,--file-alignment=4096"
 
 		conf+=(
 			ac_cv_prog_x86_64_CC="${mingwcc_amd64}"
 			ac_cv_prog_i386_CC="${mingwcc_x86}"
 
-			CPPFLAGS="${CPPFLAGS}"
-			CFLAGS="${CFLAGS} ${_GCC_FLAGS} -std=gnu17"
-			CXXFLAGS="${CXXFLAGS} ${_GCC_FLAGS} -std=gnu++17"
-			CROSSCFLAGS="${CROSSCFLAGS} ${_CROSS_FLAGS} -std=gnu17"
-			CROSSCXXFLAGS="${CROSSCXXFLAGS} ${_CROSS_FLAGS} -std=gnu++17"
+CPPFLAGS="${CPPFLAGS}"
+			CFLAGS="${CFLAGS} ${_GCC_FLAGS}"
+			CXXFLAGS="${CXXFLAGS} ${_GCC_FLAGS}"
+			CROSSCFLAGS="${CROSSCFLAGS} ${_CROSS_FLAGS}"
+			CROSSCXXFLAGS="${CROSSCXXFLAGS} ${_CROSS_FLAGS}"
 			LDFLAGS="${LDFLAGS} ${_LD_FLAGS}"
 			CROSSLDFLAGS="${CROSSLDFLAGS} ${_CROSS_LD_FLAGS}"
 		)
@@ -406,25 +405,25 @@ src_configure() {
 	# order matters with multilib: configure+compile 64->32, install 32->64
 	local -i bits
 	for bits in $(usev abi_x86_64 64) $(usev abi_x86_32 32); do
-		(
-			einfo "Configuring ${PN} for ${bits}bits in ${WORKDIR}/build${bits} ..."
+	(
+		einfo "Configuring ${PN} for ${bits}bits in ${WORKDIR}/build${bits} ..."
 
-			mkdir ../build${bits} || die
-			cd ../build${bits} || die
+		mkdir ../build${bits} || die
+		cd ../build${bits} || die
 
-			if ((bits == 64)); then
-				conf+=(--enable-win64)
-			elif use amd64; then
-				conf+=(
-					$(usev abi_x86_64 --with-wine64=../build64)
-					TARGETFLAGS=-m32 # for widl
-				)
-				# _setup is optional, but use over Wine's auto-detect (+#472038)
-				multilib_toolchain_setup x86
-			fi
+		if (( bits == 64 )); then
+			conf+=( --enable-win64 )
+		elif use amd64; then
+			conf+=(
+				$(usev abi_x86_64 --with-wine64=../build64)
+				TARGETFLAGS=-m32 # for widl
+			)
+			# _setup is optional, but use over Wine's auto-detect (+#472038)
+			multilib_toolchain_setup x86
+		fi
 
-			ECONF_SOURCE=${S} econf "${conf[@]}"
-		)
+		ECONF_SOURCE=${S} econf "${conf[@]}"
+	)
 	done
 }
 
@@ -516,4 +515,3 @@ pkg_postinst() {
 pkg_postrm() {
 	eselect wine update --if-unset || die
 }
-
