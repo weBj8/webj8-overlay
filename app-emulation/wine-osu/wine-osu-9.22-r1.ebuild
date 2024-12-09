@@ -13,6 +13,7 @@ WINE_MONO=9.3.0
 _PV=${PV/_/-}
 WINE_P=wine-${_PV}
 _P=wine-staging-${PV}
+
 STAGING_COMMIT="7ba8823e57e0a32c1373e5c304542c7ce578699c"
 WINE_COMMIT="51ccd95c49c2c61ad41960b25a01f834601d70c0"
 OSU_PATCHES_TAGS="11-22-2024-51ccd95c-7ba8823e"
@@ -289,9 +290,6 @@ src_prepare() {
 	# always update for patches (including user's wrt #432348)
 	eautoreconf
 	tools/make_requests || die # perl
-	if [ -e tools/make_specfiles ]; then
-		tools/make_specfiles || die # perl
-	fi
 	# tip: if need more for user patches, with portage can e.g. do
 	# echo "post_src_prepare() { tools/make_specfiles || die; }" \
 	#     > /etc/portage/env/app-emulation/wine-staging
@@ -376,31 +374,39 @@ src_configure() {
 		local -n mingwcc=mingwcc_$(usex abi_x86_64 amd64 x86)
 
 		# # From https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=wine-osu-spectator-wow64
-		local _common_cflags="-pipe -O3 -march=native -fomit-frame-pointer -fwrapv -fno-strict-aliasing -ffunction-sections -fdata-sections -mfpmath=sse -Wno-error=incompatible-pointer-types -Wno-error=implicit-function-declaration -w"
+		# local _common_cflags="-pipe -O3 -march=native -fomit-frame-pointer -fwrapv -fno-strict-aliasing -ffunction-sections -fdata-sections -mfpmath=sse -Wno-error=incompatible-pointer-types -Wno-error=implicit-function-declaration -w"
+		local _common_cflags="-pipe -O3 -march=native  -fomit-frame-pointer -fwrapv -fno-strict-aliasing -ffunction-sections -fdata-sections -Wno-error=incompatible-pointer-types -Wno-error=implicit-function-declaration -w"
 		local _native_common_cflags="-fuse-linker-plugin -fdevirtualize-at-ltrans -flto-partition=one -flto -Wl,-flto"
-		local _extra_native_flags="-floop-nest-optimize -fgraphite-identity -floop-strip-mine" # graphite opts
+		local _extra_native_flags="-floop-nest-optimize -fgraphite-identity -floop-strip-mine -ffunction-sections -fdata-sections" # graphite opts
 		local _lto_error_flags="-Werror=odr -Werror=lto-type-mismatch -Werror=strict-aliasing"
-		export CPPFLAGS="-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0 -DNDEBUG -D_NDEBUG"
-		local _GCC_FLAGS="${_common_cflags} ${_native_common_cflags} ${_extra_native_flags} ${_lto_error_flags} ${CPPFLAGS}"
-		local _LD_FLAGS="${_GCC_FLAGS} -Wl,-O3,--sort-common,--as-needed,--gc-sections -static-libgcc -fuse-ld=mold"
 
-		local _CROSS_FLAGS="${_common_cflags} ${CPPFLAGS}"
-		local _CROSS_LD_FLAGS="${_CROSS_FLAGS} -Wl,-O3,--sort-common,--as-needed,--file-alignment=4096,--gc-sections"
+    	# local _extra_cross_flags="-floop-nest-optimize -floop-parallelize-all -fgraphite-identity" # graphite opts
+
+		export CPPFLAGS="-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0 -DNDEBUG -D_NDEBUG"
+		# local _GCC_FLAGS="${_common_cflags} ${_native_common_cflags} ${_extra_native_flags} ${_lto_error_flags} ${CPPFLAGS}"
+		local _GCC_FLAGS="${_common_cflags} ${CPPFLAGS}"
+
+		# local _LD_FLAGS="${_GCC_FLAGS} -Wl,-O3,--sort-common,--as-needed,--gc-sections -fuse-ld=mold"
+		local _LD_FLAGS="${_GCC_FLAGS} -Wl,-O2,--sort-common,--as-needed,--gc-sections"
+
+		local _CROSS_FLAGS="${_common_cflags} ${CPPFLAGS} ${_extra_cross_flags}"
+		# local _CROSS_LD_FLAGS="${_common_cflags} ${CPPFLAGS} -Wl,-O3,--sort-common,--as-needed,--file-alignment=4096,--gc-sections"
+		local _CROSS_LD_FLAGS="${_common_cflags} ${CPPFLAGS} -Wl,-O2,--sort-common,--as-needed,--file-alignment=4096,--gc-sections"
 		
 		# broken with gcc-15's c23 default (TODO: try w/o occasionally, bug #943849)
 		append-cflags -std=gnu17
 
 		conf+=(
-			ac_cv_prog_x86_64_CC="${mingwcc_amd64}"
-			ac_cv_prog_i386_CC="${mingwcc_x86}"
+			ac_cv_prog_x86_64_CC="ccache ${mingwcc_amd64}"
+			ac_cv_prog_i386_CC="ccache ${mingwcc_x86}"
 
 			CPPFLAGS="${CPPFLAGS}"
-			CFLAGS="${CFLAGS} ${_GCC_FLAGS}"
-			CXXFLAGS="${CXXFLAGS} ${_GCC_FLAGS}"
-			CROSSCFLAGS="${CROSSCFLAGS} ${_CROSS_FLAGS}"
-			CROSSCXXFLAGS="${CROSSCXXFLAGS} ${_CROSS_FLAGS}"
-			LDFLAGS="${LDFLAGS} ${_LD_FLAGS}"
-			CROSSLDFLAGS="${CROSSLDFLAGS} ${_CROSS_LD_FLAGS}"
+			CFLAGS="${_GCC_FLAGS}"
+			CXXFLAGS="${_GCC_FLAGS}"
+			CROSSCFLAGS="${_CROSS_FLAGS}"
+			CROSSCXXFLAGS="${_CROSS_FLAGS}"
+			LDFLAGS="${_LD_FLAGS}"
+			CROSSLDFLAGS="${_CROSS_LD_FLAGS}"
 		)
 	fi
 
