@@ -376,14 +376,12 @@ src_configure() {
 		local -n mingwcc=mingwcc_$(usex abi_x86_64 amd64 x86)
 
 		# # From https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=wine-osu-spectator-wow64
-		# -ffunction-sections -fdata-sections
-		local _common_cflags="-pipe -O3 -march=native -fomit-frame-pointer -fwrapv -fno-strict-aliasing \
-		-Wno-error=incompatible-pointer-types -Wno-error=implicit-function-declaration -w"
-		local _native_common_cflags="-static-libgcc -fuse-linker-plugin -fdevirtualize-at-ltrans -flto-partition=one -flto -Wl,-flto"
+		local _common_cflags="-pipe -O3 -march=native -fomit-frame-pointer -fwrapv -fno-strict-aliasing -ffunction-sections -fdata-sections -mfpmath=sse -Wno-error=incompatible-pointer-types -Wno-error=implicit-function-declaration -w"
+		local _native_common_cflags="-fuse-linker-plugin -fdevirtualize-at-ltrans -flto-partition=one -flto -Wl,-flto"
 		local _extra_native_flags="-floop-nest-optimize -fgraphite-identity -floop-strip-mine" # graphite opts
 		local _lto_error_flags="-Werror=odr -Werror=lto-type-mismatch -Werror=strict-aliasing"
 		export CPPFLAGS="-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0 -DNDEBUG -D_NDEBUG"
-		local _GCC_FLAGS="${_common_cflags} ${_lto_error_flags} ${_extra_native_flags} ${_lto_error_flags} ${CPPFLAGS}"
+		local _GCC_FLAGS="${_common_cflags} ${_native_common_cflags} ${_extra_native_flags} ${_lto_error_flags} ${CPPFLAGS}"
 		local _LD_FLAGS="${_GCC_FLAGS} -Wl,-O3,--sort-common,--as-needed,--gc-sections -static-libgcc -fuse-ld=mold"
 
 		local _CROSS_FLAGS="${_common_cflags} ${CPPFLAGS}"
