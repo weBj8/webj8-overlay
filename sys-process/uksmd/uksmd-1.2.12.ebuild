@@ -5,7 +5,7 @@ EAPI=8
 
 inherit linux-info meson systemd
 
-MY_COMMIT="65b9974787a5301e878e9311e59737203d35b99f"
+MY_COMMIT="87730a6ed35ddaf550a493434a288aa5a3e8822a"
 
 DESCRIPTION="Userspace KSM helper daemon"
 HOMEPAGE="https://github.com/CachyOS/uksmd"

@@ -11,3 +11,13 @@ use_latest_release = true
 source = "github"
 github = "CachyOS/linux-cachyos"
 use_latest_release = true
+
+["app-emulation/wine-osu"]
+source = "github"
+github = "whrvt/wine-osu-patches"
+use_latest_release = true
+
+["x11-misc/flatpak-xdg-utils"]
+source = "github"
+github = "flatpak/flatpak-xdg-utils"
+use_latest_release = true
