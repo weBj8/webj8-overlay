@@ -3,7 +3,7 @@
 
 EAPI=8
 inherit udev tmpfiles
-SETTINGS_COMMIT="e3d1c8313167705273750eb708291812056e0030"
+SETTINGS_COMMIT="00e9e479dab9f91510e8e98ab269a12ca60184de"
 DESCRIPTION="Configuration files that tweak sysctl values, add udev rules to automatically set schedulers, and provide additional optimizations."
 HOMEPAGE="https://github.com/CachyOS/CachyOS-Settings"
 SRC_URI="https://github.com/CachyOS/CachyOS-Settings/archive/${SETTINGS_COMMIT}.tar.gz -> ${P}.tar.gz"
@@ -66,6 +66,7 @@ src_install() {
     dobin "${SUSRBIN}/pci-latency"
     dobin "${SUSRBIN}/sbctl-batch-sign"
     dobin "${SUSRBIN}/topmem"
+    dobin "${SUSRBIN}/zink-run"
 }
 
 pkg_postinst() {
