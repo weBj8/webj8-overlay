@@ -14,8 +14,8 @@ _PV=${PV/_/-}
 WINE_P=wine-${_PV}
 _P=wine-staging-${PV}
 STAGING_COMMIT="c2de76b8048c67aa33c57cff60f98ba1b1675e72"
-WINE_COMMIT="538cae099cde66706428ead4ae8951c1e389d3f2"
-OSU_PATCHES_TAGS="12-16-2024-538cae09-c2de76b8"
+WINE_COMMIT="e713c3487f9fc9b7ded528f9ce49844facb99a90"
+OSU_PATCHES_TAGS="12-25-2024-e713c348-f10d2d04"
 
 if [[ ${PV} == *9999 ]]; then
 	inherit git-r3
@@ -239,7 +239,6 @@ src_prepare() {
 		--no-autoconf
 		# No need esync fsync for using proton fsync instead
 		-W eventfd_synchronization
-		-W wined3d-unset-flip-gdi
 		${MY_WINE_STAGING_CONF}
 	)
 
