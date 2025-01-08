@@ -284,12 +284,15 @@ src_configure() {
 		$(usev !odbc ac_cv_lib_soname_odbc=)
 	)
 
-	# filter-lto                       # build failure
+	filter-lto                       # build failure
 	filter-flags -Wl,--gc-sections   # runtime issues (bug #931329)
 	use custom-cflags || strip-flags # can break in obscure ways at runtime
 
 	# broken with gcc-15's c23 default (TODO: try w/o occasionally, bug #943849)
 	append-cflags -std=gnu17
+	# avoid build failure
+	append-cflags -Wno-error=incompatible-pointer-types
+	append-cflags -Wno-error=implicit-function-declaration
 
 	# wine uses linker tricks unlikely to work with non-bfd/lld (bug #867097)
 	# (do self test until https://github.com/gentoo/gentoo/pull/28355)
