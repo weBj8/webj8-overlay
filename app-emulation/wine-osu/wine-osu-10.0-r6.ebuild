@@ -13,9 +13,9 @@ WINE_MONO=9.4.0
 _PV=${PV/_/-}
 WINE_P=wine-${_PV}
 _P=wine-staging-${PV}
-STAGING_COMMIT="d0d5fef5bb56ef46b1aba207e42a25aa3896f43f"
-WINE_COMMIT="b073859675060c9211fcbccfd90e4e87520dc2c2"
-OSU_PATCHES_TAGS="01-21-2025-b0738596-d0d5fef5"
+STAGING_COMMIT="c263c6fabba8f952b71bf6ea12a77784b9b43ed2"
+WINE_COMMIT="5942da6c6ca66170d3546016328c4c3e0cf8f1b5"
+OSU_PATCHES_TAGS="01-08-2025-5942da6c-c263c6fa"
 
 if [[ ${PV} == *9999 ]]; then
 	inherit git-r3
@@ -271,21 +271,20 @@ src_prepare() {
 		fi
 	fi
 
-	mapfile -t patchlist < <(find "${WORKDIR}/patch/" -type f -regex ".*\.patch" | LC_ALL=C sort -f) || die
-	for patch in "${patchlist[@]}"; do
-		shortname="${patch#"${WORKDIR}/"}"
-		# git apply --ignore-whitespace --verbose "${patch}" &>> "${WORKDIR}"/patchlog.txt || \
-		# patch -Np1 <"${patch}" &>> "${WORKDIR}"/patchlog.txt || \
-		# 	_failure "An error occurred applying ${shortname}, check patchlog.txt for info." || die
-		eapply --ignore-whitespace -Np1 "$patch"
-	done
-
 	# ensure .desktop calls this variant + slot
 	sed -i "/^Exec=/s/wine /${P} /" loader/wine.desktop || die
 
 	# datadir is not where wine-mono is installed, so prefixy alternate paths
 	hprefixify -w /get_mono_path/ dlls/mscoree/metahost.c
 
+	mapfile -t patchlist < <(find "${WORKDIR}/patch/" -type f -regex ".*\.patch" | LC_ALL=C sort -f) || die
+	for patch in "${patchlist[@]}"; do
+		shortname="${patch#"${WORKDIR}/"}"
+		# git apply --ignore-whitespace --verbose "${patch}" &>> "${WORKDIR}"/patchlog.txt || \
+		# patch -Np1 <"${patch}" &>> "${WORKDIR}"/patchlog.txt || \
+		# 	_failure "An error occurred applying ${shortname}, check patchlog.txt for info." || die
+		eapply --ignore-whitespace -Np1 "$patch" || die
+	done
 	# always update for patches (including user's wrt #432348)
 	eautoreconf
 	tools/make_requests || die # perl
