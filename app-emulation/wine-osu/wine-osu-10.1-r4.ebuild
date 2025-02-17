@@ -179,7 +179,7 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-7.17-noexecstack.patch
 	"${FILESDIR}"/${PN}-7.20-unwind.patch
 	"${FILESDIR}"/${PN}-8.13-rpath.patch
-	"${FILESDIR}"/${PN}-10.0-binutils2.44.patch
+	# "${FILESDIR}"/${PN}-10.0-binutils2.44.patch
 	"${FILESDIR}/lto-fixup.patch"
 )
 
@@ -375,16 +375,21 @@ src_configure() {
 		local -n mingwcc=mingwcc_$(usex abi_x86_64 amd64 x86)
 
 		# # From https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=wine-osu-spectator-wow64
-		local _common_cflags="-pipe -O3 -march=native -fomit-frame-pointer -fwrapv -fno-strict-aliasing -mfpmath=sse -Wno-error=incompatible-pointer-types -Wno-error=implicit-function-declaration -w"
-		local _native_common_cflags="-fuse-linker-plugin -fdevirtualize-at-ltrans -flto-partition=one -flto=auto -Wl,-flto=auto -ffunction-sections -fdata-sections"
-		local _extra_native_flags="-floop-nest-optimize -fgraphite-identity -floop-strip-mine" # graphite opts
+		local _common_cflags="-pipe -O3 -mfpmath=sse -fno-strict-aliasing -fwrapv -fno-semantic-interposition -Wno-error=incompatible-pointer-types -Wno-error=implicit-function-declaration -w"
+		local _native_common_cflags="-fuse-ld=lld -ffat-lto-objects -fuse-linker-plugin -fdevirtualize-at-ltrans -flto-partition=one -flto"
+		local _extra_native_flags="-floop-nest-optimize -floop-parallelize-all -fgraphite-identity -mtls-dialect=gnu2" # graphite opts
+		local _extra_ld_flags="-fuse-ld=lld -ffat-lto-objects -fuse-linker-plugin -fdevirtualize-at-ltrans -flto-partition=one -flto"
+		export wine_preloader_LDFLAGS="-fuse-ld=bfd"
+    	export wine64_preloader_LDFLAGS="-fuse-ld=bfd"
+    	export preloader_CFLAGS="-fuse-ld=bfd"
+
 		local _lto_error_flags="-Werror=odr -Werror=lto-type-mismatch -Werror=strict-aliasing"
 		export CPPFLAGS="-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0 -DNDEBUG -D_NDEBUG"
-		local _GCC_FLAGS="${_common_cflags} ${_native_common_cflags} ${_extra_native_flags} ${_lto_error_flags} ${CPPFLAGS}"
-		local _LD_FLAGS="${_GCC_FLAGS} -Wl,-O3,--sort-common,--as-needed -static-libgcc"
+		local _GCC_FLAGS="${_common_cflags} ${_native_common_cflags} ${_extra_native_flags} ${_lto_error_flags} ${CPPFLAGS} -ffunction-sections -fdata-sections"
+		local _LD_FLAGS="${_GCC_FLAGS} ${_extra_ld_flags} -static-libgcc -Wl,-O2,--sort-common,--as-needed"
 
 		local _CROSS_FLAGS="${_common_cflags} ${CPPFLAGS}"
-		local _CROSS_LD_FLAGS="${_CROSS_FLAGS} -Wl,-O3,--sort-common,--as-needed,--file-alignment=4096"
+		local _CROSS_LD_FLAGS="${_CROSS_FLAGS} -Wl,-O2,--sort-common,--as-needed,--file-alignment=4096"
 
 		# broken with gcc-15's c23 default (TODO: try w/o occasionally, bug #943849)
 		append-cflags -std=gnu17
@@ -400,6 +405,9 @@ src_configure() {
 			CROSSCXXFLAGS="${_CROSS_FLAGS}"
 			LDFLAGS="${_LD_FLAGS}"
 			CROSSLDFLAGS="${_CROSS_LD_FLAGS}"
+			wine_preloader_LDFLAGS="${wine_preloader_LDFLAGS}"
+    		wine64_preloader_LDFLAGS="${wine64_preloader_LDFLAGS}"
+    		preloader_CFLAGS="${preloader_CFLAGS}"
 		)
 	fi
 
