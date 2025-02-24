@@ -13,9 +13,9 @@ WINE_MONO=9.4.0
 _PV=${PV/_/-}
 WINE_P=wine-${_PV}
 _P=wine-staging-${PV}
-STAGING_COMMIT="735225dbaa71dc0cbff67c13708e63e3a44981aa"
-WINE_COMMIT="4de563994426e258d1f2848b663f6ed85dd1298d"
-OSU_PATCHES_TAGS="02-15-2025-4de56399-735225db"
+STAGING_COMMIT="4378292a655afe0e2e3df1da92b3ad3ad6845e99"
+WINE_COMMIT="41abefccebf2729a70be9ec7bdb1c6226a56e369"
+OSU_PATCHES_TAGS="02-21-2025-41abefcc-4378292a-v2"
 
 if [[ ${PV} == *9999 ]]; then
 	inherit git-r3
@@ -41,12 +41,12 @@ S="${WORKDIR}/${WINE_P}"
 LICENSE="LGPL-2.1+ BSD BSD-2 IJG MIT OPENLDAP ZLIB gsm libpng2 libtiff"
 SLOT="${PV}"
 IUSE="
-	+X +abi_x86_32 +abi_x86_64 +alsa capi crossdev-mingw cups dos
-	llvm-libunwind custom-cflags ffmpeg +fontconfig +gecko gphoto2
+	+X abi_x86_32 +abi_x86_64 +alsa capi crossdev-mingw cups dos
+	+llvm-libunwind +custom-cflags +ffmpeg +fontconfig +gecko gphoto2
 	+gstreamer kerberos +mingw +mono netapi nls odbc opencl +opengl
 	osmesa pcap perl pulseaudio samba scanner +sdl selinux smartcard
-	+ssl +strip +truetype udev udisks +unwind usb v4l +vulkan wayland
-	wow64 +xcomposite xinerama
+	+ssl +strip +truetype udev udisks +unwind usb v4l +vulkan +wayland
+	+wow64 +xcomposite xinerama
 "
 # bug #551124 for truetype
 # TODO: wow64 can be done without mingw if using clang (needs bug #912237)
@@ -181,6 +181,7 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-8.13-rpath.patch
 	# "${FILESDIR}"/${PN}-10.0-binutils2.44.patch
 	"${FILESDIR}/lto-fixup.patch"
+	"${FILESDIR}/makedep-fix.patch"
 )
 
 pkg_pretend() {
@@ -279,10 +280,6 @@ src_prepare() {
 
 	mapfile -t patchlist < <(find "${WORKDIR}/patch/" -type f -regex ".*\.patch" | LC_ALL=C sort -f) || die
 	for patch in "${patchlist[@]}"; do
-		shortname="${patch#"${WORKDIR}/"}"
-		# git apply --ignore-whitespace --verbose "${patch}" &>> "${WORKDIR}"/patchlog.txt || \
-		# patch -Np1 <"${patch}" &>> "${WORKDIR}"/patchlog.txt || \
-		# 	_failure "An error occurred applying ${shortname}, check patchlog.txt for info." || die
 		eapply --ignore-whitespace -Np1 "$patch" || die
 	done
 	# always update for patches (including user's wrt #432348)
@@ -349,65 +346,65 @@ src_configure() {
 		$(usev !odbc ac_cv_lib_soname_odbc=)
 	)
 
-	# filter-lto # build failure
-	# filter-flags -Wl,--gc-sections # runtime issues (bug #931329)
-	# use custom-cflags || strip-flags # can break in obscure ways at runtime
-
-	# broken with gcc-15's c23 default (TODO: try w/o occasionally, bug #943849)
-	# append-cflags -std=gnu17
-
-	# wine uses linker tricks unlikely to work with non-bfd/lld (bug #867097)
-	# (do self test until https://github.com/gentoo/gentoo/pull/28355)
-	# if [[ $(LC_ALL=C $(tc-getCC) ${LDFLAGS} -Wl,--version 2>/dev/null) != @(LLD|GNU\ ld)* ]]; then
-	# 	has_version -b sys-devel/binutils &&
-	# 		append-ldflags -fuse-ld=bfd ||
-	# 		append-ldflags -fuse-ld=lld
-	# 	strip-unsupported-flags
-	# fi
-
 	if use mingw; then
 		use crossdev-mingw || PATH=${BROOT}/usr/lib/mingw64-toolchain/bin:${PATH}
 
 		# CROSSCC was formerly recognized by wine, thus been using similar
 		# variables (subject to change, esp. if ever make a mingw.eclass).
-		local mingwcc_amd64=${CROSSCC:-${CROSSCC_amd64:-x86_64-w64-mingw32-gcc}}
-		local mingwcc_x86=${CROSSCC:-${CROSSCC_x86:-i686-w64-mingw32-gcc}}
-		local -n mingwcc=mingwcc_$(usex abi_x86_64 amd64 x86)
+		# local mingwcc_amd64=${CROSSCC:-${CROSSCC_amd64:-x86_64-w64-mingw32-gcc}}
+		# local mingwcc_x86=${CROSSCC:-${CROSSCC_x86:-i686-w64-mingw32-gcc}}
+		# local -n mingwcc=mingwcc_$(usex abi_x86_64 amd64 x86)
+		local mingwcc_amd64="clang"
+		local mingwcc_x86="clang++"
 
 		# # From https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=wine-osu-spectator-wow64
-		local _common_cflags="-pipe -O3 -mfpmath=sse -fno-strict-aliasing -fwrapv -fno-semantic-interposition -Wno-error=incompatible-pointer-types -Wno-error=implicit-function-declaration -w"
-		local _native_common_cflags="-fuse-ld=lld -ffat-lto-objects -fuse-linker-plugin -fdevirtualize-at-ltrans -flto-partition=one -flto"
-		local _extra_native_flags="-floop-nest-optimize -floop-parallelize-all -fgraphite-identity -mtls-dialect=gnu2" # graphite opts
-		local _extra_ld_flags="-fuse-ld=lld -ffat-lto-objects -fuse-linker-plugin -fdevirtualize-at-ltrans -flto-partition=one -flto"
-		export wine_preloader_LDFLAGS="-fuse-ld=bfd"
-    	export wine64_preloader_LDFLAGS="-fuse-ld=bfd"
-    	export preloader_CFLAGS="-fuse-ld=bfd"
+		local _fake_gnuc_flag="-fgnuc-version=5.99.99"
+		local _polly_flags="-Xclang -load -Xclang /usr/lib/llvm/19/lib64/LLVMPolly.so -mllvm -polly -mllvm -polly-parallel -mllvm -polly-omp-backend=LLVM -mllvm -polly-vectorizer=stripmine"
+    	_extra_native_flags+=" ${_polly_flags}"
+		_extra_ld_flags+=" -flto=thin"
+		_lto_flags+=" -flto=thin -D__LLD_LTO__"
+		export wine_preloader_LDFLAGS="-fno-lto -Wl,--no-relax"
+		export wine64_preloader_LDFLAGS="-fno-lto -Wl,--no-relax"
+		export preloader_CFLAGS="-fno-lto -Wl,--no-relax"
+  		_extra_native_flags+=" ${_fake_gnuc_flag} -mtls-dialect=gnu2"
+		_extra_cross_flags+=" -fmsc-version=1933 -ffunction-sections -fdata-sections"
+		_extra_crossld_flags+=" -Wl,/FILEALIGN:4096,/OPT:REF,/OPT:ICF,/HIGHENTROPYVA:NO"
 
-		local _lto_error_flags="-Werror=odr -Werror=lto-type-mismatch -Werror=strict-aliasing"
+
+  		_common_cflags="-march=native -mtune=native -pipe -O3 -mfpmath=sse -fno-strict-aliasing -fwrapv -fno-semantic-interposition \
+                 -Wno-error=incompatible-pointer-types -Wno-error=implicit-function-declaration -w"
+
 		export CPPFLAGS="-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0 -DNDEBUG -D_NDEBUG"
-		local _GCC_FLAGS="${_common_cflags} ${_native_common_cflags} ${_extra_native_flags} ${_lto_error_flags} ${CPPFLAGS} -ffunction-sections -fdata-sections"
-		local _LD_FLAGS="${_GCC_FLAGS} ${_extra_ld_flags} -static-libgcc -Wl,-O2,--sort-common,--as-needed"
+  		_GCC_FLAGS="${_common_cflags:-} ${_lto_flags:-} ${_extra_native_flags:-} ${CPPFLAGS:-} -ffunction-sections -fdata-sections" # only for the non-mingw side
+  		_CROSS_FLAGS="${_common_cflags:-} ${_extra_cross_flags:-} ${CPPFLAGS:-}" # only for the mingw side
 
-		local _CROSS_FLAGS="${_common_cflags} ${CPPFLAGS}"
-		local _CROSS_LD_FLAGS="${_CROSS_FLAGS} -Wl,-O2,--sort-common,--as-needed,--file-alignment=4096"
-
-		# broken with gcc-15's c23 default (TODO: try w/o occasionally, bug #943849)
-		append-cflags -std=gnu17
+  		_LD_FLAGS="${_GCC_FLAGS:-} ${_extra_ld_flags:-} -static-libgcc -Wl,-O2,--sort-common,--as-needed"
+  		_CROSS_LD_FLAGS="${_common_cflags:-} ${_extra_crossld_flags:-} ${CPPFLAGS:-}"
 
 		conf+=(
-			ac_cv_prog_x86_64_CC="ccache ${mingwcc_amd64}"
-			ac_cv_prog_i386_CC="ccache ${mingwcc_x86}"
+			CC="ccache ${mingwcc_amd64}"
+			CXX="ccache ${mingwcc_x86}"
+  			x86_64_CC="ccache ${mingwcc_amd64}"
+  			x86_64_CXX="ccache ${mingwcc_x86}"
+  			i386_CC="ccache ${mingwcc_amd64}"
+  			i386_CXX="ccache ${mingwcc_x86}"
+
+			ac_cv_prog_x86_64_CC=" ${mingwcc_amd64}"
+			ac_cv_prog_i386_CC=" ${mingwcc_x86}"
 
 			CPPFLAGS="${CPPFLAGS}"
-			CFLAGS="${_GCC_FLAGS}"
+
+			CFLAGS="${_GCC_FLAGS} -std=gnu23"
 			CXXFLAGS="${_GCC_FLAGS}"
-			CROSSCFLAGS="${_CROSS_FLAGS}"
+			CROSSCFLAGS="${_CROSS_FLAGS} -std=gnu23"
 			CROSSCXXFLAGS="${_CROSS_FLAGS}"
+
 			LDFLAGS="${_LD_FLAGS}"
 			CROSSLDFLAGS="${_CROSS_LD_FLAGS}"
+
 			wine_preloader_LDFLAGS="${wine_preloader_LDFLAGS}"
-    		wine64_preloader_LDFLAGS="${wine64_preloader_LDFLAGS}"
-    		preloader_CFLAGS="${preloader_CFLAGS}"
+			wine64_preloader_LDFLAGS="${wine64_preloader_LDFLAGS}"
+			preloader_CFLAGS="${preloader_CFLAGS}"
 		)
 	fi
 
@@ -445,27 +442,10 @@ src_install() {
 	use abi_x86_32 && emake DESTDIR="${D}" -C ../build32 install
 	use abi_x86_64 && emake DESTDIR="${D}" -C ../build64 install # do last
 
-	# Ensure both wine64 and wine are available if USE=abi_x86_64 (wow64,
-	# -abi_x86_32, and/or EXTRA_ECONF could cause varying scenarios where
-	# one or the other could be missing and that is unexpected for users
-	# and some tools like winetricks)
-	if use abi_x86_64; then
-		if [[ -e ${ED}${WINE_PREFIX}/bin/wine64 && ! -e ${ED}${WINE_PREFIX}/bin/wine ]]; then
-			dosym wine64 ${WINE_PREFIX}/bin/wine
-			dosym wine64-preloader ${WINE_PREFIX}/bin/wine-preloader
-
-			# also install wine(1) man pages (incl. translations)
-			local man
-			for man in ../build64/loader/wine.*man; do
-				: "${man##*/wine}"
-				: "${_%.*}"
-				insinto ${WINE_DATADIR}/man/${_:+${_#.}/}man1
-				newins ${man} wine.1
-			done
-		elif [[ ! -e ${ED}${WINE_PREFIX}/bin/wine64 && -e ${ED}${WINE_PREFIX}/bin/wine ]]; then
-			dosym wine ${WINE_PREFIX}/bin/wine64
-			dosym wine-preloader ${WINE_PREFIX}/bin/wine64-preloader
-		fi
+	# "wine64" is no longer provided, but a keep symlink for old scripts
+	# TODO: remove the guard later, only useful for bisecting -9999
+	if [[ ! -e ${ED}${WINE_PREFIX}/bin/wine64 ]]; then
+		use abi_x86_64 && dosym wine ${WINE_PREFIX}/bin/wine64
 	fi
 
 	use perl || rm "${ED}"${WINE_DATADIR}/man/man1/wine{dump,maker}.1 \
