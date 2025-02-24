@@ -42,7 +42,7 @@ LICENSE="LGPL-2.1+ BSD BSD-2 IJG MIT OPENLDAP ZLIB gsm libpng2 libtiff"
 SLOT="${PV}"
 IUSE="
 	+X abi_x86_32 +abi_x86_64 +alsa capi crossdev-mingw cups dos
-	+llvm-libunwind +custom-cflags +ffmpeg +fontconfig +gecko gphoto2
+	llvm-libunwind +custom-cflags +ffmpeg +fontconfig +gecko gphoto2
 	+gstreamer kerberos +mingw +mono netapi nls odbc opencl +opengl
 	osmesa pcap perl pulseaudio samba scanner +sdl selinux smartcard
 	+ssl +strip +truetype udev udisks +unwind usb v4l +vulkan +wayland
