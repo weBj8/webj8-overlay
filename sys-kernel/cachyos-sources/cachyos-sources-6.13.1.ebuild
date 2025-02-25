@@ -34,7 +34,7 @@ LICENSE="GPL-3"
 KEYWORDS="~amd64"
 IUSE="experimental +preempt-lazy acpi-call aufs spadfs handheld polly"
 DEPEND="
-polly? ( sys-devel/polly )
+polly? ( llvm-core/polly )
 "
 
 pkg_pretend() {
