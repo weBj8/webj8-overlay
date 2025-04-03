@@ -359,8 +359,8 @@ src_configure() {
 		local _fake_gnuc_flag="-fgnuc-version=5.99.99"
 		local _polly_flags="-Xclang -load -Xclang /usr/lib/llvm/20/lib64/LLVMPolly.so -mllvm -polly -mllvm -polly-parallel -mllvm -polly-omp-backend=LLVM -mllvm -polly-vectorizer=stripmine"
     	_extra_native_flags+=" ${_polly_flags}"
-		_extra_ld_flags+=" -flto"
-		_lto_flags+=" -flto -D__LLD_LTO__"
+		_extra_ld_flags+=" -flto=full"
+		_lto_flags+=" -flto=full -D__LLD_LTO__"
 		export wine_preloader_LDFLAGS="-fno-lto -Wl,--no-relax"
 		export wine64_preloader_LDFLAGS="-fno-lto -Wl,--no-relax"
 		export preloader_CFLAGS="-fno-lto -Wl,--no-relax"
@@ -372,11 +372,11 @@ src_configure() {
   		_common_cflags="-march=native -mtune=native -pipe -O3 -mfpmath=sse -fno-strict-aliasing -fwrapv -fno-semantic-interposition \
                  -Wno-error=incompatible-pointer-types -Wno-error=implicit-function-declaration -w"
 
-		export CPPFLAGS="-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0 -DNDEBUG -D_NDEBUG"
+		export CPPFLAGS="-D_GNU_SOURCE -D_TIME_BITS=64 -D_FILE_OFFSET_BITS=64 -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0 -DNDEBUG -D_NDEBUG"
   		_GCC_FLAGS="${_common_cflags:-} ${_lto_flags:-} ${_extra_native_flags:-} ${CPPFLAGS:-} -ffunction-sections -fdata-sections" # only for the non-mingw side
   		_CROSS_FLAGS="${_common_cflags:-} ${_extra_cross_flags:-} ${CPPFLAGS:-}" # only for the mingw side
 
-  		_LD_FLAGS="${_GCC_FLAGS:-} ${_extra_ld_flags:-} -static-libgcc -Wl,-O2,--sort-common,--as-needed"
+  		_LD_FLAGS="${_GCC_FLAGS:-} ${_extra_ld_flags:-} -static-libgcc -Wl,-O2,--sort-common,--as-needed,--gc-sections"
   		_CROSS_LD_FLAGS="${_common_cflags:-} ${_extra_crossld_flags:-} ${CPPFLAGS:-}"
 
 		conf+=(
