@@ -1,21 +1,21 @@
-# Copyright 2022-2024 Gentoo Authors
+# Copyright 2022-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-MULTILIB_COMPAT=(abi_x86_{32,64})
-PYTHON_COMPAT=(python3_{10..13})
+MULTILIB_COMPAT=( abi_x86_{32,64} )
+PYTHON_COMPAT=( python3_{10..13} )
 inherit autotools edo flag-o-matic multilib multilib-build optfeature
 inherit prefix python-any-r1 toolchain-funcs wrapper
 
 WINE_GECKO=2.47.4
-WINE_MONO=9.3.0
+WINE_MONO=10.0.0
 _PV=${PV/_/-}
 WINE_P=wine-${_PV}
 _P=wine-staging-${PV}
-STAGING_COMMIT="7ba8823e57e0a32c1373e5c304542c7ce578699c"
-WINE_COMMIT="51ccd95c49c2c61ad41960b25a01f834601d70c0"
-OSU_PATCHES_TAGS="11-22-2024-51ccd95c-7ba8823e"
+STAGING_COMMIT="5b64f435e92f270c4792ae3788dbb167c7dc629c"
+WINE_COMMIT="8e2aea6290e823d2f5023e2bff5c2fec0880a65d"
+OSU_PATCHES_TAGS="04-01-2025-8e2aea62-5b64f435"
 
 if [[ ${PV} == *9999 ]]; then
 	inherit git-r3
@@ -41,12 +41,12 @@ S="${WORKDIR}/${WINE_P}"
 LICENSE="LGPL-2.1+ BSD BSD-2 IJG MIT OPENLDAP ZLIB gsm libpng2 libtiff"
 SLOT="${PV}"
 IUSE="
-	+X +abi_x86_32 +abi_x86_64 +alsa capi crossdev-mingw cups dos
-	llvm-libunwind custom-cflags ffmpeg +fontconfig +gecko gphoto2
+	+X abi_x86_32 +abi_x86_64 +alsa capi crossdev-mingw cups dos +dbus
+	llvm-libunwind +custom-cflags +ffmpeg +fontconfig +gecko gphoto2
 	+gstreamer kerberos +mingw +mono netapi nls odbc opencl +opengl
-	osmesa pcap perl pulseaudio samba scanner +sdl selinux smartcard
-	+ssl +strip +truetype udev udisks +unwind usb v4l +vulkan wayland
-	wow64 +xcomposite xinerama
+	pcap perl pulseaudio samba scanner +sdl selinux smartcard
+	+ssl +strip +truetype udev +unwind usb v4l +vulkan +wayland
+	+wow64 +xcomposite xinerama
 "
 # bug #551124 for truetype
 # TODO: wow64 can be done without mingw if using clang (needs bug #912237)
@@ -71,12 +71,12 @@ WINE_DLOPEN_DEPEND="
 		x11-libs/libXxf86vm[${MULTILIB_USEDEP}]
 		opengl? (
 			media-libs/libglvnd[X,${MULTILIB_USEDEP}]
-			osmesa? ( media-libs/mesa[osmesa,${MULTILIB_USEDEP}] )
 		)
 		xcomposite? ( x11-libs/libXcomposite[${MULTILIB_USEDEP}] )
 		xinerama? ( x11-libs/libXinerama[${MULTILIB_USEDEP}] )
 	)
 	cups? ( net-print/cups[${MULTILIB_USEDEP}] )
+	dbus? ( sys-apps/dbus[${MULTILIB_USEDEP}] )
 	fontconfig? ( media-libs/fontconfig[${MULTILIB_USEDEP}] )
 	kerberos? ( virtual/krb5[${MULTILIB_USEDEP}] )
 	netapi? ( net-fs/samba[${MULTILIB_USEDEP}] )
@@ -84,7 +84,6 @@ WINE_DLOPEN_DEPEND="
 	sdl? ( media-libs/libsdl2[haptic,joystick,${MULTILIB_USEDEP}] )
 	ssl? ( net-libs/gnutls:=[${MULTILIB_USEDEP}] )
 	truetype? ( media-libs/freetype[${MULTILIB_USEDEP}] )
-	udisks? ( sys-apps/dbus[${MULTILIB_USEDEP}] )
 	v4l? ( media-libs/libv4l[${MULTILIB_USEDEP}] )
 	vulkan? ( media-libs/vulkan-loader[X?,wayland?,${MULTILIB_USEDEP}] )
 "
@@ -110,7 +109,7 @@ WINE_COMMON_DEPEND="
 	smartcard? ( sys-apps/pcsc-lite[${MULTILIB_USEDEP}] )
 	udev? ( virtual/libudev:=[${MULTILIB_USEDEP}] )
 	unwind? (
-		llvm-libunwind? ( sys-libs/llvm-libunwind[${MULTILIB_USEDEP}] )
+		llvm-libunwind? ( llvm-runtimes/libunwind[${MULTILIB_USEDEP}] )
 		!llvm-libunwind? ( sys-libs/libunwind:=[${MULTILIB_USEDEP}] )
 	)
 	usb? ( dev-libs/libusb:1[${MULTILIB_USEDEP}] )
@@ -140,7 +139,6 @@ RDEPEND="
 	)
 	samba? ( net-fs/samba[winbind] )
 	selinux? ( sec-policy/selinux-wine )
-	udisks? ( sys-fs/udisks:2 )
 "
 DEPEND="
 	${WINE_COMMON_DEPEND}
@@ -153,7 +151,7 @@ BDEPEND="
 	${PYTHON_DEPS}
 	|| (
 		sys-devel/binutils
-		sys-devel/lld
+		llvm-core/lld
 	)
 	dev-lang/perl
 	dev-vcs/git
@@ -170,7 +168,7 @@ BDEPEND="
 IDEPEND=">=app-eselect/eselect-wine-2"
 
 QA_CONFIG_IMPL_DECL_SKIP=(
-	__clear_cache  # unused on amd64+x86 (bug #900334)
+	__clear_cache # unused on amd64+x86 (bug #900334)
 	res_getservers # false positive
 )
 QA_TEXTRELS="usr/lib/*/wine/i386-unix/*.so" # uses -fno-PIC -Wl,-z,notext
@@ -179,7 +177,9 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-7.17-noexecstack.patch
 	"${FILESDIR}"/${PN}-7.20-unwind.patch
 	"${FILESDIR}"/${PN}-8.13-rpath.patch
+	# "${FILESDIR}"/${PN}-10.0-binutils2.44.patch
 	"${FILESDIR}/lto-fixup.patch"
+	"${FILESDIR}/makedep-fix.patch"
 )
 
 pkg_pretend() {
@@ -237,12 +237,11 @@ src_prepare() {
 	local patchinstallargs=(
 		--all
 		--no-autoconf
-		# No need esync fsync for using proton fsync instead
-		-W eventfd_synchronization
+		$(cat $WORKDIR/patch/staging-exclude || die)
 		${MY_WINE_STAGING_CONF}
 	)
 
-	edo "${PYTHON}" ../${_P}/staging/patchinstall.py "${patchinstallargs[@]}" &>>"${WORKDIR}"/patchlog.txt
+	edo "${PYTHON}" ../${_P}/staging/patchinstall.py "${patchinstallargs[@]}" 
 
 	# sanity check, bumping these has a history of oversights
 	local geckomono=$(sed -En '/^#define (GECKO|MONO)_VER/{s/[^0-9.]//gp}' \
@@ -271,25 +270,20 @@ src_prepare() {
 		fi
 	fi
 
-	mapfile -t patchlist < <(find "${WORKDIR}/patch/" -type f -regex ".*\.patch" | LC_ALL=C sort -f) || die
-	for patch in "${patchlist[@]}"; do
-		shortname="${patch#"${WORKDIR}/"}"
-		# git apply --ignore-whitespace --verbose "${patch}" &>> "${WORKDIR}"/patchlog.txt || \
-		# patch -Np1 <"${patch}" &>> "${WORKDIR}"/patchlog.txt || \
-		# 	_failure "An error occurred applying ${shortname}, check patchlog.txt for info." || die
-		eapply --ignore-whitespace -Np1 "$patch"
-	done
-
 	# ensure .desktop calls this variant + slot
 	sed -i "/^Exec=/s/wine /${P} /" loader/wine.desktop || die
 
 	# datadir is not where wine-mono is installed, so prefixy alternate paths
 	hprefixify -w /get_mono_path/ dlls/mscoree/metahost.c
 
+	mapfile -t patchlist < <(find "${WORKDIR}/patch/" -type f -regex ".*\.patch" | LC_ALL=C sort -f) || die
+	for patch in "${patchlist[@]}"; do
+		eapply --ignore-whitespace -Np1 "$patch" || die
+	done
 	# always update for patches (including user's wrt #432348)
 	eautoreconf
 	tools/make_requests || die # perl
-	if [ -e tools/make_specfiles ]; then
+		if [ -e tools/make_specfiles ]; then
 		tools/make_specfiles || die # perl
 	fi
 	# tip: if need more for user patches, with portage can e.g. do
@@ -318,6 +312,7 @@ src_configure() {
 		$(use_with alsa)
 		$(use_with capi)
 		$(use_with cups)
+		$(use_with dbus)
 		$(use_with ffmpeg)
 		$(use_with fontconfig)
 		$(use_with gphoto2 gphoto)
@@ -329,8 +324,8 @@ src_configure() {
 		$(use_with nls gettext)
 		$(use_with opencl)
 		$(use_with opengl)
-		$(use_with osmesa)
 		--without-oss # media-sound/oss is not packaged (OSSv4)
+		--without-osmesa # media-libs/mesa no longer supports this
 		$(use_with pcap)
 		$(use_with pulseaudio pulse)
 		$(use_with scanner sane)
@@ -339,7 +334,6 @@ src_configure() {
 		$(use_with ssl gnutls)
 		$(use_with truetype freetype)
 		$(use_with udev)
-		$(use_with udisks dbus) # dbus is only used for udisks
 		$(use_with unwind)
 		$(use_with usb)
 		$(use_with v4l v4l2)
@@ -350,82 +344,90 @@ src_configure() {
 		$(usev !odbc ac_cv_lib_soname_odbc=)
 	)
 
-	# filter-lto # build failure
-	# filter-flags -Wl,--gc-sections # runtime issues (bug #931329)
-	# use custom-cflags || strip-flags # can break in obscure ways at runtime
-
-	# broken with gcc-15's c23 default (TODO: try w/o occasionally, bug #943849)
-	# append-cflags -std=gnu17
-
-	# wine uses linker tricks unlikely to work with non-bfd/lld (bug #867097)
-	# (do self test until https://github.com/gentoo/gentoo/pull/28355)
-	# if [[ $(LC_ALL=C $(tc-getCC) ${LDFLAGS} -Wl,--version 2>/dev/null) != @(LLD|GNU\ ld)* ]]; then
-	# 	has_version -b sys-devel/binutils &&
-	# 		append-ldflags -fuse-ld=bfd ||
-	# 		append-ldflags -fuse-ld=lld
-	# 	strip-unsupported-flags
-	# fi
-
 	if use mingw; then
 		use crossdev-mingw || PATH=${BROOT}/usr/lib/mingw64-toolchain/bin:${PATH}
 
 		# CROSSCC was formerly recognized by wine, thus been using similar
 		# variables (subject to change, esp. if ever make a mingw.eclass).
-		local mingwcc_amd64=${CROSSCC:-${CROSSCC_amd64:-x86_64-w64-mingw32-gcc}}
-		local mingwcc_x86=${CROSSCC:-${CROSSCC_x86:-i686-w64-mingw32-gcc}}
-		local -n mingwcc=mingwcc_$(usex abi_x86_64 amd64 x86)
+		# local mingwcc_amd64=${CROSSCC:-${CROSSCC_amd64:-x86_64-w64-mingw32-gcc}}
+		# local mingwcc_x86=${CROSSCC:-${CROSSCC_x86:-i686-w64-mingw32-gcc}}
+		# local -n mingwcc=mingwcc_$(usex abi_x86_64 amd64 x86)
+		local mingwcc_amd64="clang"
+		local mingwcc_x86="clang++"
 
 		# # From https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=wine-osu-spectator-wow64
-		local _common_cflags="-pipe -O3 -march=native -fomit-frame-pointer -fwrapv -fno-strict-aliasing -mfpmath=sse -Wno-error=incompatible-pointer-types -Wno-error=implicit-function-declaration -w"
-		local _native_common_cflags="-fuse-linker-plugin -fdevirtualize-at-ltrans -flto-partition=one -flto=auto -Wl,-flto=auto -ffunction-sections -fdata-sections"
-		local _extra_native_flags="-floop-nest-optimize -fgraphite-identity -floop-strip-mine" # graphite opts
-		local _lto_error_flags="-Werror=odr -Werror=lto-type-mismatch -Werror=strict-aliasing"
-		export CPPFLAGS="-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0 -DNDEBUG -D_NDEBUG"
-		local _GCC_FLAGS="${_common_cflags} ${_native_common_cflags} ${_extra_native_flags} ${_lto_error_flags} ${CPPFLAGS}"
-		local _LD_FLAGS="${_GCC_FLAGS} -Wl,-O3,--sort-common,--as-needed -static-libgcc"
+		local _fake_gnuc_flag="-fgnuc-version=5.99.99"
+		local _polly_flags="-Xclang -load -Xclang /usr/lib/llvm/20/lib64/LLVMPolly.so -mllvm -polly -mllvm -polly-parallel -mllvm -polly-omp-backend=LLVM -mllvm -polly-vectorizer=stripmine"
+    	_extra_native_flags+=" ${_polly_flags}"
+		_extra_ld_flags+=" -flto"
+		_lto_flags+=" -flto -D__LLD_LTO__"
+		export wine_preloader_LDFLAGS="-fno-lto -Wl,--no-relax"
+		export wine64_preloader_LDFLAGS="-fno-lto -Wl,--no-relax"
+		export preloader_CFLAGS="-fno-lto -Wl,--no-relax"
+  		_extra_native_flags+=" ${_fake_gnuc_flag} -mtls-dialect=gnu2"
+		_extra_cross_flags+=" -fmsc-version=1933 -ffunction-sections -fdata-sections"
+		_extra_crossld_flags+=" -Wl,/FILEALIGN:4096,/OPT:REF,/OPT:ICF,/HIGHENTROPYVA:NO"
 
-		local _CROSS_FLAGS="${_common_cflags} ${CPPFLAGS}"
-		local _CROSS_LD_FLAGS="${_CROSS_FLAGS} -Wl,-O3,--sort-common,--as-needed,--file-alignment=4096"
-		
-		# broken with gcc-15's c23 default (TODO: try w/o occasionally, bug #943849)
-		append-cflags -std=gnu17
+
+  		_common_cflags="-march=native -mtune=native -pipe -O3 -mfpmath=sse -fno-strict-aliasing -fwrapv -fno-semantic-interposition \
+                 -Wno-error=incompatible-pointer-types -Wno-error=implicit-function-declaration -w"
+
+		export CPPFLAGS="-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0 -DNDEBUG -D_NDEBUG"
+  		_GCC_FLAGS="${_common_cflags:-} ${_lto_flags:-} ${_extra_native_flags:-} ${CPPFLAGS:-} -ffunction-sections -fdata-sections" # only for the non-mingw side
+  		_CROSS_FLAGS="${_common_cflags:-} ${_extra_cross_flags:-} ${CPPFLAGS:-}" # only for the mingw side
+
+  		_LD_FLAGS="${_GCC_FLAGS:-} ${_extra_ld_flags:-} -static-libgcc -Wl,-O2,--sort-common,--as-needed"
+  		_CROSS_LD_FLAGS="${_common_cflags:-} ${_extra_crossld_flags:-} ${CPPFLAGS:-}"
 
 		conf+=(
-			ac_cv_prog_x86_64_CC="ccache ${mingwcc_amd64}"
-			ac_cv_prog_i386_CC="ccache ${mingwcc_x86}"
+			CC="ccache ${mingwcc_amd64}"
+			CXX="ccache ${mingwcc_x86}"
+  			x86_64_CC="ccache ${mingwcc_amd64}"
+  			x86_64_CXX="ccache ${mingwcc_x86}"
+  			i386_CC="ccache ${mingwcc_amd64}"
+  			i386_CXX="ccache ${mingwcc_x86}"
+
+			ac_cv_prog_x86_64_CC=" ${mingwcc_amd64}"
+			ac_cv_prog_i386_CC=" ${mingwcc_x86}"
 
 			CPPFLAGS="${CPPFLAGS}"
-			CFLAGS="${_GCC_FLAGS}"
+
+			CFLAGS="${_GCC_FLAGS} -std=gnu23"
 			CXXFLAGS="${_GCC_FLAGS}"
-			CROSSCFLAGS="${_CROSS_FLAGS}"
+			CROSSCFLAGS="${_CROSS_FLAGS} -std=gnu23"
 			CROSSCXXFLAGS="${_CROSS_FLAGS}"
+
 			LDFLAGS="${_LD_FLAGS}"
 			CROSSLDFLAGS="${_CROSS_LD_FLAGS}"
+
+			wine_preloader_LDFLAGS="${wine_preloader_LDFLAGS}"
+			wine64_preloader_LDFLAGS="${wine64_preloader_LDFLAGS}"
+			preloader_CFLAGS="${preloader_CFLAGS}"
 		)
 	fi
 
 	# order matters with multilib: configure+compile 64->32, install 32->64
 	local -i bits
 	for bits in $(usev abi_x86_64 64) $(usev abi_x86_32 32); do
-		(
-			einfo "Configuring ${PN} for ${bits}bits in ${WORKDIR}/build${bits} ..."
+	(
+		einfo "Configuring ${PN} for ${bits}bits in ${WORKDIR}/build${bits} ..."
 
-			mkdir ../build${bits} || die
-			cd ../build${bits} || die
+		mkdir ../build${bits} || die
+		cd ../build${bits} || die
 
-			if ((bits == 64)); then
-				conf+=(--enable-win64)
-			elif use amd64; then
-				conf+=(
-					$(usev abi_x86_64 --with-wine64=../build64)
-					TARGETFLAGS=-m32 # for widl
-				)
-				# _setup is optional, but use over Wine's auto-detect (+#472038)
-				multilib_toolchain_setup x86
-			fi
+		if (( bits == 64 )); then
+			conf+=( --enable-win64 )
+		elif use amd64; then
+			conf+=(
+				$(usev abi_x86_64 --with-wine64=../build64)
+				TARGETFLAGS=-m32 # for widl
+			)
+			# _setup is optional, but use over Wine's auto-detect (+#472038)
+			multilib_toolchain_setup x86
+		fi
 
-			ECONF_SOURCE=${S} econf "${conf[@]}"
-		)
+		ECONF_SOURCE=${S} econf "${conf[@]}"
+	)
 	done
 }
 
@@ -438,27 +440,10 @@ src_install() {
 	use abi_x86_32 && emake DESTDIR="${D}" -C ../build32 install
 	use abi_x86_64 && emake DESTDIR="${D}" -C ../build64 install # do last
 
-	# Ensure both wine64 and wine are available if USE=abi_x86_64 (wow64,
-	# -abi_x86_32, and/or EXTRA_ECONF could cause varying scenarios where
-	# one or the other could be missing and that is unexpected for users
-	# and some tools like winetricks)
-	if use abi_x86_64; then
-		if [[ -e ${ED}${WINE_PREFIX}/bin/wine64 && ! -e ${ED}${WINE_PREFIX}/bin/wine ]]; then
-			dosym wine64 ${WINE_PREFIX}/bin/wine
-			dosym wine64-preloader ${WINE_PREFIX}/bin/wine-preloader
-
-			# also install wine(1) man pages (incl. translations)
-			local man
-			for man in ../build64/loader/wine.*man; do
-				: "${man##*/wine}"
-				: "${_%.*}"
-				insinto ${WINE_DATADIR}/man/${_:+${_#.}/}man1
-				newins ${man} wine.1
-			done
-		elif [[ ! -e ${ED}${WINE_PREFIX}/bin/wine64 && -e ${ED}${WINE_PREFIX}/bin/wine ]]; then
-			dosym wine ${WINE_PREFIX}/bin/wine64
-			dosym wine-preloader ${WINE_PREFIX}/bin/wine64-preloader
-		fi
+	# "wine64" is no longer provided, but a keep symlink for old scripts
+	# TODO: remove the guard later, only useful for bisecting -9999
+	if [[ ! -e ${ED}${WINE_PREFIX}/bin/wine64 ]]; then
+		use abi_x86_64 && dosym wine ${WINE_PREFIX}/bin/wine64
 	fi
 
 	use perl || rm "${ED}"${WINE_DATADIR}/man/man1/wine{dump,maker}.1 \
@@ -515,6 +500,7 @@ pkg_postinst() {
 }
 
 pkg_postrm() {
-	eselect wine update --if-unset || die
+	if has_version -b app-eselect/eselect-wine; then
+		eselect wine update --if-unset || die
+	fi
 }
-
