@@ -1,27 +1,20 @@
-# Copyright 2023 Gentoo Authors
-# Distributed under the terms of the GNU General Public License v3
+# Copyright 1999-2025 Gentoo Authors
+# Distributed under the terms of the GNU General Public License v2
 
 EAPI="8"
 ETYPE="sources"
 K_WANT_GENPATCHES="base extras experimental"
-K_GENPATCHES_VER="11"
-# K_EXP_GENPATCHES_NOUSE="1"
-K_USEPV="1"
+K_GENPATCHES_VER="1"
 
-EXTRAVERSION="-cachyos"
-
-# make sure kernel-2 know right version without guess
-CKV="$(ver_cut 1-3)"
-
-inherit check-reqs kernel-2 optfeature
+inherit check-reqs kernel-2
 detect_version
 detect_arch
 
 DESCRIPTION="CachyOS kernel sources"
 HOMEPAGE="https://github.com/CachyOS/linux-cachyos"
 
-CACHY_OS_KERNEL_PATCHES_COMMIT_HASH="c16ab90858d6749890e4a7f509e465b2b84548bc"
-CACHY_OS_PKGBUILD_COMMIT_HASH="9c072e702f18be25ef989d65c346e714bd046f5e"
+CACHY_OS_KERNEL_PATCHES_COMMIT_HASH="aff044eb4da35a55c1f7d095c0b738be7d275fc7"
+CACHY_OS_PKGBUILD_COMMIT_HASH="f94eef2c767cf31c2f25b8eef30068e60f279cc7"
 
 SRC_URI="
 	${KERNEL_URI} ${GENPATCHES_URI}
@@ -29,9 +22,6 @@ SRC_URI="
 	https://github.com/CachyOS/linux-cachyos/archive/${CACHY_OS_PKGBUILD_COMMIT_HASH}.tar.gz -> ${P}-config.tar.gz
 "
 KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~loong ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
-
-LICENSE="GPL-3"
-KEYWORDS="~amd64"
 IUSE="experimental +preempt-lazy acpi-call aufs spadfs handheld polly"
 DEPEND="
 polly? ( llvm-core/polly )
@@ -59,16 +49,11 @@ src_prepare() {
 	CACHY_OS_PATCHES_DIR="${WORKDIR}/cachyos/kernel-patches-${CACHY_OS_KERNEL_PATCHES_COMMIT_HASH}/${KV_MAJOR}.${KV_MINOR}"
 	CACHY_OS_CONFIG_DIR="${WORKDIR}/cachyos/linux-cachyos-${CACHY_OS_PKGBUILD_COMMIT_HASH}"
 
-	eapply --ignore-whitespace "${CACHY_OS_PATCHES_DIR}/all/0001-cachyos-base-all.patch"
+	eapply --ignore-whitespace -p1 "${CACHY_OS_PATCHES_DIR}/all/0001-cachyos-base-all.patch"
 
 	# Apply scheduler patches
-	eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-bore-cachy.patch"
+	eapply --ignore-whitespace -p1 "${CACHY_OS_PATCHES_DIR}/sched/0001-bore-cachy.patch"
 	CACHY_OS_PROFILE="linux-cachyos"
-	# if use bore; then
-	# else
-	#     eapply "${CACHY_OS_PATCHES_DIR}/sched/0001-sched-ext.patch"
-	# 	CACHY_OS_PROFILE="linux-cachyos-sched-ext"
-	# fi
 
 	cp "${CACHY_OS_CONFIG_DIR}/${CACHY_OS_PROFILE}/config" .config || die
 	sh "${CACHY_OS_CONFIG_DIR}/${CACHY_OS_PROFILE}/auto-cpu-optimization.sh" || die
@@ -78,19 +63,11 @@ src_prepare() {
 	fi
 
 	if use aufs; then
-		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-aufs-6.10-merge-v20240701.patch"
-	fi
-
-	if use spadfs; then
-		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-spadfs-6.10-merge-v1.0.19.patch"
+		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-aufs-6.14-merge-v20250210.patch"
 	fi
 
 	if use handheld; then
 		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-handheld.patch"
-	fi
-
-	if use preempt-lazy; then
-		eapply "${CACHY_OS_PATCHES_DIR}/misc/0001-preempt-lazy.patch"
 	fi
 
 	if use polly; then
@@ -106,18 +83,11 @@ src_prepare() {
 	# Enable CachyOS tweaks
 	scripts/config -e CACHY || die
 
-	scripts/config -e SCHED_CLASS_EXT -e SCHED_BORE --set-val MIN_BASE_SLICE_NS 1000000 || die
-	# if use sched-ext; then
-	# 	if use bore; then
-	#         scripts/config -e SCHED_CLASS_EXT -e SCHED_BORE --set-val MIN_BASE_SLICE_NS 1000000 || die
-	# 	else
-	#         scripts/config -e SCHED_CLASS_EXT || die
-	# 	fi
-	# else
-	# 	if use bore; then
-	#         scripts/config -e SCHED_BORE --set-val MIN_BASE_SLICE_NS 1000000 || die
-	# 	fi
-	# fi
+	# Selecting BORE scheduler
+	scripts/config -e SCHED_BORE || die
+
+	# Enable KCFI
+	 scripts/config -e ARCH_SUPPORTS_CFI_CLANG -e CFI_CLANG -e CFI_AUTO_DEFAULT || die
 
 	# Disable NUMA
 	scripts/config -d NUMA \
@@ -150,19 +120,23 @@ src_prepare() {
 	scripts/config -d HZ_PERIODIC -d NO_HZ_IDLE -d CONTEXT_TRACKING_FORCE \
 		-e NO_HZ_FULL_NODEF -e NO_HZ_FULL -e NO_HZ -e NO_HZ_COMMON -e CONTEXT_TRACKING || die
 
-	# Setting full preempt
-	scripts/config -e PREEMPT_BUILD -d PREEMPT_NONE -d PREEMPT_VOLUNTARY \
-		-e PREEMPT -e PREEMPT_COUNT -e PREEMPTION -e PREEMPT_DYNAMIC || die
+	# Setting lazy preempt
+	scripts/config -e PREEMPT_DYNAMIC -d PREEMPT -d PREEMPT_VOLUNTARY \
+		-e PREEMPT_LAZY -d PREEMPT_NONE || die
 
 	# Enable O3
 	scripts/config -d CC_OPTIMIZE_FOR_PERFORMANCE -e CC_OPTIMIZE_FOR_PERFORMANCE_O3 || die
 
 	# Enable bbr3
 	scripts/config -m TCP_CONG_CUBIC \
-		-d DEFAULT_CUBIC \
-		-e TCP_CONG_BBR \
-		-e DEFAULT_BBR \
-		--set-str DEFAULT_TCP_CONG bbr || die
+            -d DEFAULT_CUBIC \
+            -e TCP_CONG_BBR \
+            -e DEFAULT_BBR \
+            --set-str DEFAULT_TCP_CONG bbr \
+            -m NET_SCH_FQ_CODEL \
+            -e NET_SCH_FQ \
+            -d CONFIG_DEFAULT_FQ_CODEL \
+            -e CONFIG_DEFAULT_FQ || die
 
 	# Enable MultiGen LRU
 	scripts/config -e LRU_GEN -e LRU_GEN_ENABLED -d LRU_GEN_STATS || die
@@ -182,39 +156,37 @@ src_prepare() {
 	# 	-e DAMON_RECLAIM \
 	# 	-e DAMON_LRU_SORT || die
 
-	# if ! use sched-ext; then
-	# 	scripts/config -d DEBUG_INFO \
-	#         -d DEBUG_INFO_BTF \
-	#         -d DEBUG_INFO_DWARF4 \
-	#         -d DEBUG_INFO_DWARF5 \
-	#         -d PAHOLE_HAS_SPLIT_BTF \
-	#         -d DEBUG_INFO_BTF_MODULES \
-	#         -d SLUB_DEBUG \
-	#         -d PM_DEBUG \
-	#         -d PM_ADVANCED_DEBUG \
-	#         -d PM_SLEEP_DEBUG \
-	#         -d ACPI_DEBUG \
-	#         -d SCHED_DEBUG \
-	#         -d LATENCYTOP \
-	#         -d DEBUG_PREEMPT || die
-	# fi
+	scripts/config -d DEBUG_INFO \
+	    -d DEBUG_INFO_BTF \
+	    -d DEBUG_INFO_DWARF4 \
+	    -d DEBUG_INFO_DWARF5 \
+	    -d PAHOLE_HAS_SPLIT_BTF \
+	    -d DEBUG_INFO_BTF_MODULES \
+	    -d SLUB_DEBUG \
+	    -d PM_DEBUG \
+	    -d PM_ADVANCED_DEBUG \
+	    -d PM_SLEEP_DEBUG \
+	    -d ACPI_DEBUG \
+	    -d SCHED_DEBUG \
+	    -d LATENCYTOP \
+	    -d DEBUG_PREEMPT || die
 
 	# Enable USER_NS_UNPRIVILEGED
 	scripts/config -e USER_NS || die
 
 	mv .config cachyos-config || die
+
 }
 
 pkg_postinst() {
 	kernel-2_pkg_postinst
-
 	optfeature "NVIDIA opensource module" "x11-drivers/nvidia-drivers[kernel-open]"
 	optfeature "NVIDIA module" x11-drivers/nvidia-drivers
 	optfeature "userspace KSM helper" sys-process/uksmd
 	ewarn "Install sys-kernel/scx to Enable sched_ext schedulers"
 	ewarn "Then enable/start scx service."
-
-	#optfeature "auto nice daemon" app-admin/ananicy-cpp
+	einfo "For more info on this patchset, and how to report problems, see:"
+	einfo "${HOMEPAGE}"
 }
 
 pkg_postrm() {
