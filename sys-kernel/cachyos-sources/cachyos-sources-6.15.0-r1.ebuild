@@ -3,7 +3,7 @@
 
 EAPI="8"
 ETYPE="sources"
-K_WANT_GENPATCHES="base extras experimental"
+K_WANT_GENPATCHES="base extras"
 K_GENPATCHES_VER="1"
 
 inherit check-reqs kernel-2
@@ -22,7 +22,7 @@ SRC_URI="
 	https://github.com/CachyOS/linux-cachyos/archive/${CACHY_OS_PKGBUILD_COMMIT_HASH}.tar.gz -> ${P}-config.tar.gz
 "
 KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~loong ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
-IUSE="experimental bore polly acpi-call aufs handheld"
+IUSE="bore polly acpi-call aufs handheld"
 DEPEND="
 polly? ( llvm-core/polly )
 "
