@@ -11,15 +11,6 @@
   </upstream>
   <use>
     <flag name="bore">Enable Burst-Oriented Response Enhancer scheduler</flag>
-    <flag name="bore-tuning">Tune BORE scheduler parameters</flag>
-    <flag name="sched-ext">Enable SCX External scheduler</flag>
-    <flag name="lrng">Enable LRNG</flag>
     <flag name="spadfs">Enable spadfs</flag>
-    <flag name="gcc-extra-flags">Enable Extra GCC Flags</flag>
-    <flag name="intel">Enable Intel Thread Director</flag>
-    <flag name="amd-hdr">Enable AMDGPU HDR support</flag>
-    <flag name="vmap">Fix a vmap lock contention</flag>
-    <flag name="ntsync">Enable NTSync support</flag>
-    <flag name="v4l2-loopback">Enable V4L2 Loopback Support</flag>
   </use>
 </pkgmetadata>
