@@ -1,0 +1,15 @@
+BDEPEND=virtual/pkgconfig
+DEFINED_PHASES=install postinst postrm prepare
+DEPEND=virtual/udev sys-apps/hdparm sys-apps/systemd zram? ( sys-apps/zram-generator app-arch/zstd )
+DESCRIPTION=Configuration files that tweak sysctl values, add udev rules to automatically set schedulers, and provide additional optimizations.
+EAPI=8
+HOMEPAGE=https://github.com/CachyOS/CachyOS-Settings
+INHERIT=udev tmpfiles
+IUSE=zram
+KEYWORDS=~amd64
+LICENSE=GPL-3
+RDEPEND=virtual/udev sys-apps/hdparm sys-apps/systemd zram? ( sys-apps/zram-generator app-arch/zstd ) virtual/tmpfiles
+SLOT=0
+SRC_URI=https://github.com/CachyOS/CachyOS-Settings/archive/d92ed1dab68515050a585d2a13630ead819e0a12.tar.gz -> cachyos-settings-20250529.tar.gz
+_eclasses_=toolchain-funcs	f9d71a6efe9d083aec750dd13968e169	udev	f3d9a4376ebd22131726a68e1a0a058f	tmpfiles	9a9814db5a3fbd4f1e921c05297e7735
+_md5_=30e39f88018f3b34c29752db7e7fedee
