@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+  <maintainer type="person">
+    <email>cl20103B11@yahoo.com.hk</email>
+    <name>Stllok</name>
+  </maintainer>
+  <upstream>
+    <remote-id type="github">dlundqvist/xone</remote-id>
+  </upstream>
+  <longdescription>
+    xone is a Linux kernel driver for Xbox One and Xbox Series X|S
+    accessories. It serves as a modern replacement for xpad, aiming to be
+    compatible with Microsoft's Game Input Protocol (GIP).
+
+    It is originally on the guru repository, but has been outdated for a while.
+  </longdescription>
+</pkgmetadata>
