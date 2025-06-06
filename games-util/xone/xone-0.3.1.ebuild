@@ -36,10 +36,6 @@ PATCHES=(
 src_unpack() {
 	unpack ${P}.tar.gz
 
-	cabextract -F FW_ACC_00U.bin -d "${S}" "${DISTDIR}/${PN}-driver-${XONE_DRIVER_VERSION}.cab" > /dev/null \
-		|| die "Failed to unpack driver"
-	cabextract -F FW_ACC_00U2.bin -d "${S}" "${DISTDIR}/${PN}-driver-${XONE_045E_02E6_DRIVER_VERSION}.cab" > /dev/null \
-		|| die "Failed to unpack driver"
 }
 
 src_prepare() {
@@ -72,6 +68,12 @@ src_install() {
 
 	einfo "Installing Microsoft binary firmware"
 	insinto /lib/firmware/
+    
+	cabextract -F FW_ACC_00U.bin -d "${S}" "${DISTDIR}/${PN}-driver-${XONE_DRIVER_VERSION}.cab" > /dev/null \
+		|| die "Failed to unpack driver"
 	newins "${S}"/FW_ACC_00U.bin xow_dongle.bin
-	newins "${S}"/FW_ACC_00U2.bin xow_dongle_045e_02e6.bin
+
+	cabextract -F FW_ACC_00U.bin -d "${S}" "${DISTDIR}/${PN}-driver-${XONE_045E_02E6_DRIVER_VERSION}.cab" > /dev/null \
+		|| die "Failed to unpack driver"
+	newins "${S}"/FW_ACC_00U.bin xow_dongle_045e_02e6.bin
 }
