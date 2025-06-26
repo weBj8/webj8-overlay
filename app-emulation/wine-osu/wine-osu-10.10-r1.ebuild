@@ -3,19 +3,17 @@
 
 EAPI=8
 
-MULTILIB_COMPAT=( abi_x86_{32,64} )
-PYTHON_COMPAT=( python3_{10..13} )
-inherit autotools edo flag-o-matic multilib multilib-build optfeature
-inherit prefix python-any-r1 toolchain-funcs wrapper
+PYTHON_COMPAT=( python3_{11..14} )
+inherit edo optfeature python-any-r1 wine
 
 WINE_GECKO=2.47.4
-WINE_MONO=10.0.0
+WINE_MONO=10.1.0
 _PV=${PV/_/-}
 WINE_P=wine-${_PV}
 _P=wine-staging-${PV}
-STAGING_COMMIT="4adf613941e5b9513e6aa90cd72b15a1350a0f05"
-WINE_COMMIT="7f833db11ffea4f3f4fa07be31d30559aff9c5fb"
-OSU_PATCHES_TAGS="05-16-2025-7f833db1-4adf6139"
+STAGING_COMMIT="c37f9f50912bd801e217ba81d2512feb7386f0d1"
+WINE_COMMIT="885446556ce443b496e368b8f2c68807dcc7df0f"
+OSU_PATCHES_TAGS="06-14-2025-88544655-c37f9f50"
 
 if [[ ${PV} == *9999 ]]; then
 	inherit git-r3
@@ -38,22 +36,25 @@ HOMEPAGE="
 
 S="${WORKDIR}/${WINE_P}"
 
-LICENSE="LGPL-2.1+ BSD BSD-2 IJG MIT OPENLDAP ZLIB gsm libpng2 libtiff"
+LICENSE="
+	LGPL-2.1+
+	BSD BSD-2 IJG MIT OPENLDAP ZLIB gsm libpng2 libtiff
+	|| ( WTFPL-2 public-domain )
+"
 SLOT="${PV}"
 IUSE="
-	+X abi_x86_32 +abi_x86_64 +alsa capi crossdev-mingw cups dos +dbus
-	llvm-libunwind +custom-cflags +ffmpeg +fontconfig +gecko gphoto2
-	+gstreamer kerberos +mingw +mono netapi nls odbc opencl +opengl
-	pcap perl pulseaudio samba scanner +sdl selinux smartcard
-	+ssl +strip +truetype udev +unwind usb v4l +vulkan +wayland
-	+wow64 +xcomposite xinerama
+	+X +alsa bluetooth capi cups dbus dos llvm-libunwind +ffmpeg
+	+fontconfig +gecko gphoto2 +gstreamer kerberos +mono netapi
+	nls odbc opencl +opengl pcap perl +pulseaudio samba scanner
+	+sdl selinux smartcard +ssl +truetype +udev +unwind usb v4l
+	+vulkan +wayland +xcomposite +xinerama
 "
 # bug #551124 for truetype
 # TODO: wow64 can be done without mingw if using clang (needs bug #912237)
 REQUIRED_USE="
 	X? ( truetype )
-	crossdev-mingw? ( mingw )
-	wow64? ( abi_x86_64 !abi_x86_32 mingw )
+	bluetooth? ( dbus )
+	opengl? ( || ( X wayland ) )
 "
 
 # tests are non-trivial to run, can hang easily, don't play well with
@@ -63,59 +64,57 @@ RESTRICT="test"
 # `grep WINE_CHECK_SONAME configure.ac` + if not directly linked
 WINE_DLOPEN_DEPEND="
 	X? (
-		x11-libs/libXcursor[${MULTILIB_USEDEP}]
-		x11-libs/libXfixes[${MULTILIB_USEDEP}]
-		x11-libs/libXi[${MULTILIB_USEDEP}]
-		x11-libs/libXrandr[${MULTILIB_USEDEP}]
-		x11-libs/libXrender[${MULTILIB_USEDEP}]
-		x11-libs/libXxf86vm[${MULTILIB_USEDEP}]
-		opengl? (
-			media-libs/libglvnd[X,${MULTILIB_USEDEP}]
-		)
-		xcomposite? ( x11-libs/libXcomposite[${MULTILIB_USEDEP}] )
-		xinerama? ( x11-libs/libXinerama[${MULTILIB_USEDEP}] )
+		x11-libs/libXcursor[${WINE_USEDEP}]
+		x11-libs/libXfixes[${WINE_USEDEP}]
+		x11-libs/libXi[${WINE_USEDEP}]
+		x11-libs/libXrandr[${WINE_USEDEP}]
+		x11-libs/libXrender[${WINE_USEDEP}]
+		x11-libs/libXxf86vm[${WINE_USEDEP}]
+		xcomposite? ( x11-libs/libXcomposite[${WINE_USEDEP}] )
+		xinerama? ( x11-libs/libXinerama[${WINE_USEDEP}] )
 	)
-	cups? ( net-print/cups[${MULTILIB_USEDEP}] )
-	dbus? ( sys-apps/dbus[${MULTILIB_USEDEP}] )
-	fontconfig? ( media-libs/fontconfig[${MULTILIB_USEDEP}] )
-	kerberos? ( virtual/krb5[${MULTILIB_USEDEP}] )
-	netapi? ( net-fs/samba[${MULTILIB_USEDEP}] )
-	odbc? ( dev-db/unixODBC[${MULTILIB_USEDEP}] )
-	sdl? ( media-libs/libsdl2[haptic,joystick,${MULTILIB_USEDEP}] )
-	ssl? ( net-libs/gnutls:=[${MULTILIB_USEDEP}] )
-	truetype? ( media-libs/freetype[${MULTILIB_USEDEP}] )
-	v4l? ( media-libs/libv4l[${MULTILIB_USEDEP}] )
-	vulkan? ( media-libs/vulkan-loader[X?,wayland?,${MULTILIB_USEDEP}] )
+	cups? ( net-print/cups[${WINE_USEDEP}] )
+	dbus? ( sys-apps/dbus[${WINE_USEDEP}] )
+	fontconfig? ( media-libs/fontconfig[${WINE_USEDEP}] )
+	kerberos? ( virtual/krb5[${WINE_USEDEP}] )
+	netapi? ( net-fs/samba[${WINE_USEDEP}] )
+	odbc? ( dev-db/unixODBC[${WINE_USEDEP}] )
+	opengl? ( media-libs/libglvnd[X?,${WINE_USEDEP}] )
+	sdl? ( media-libs/libsdl2[haptic,joystick,${WINE_USEDEP}] )
+	ssl? ( net-libs/gnutls:=[${WINE_USEDEP}] )
+	truetype? ( media-libs/freetype[${WINE_USEDEP}] )
+	v4l? ( media-libs/libv4l[${WINE_USEDEP}] )
+	vulkan? ( media-libs/vulkan-loader[X?,wayland?,${WINE_USEDEP}] )
 "
 WINE_COMMON_DEPEND="
 	${WINE_DLOPEN_DEPEND}
 	X? (
-		x11-libs/libX11[${MULTILIB_USEDEP}]
-		x11-libs/libXext[${MULTILIB_USEDEP}]
+		x11-libs/libX11[${WINE_USEDEP}]
+		x11-libs/libXext[${WINE_USEDEP}]
 	)
-	alsa? ( media-libs/alsa-lib[${MULTILIB_USEDEP}] )
-	capi? ( net-libs/libcapi:=[${MULTILIB_USEDEP}] )
-	ffmpeg? ( media-video/ffmpeg:=[${MULTILIB_USEDEP}] )
-	gphoto2? ( media-libs/libgphoto2:=[${MULTILIB_USEDEP}] )
+	alsa? ( media-libs/alsa-lib[${WINE_USEDEP}] )
+	capi? ( net-libs/libcapi:=[${WINE_USEDEP}] )
+	ffmpeg? ( media-video/ffmpeg:=[${WINE_USEDEP}] )
+	gphoto2? ( media-libs/libgphoto2:=[${WINE_USEDEP}] )
 	gstreamer? (
-		dev-libs/glib:2[${MULTILIB_USEDEP}]
-		media-libs/gst-plugins-base:1.0[${MULTILIB_USEDEP}]
-		media-libs/gstreamer:1.0[${MULTILIB_USEDEP}]
+		dev-libs/glib:2[${WINE_USEDEP}]
+		media-libs/gst-plugins-base:1.0[${WINE_USEDEP}]
+		media-libs/gstreamer:1.0[${WINE_USEDEP}]
 	)
-	opencl? ( virtual/opencl[${MULTILIB_USEDEP}] )
-	pcap? ( net-libs/libpcap[${MULTILIB_USEDEP}] )
-	pulseaudio? ( media-libs/libpulse[${MULTILIB_USEDEP}] )
-	scanner? ( media-gfx/sane-backends[${MULTILIB_USEDEP}] )
-	smartcard? ( sys-apps/pcsc-lite[${MULTILIB_USEDEP}] )
-	udev? ( virtual/libudev:=[${MULTILIB_USEDEP}] )
+	opencl? ( virtual/opencl[${WINE_USEDEP}] )
+	pcap? ( net-libs/libpcap[${WINE_USEDEP}] )
+	pulseaudio? ( media-libs/libpulse[${WINE_USEDEP}] )
+	scanner? ( media-gfx/sane-backends[${WINE_USEDEP}] )
+	smartcard? ( sys-apps/pcsc-lite[${WINE_USEDEP}] )
+	udev? ( virtual/libudev:=[${WINE_USEDEP}] )
 	unwind? (
-		llvm-libunwind? ( llvm-runtimes/libunwind[${MULTILIB_USEDEP}] )
-		!llvm-libunwind? ( sys-libs/libunwind:=[${MULTILIB_USEDEP}] )
+		llvm-libunwind? ( llvm-runtimes/libunwind[${WINE_USEDEP}] )
+		!llvm-libunwind? ( sys-libs/libunwind:=[${WINE_USEDEP}] )
 	)
-	usb? ( dev-libs/libusb:1[${MULTILIB_USEDEP}] )
+	usb? ( dev-libs/libusb:1[${WINE_USEDEP}] )
 	wayland? (
-		dev-libs/wayland[${MULTILIB_USEDEP}]
-		x11-libs/libxkbcommon[${MULTILIB_USEDEP}]
+		dev-libs/wayland[${WINE_USEDEP}]
+		x11-libs/libxkbcommon[${WINE_USEDEP}]
 	)
 "
 RDEPEND="
@@ -128,10 +127,10 @@ RDEPEND="
 		)
 	)
 	gecko? (
-		app-emulation/wine-gecko:${WINE_GECKO}[${MULTILIB_USEDEP}]
+		app-emulation/wine-gecko:${WINE_GECKO}[${WINE_USEDEP}]
 		wow64? ( app-emulation/wine-gecko[abi_x86_32] )
 	)
-	gstreamer? ( media-plugins/gst-plugins-meta:1.0[${MULTILIB_USEDEP}] )
+	gstreamer? ( media-plugins/gst-plugins-meta:1.0[${WINE_USEDEP}] )
 	mono? ( app-emulation/wine-mono:${WINE_MONO} )
 	perl? (
 		dev-lang/perl
@@ -144,28 +143,19 @@ DEPEND="
 	${WINE_COMMON_DEPEND}
 	sys-kernel/linux-headers
 	X? ( x11-base/xorg-proto )
+	bluetooth? ( net-wireless/bluez )
 "
 # gitapply.sh "can" work without git but that is hardly tested
 # and known failing with some versions, so force real git
 BDEPEND="
 	${PYTHON_DEPS}
-	|| (
-		sys-devel/binutils
-		llvm-core/lld
-	)
-	dev-lang/perl
 	dev-vcs/git
 	sys-devel/bison
 	sys-devel/flex
 	virtual/pkgconfig
-	mingw? ( !crossdev-mingw? (
-		>=dev-util/mingw64-toolchain-10.0.0_p1-r2[${MULTILIB_USEDEP}]
-		wow64? ( dev-util/mingw64-toolchain[abi_x86_32] )
-	) )
 	nls? ( sys-devel/gettext )
 	wayland? ( dev-util/wayland-scanner )
 "
-IDEPEND=">=app-eselect/eselect-wine-2"
 
 QA_CONFIG_IMPL_DECL_SKIP=(
 	__clear_cache # unused on amd64+x86 (bug #900334)
@@ -174,36 +164,15 @@ QA_CONFIG_IMPL_DECL_SKIP=(
 QA_TEXTRELS="usr/lib/*/wine/i386-unix/*.so" # uses -fno-PIC -Wl,-z,notext
 
 PATCHES=(
+	# "${FILESDIR}/lto-fixup.patch"
+	"${FILESDIR}/makedep-fix.patch"
 	"${FILESDIR}"/${PN}-7.17-noexecstack.patch
 	"${FILESDIR}"/${PN}-7.20-unwind.patch
 	"${FILESDIR}"/${PN}-8.13-rpath.patch
-	# "${FILESDIR}"/${PN}-10.0-binutils2.44.patch
-	"${FILESDIR}/lto-fixup.patch"
-	"${FILESDIR}/makedep-fix.patch"
 )
 
-pkg_pretend() {
-	[[ ${MERGE_TYPE} == binary ]] && return
-
-	if use crossdev-mingw && [[ ! -v MINGW_BYPASS ]]; then
-		local mingw=-w64-mingw32
-		for mingw in $(usev abi_x86_64 x86_64${mingw}) \
-			$(use abi_x86_32 || use wow64 && echo i686${mingw}); do
-			if ! type -P ${mingw}-gcc >/dev/null; then
-				eerror "With USE=crossdev-mingw, you must prepare the MinGW toolchain"
-				eerror "yourself by installing sys-devel/crossdev then running:"
-				eerror
-				eerror "    crossdev --target ${mingw}"
-				eerror
-				eerror "For more information, please see: https://wiki.gentoo.org/wiki/Mingw"
-				die "USE=crossdev-mingw is enabled, but ${mingw}-gcc was not found"
-			fi
-		done
-	fi
-}
-
 src_unpack() {
-	if [[ ${PV} == *9999 ]]; then
+	if [[ ${PV} == 9999 ]]; then
 		EGIT_CHECKOUT_DIR=${WORKDIR}/${P}
 		git-r3_src_unpack
 
@@ -292,18 +261,7 @@ src_prepare() {
 }
 
 src_configure() {
-	WINE_PREFIX=/usr/lib/${P}
-	WINE_DATADIR=/usr/share/${P}
-
-	local conf=(
-		--prefix="${EPREFIX}"${WINE_PREFIX}
-		--datadir="${EPREFIX}"${WINE_DATADIR}
-		--includedir="${EPREFIX}"/usr/include/${P}
-		--libdir="${EPREFIX}"${WINE_PREFIX}
-		--mandir="${EPREFIX}"${WINE_DATADIR}/man
-
-		$(usev wow64 --enable-archs=x86_64,i386)
-
+	local wineconfargs=(
 		$(use_enable gecko mshtml)
 		$(use_enable mono mscoree)
 		--disable-tests
@@ -319,13 +277,12 @@ src_configure() {
 		$(use_with gstreamer)
 		$(use_with kerberos gssapi)
 		$(use_with kerberos krb5)
-		$(use_with mingw)
 		$(use_with netapi)
 		$(use_with nls gettext)
 		$(use_with opencl)
 		$(use_with opengl)
 		--without-oss # media-sound/oss is not packaged (OSSv4)
-		--without-osmesa # media-libs/mesa no longer supports this
+		--without-coreaudio
 		$(use_with pcap)
 		$(use_with pulseaudio pulse)
 		$(use_with scanner sane)
@@ -341,6 +298,11 @@ src_configure() {
 		$(use_with wayland)
 		$(use_with xcomposite)
 		$(use_with xinerama)
+
+		$(usev !bluetooth '
+			ac_cv_header_bluetooth_bluetooth_h=no
+			ac_cv_header_bluetooth_rfcomm_h=no
+		')
 		$(usev !odbc ac_cv_lib_soname_odbc=)
 	)
 
@@ -358,12 +320,12 @@ src_configure() {
 		# # From https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=wine-osu-spectator-wow64
 		local _fake_gnuc_flag="-fgnuc-version=5.99.99"
 		local _polly_flags="-Xclang -load -Xclang /usr/lib/llvm/20/lib64/LLVMPolly.so -mllvm -polly -mllvm -polly-parallel -mllvm -polly-omp-backend=LLVM -mllvm -polly-vectorizer=stripmine"
-    	_extra_native_flags+=" ${_polly_flags}"
-		_extra_ld_flags+=" -flto=full"
+    	_extra_native_flags+=" ${_polly_flags} -rtlib=compiler-rt -unwindlib=libgcc -static-libgcc"
+		_extra_ld_flags+=" -rtlib=compiler-rt -unwindlib=libgcc -static-libgcc -fuse-ld=lld"
 		_lto_flags+=" -flto=full -Wl,--lto-whole-program-visibility -D__LLD_LTO__"
-		export wine_preloader_LDFLAGS="-fno-lto -Wl,--no-relax"
-		export wine64_preloader_LDFLAGS="-fno-lto -Wl,--no-relax"
-		export preloader_CFLAGS="-fno-lto -Wl,--no-relax"
+		export wine_preloader_LDFLAGS="-fno-lto -fuse-ld=lld -Wl,--no-relax"
+		export wine64_preloader_LDFLAGS="-fno-lto -fuse-ld=lld -Wl,--no-relax"
+		export preloader_CFLAGS="-fno-lto -fuse-ld=lld -Wl,--no-relax"
   		_extra_native_flags+=" ${_fake_gnuc_flag} -mtls-dialect=gnu2"
 		_extra_cross_flags+=" -fmsc-version=1933 -ffunction-sections -fdata-sections"
 		_extra_crossld_flags+=" -Wl,/FILEALIGN:4096,/OPT:REF,/OPT:ICF,/HIGHENTROPYVA:NO"
@@ -437,66 +399,21 @@ src_compile() {
 }
 
 src_install() {
-	use abi_x86_32 && emake DESTDIR="${D}" -C ../build32 install
-	use abi_x86_64 && emake DESTDIR="${D}" -C ../build64 install # do last
+	use perl || local WINE_SKIP_INSTALL=(
+		${WINE_DATADIR}/man/man1/wine{dump,maker}.1
+		${WINE_PREFIX}/bin/{function_grep.pl,wine{dump,maker}}
+	)
 
-	# "wine64" is no longer provided, but a keep symlink for old scripts
-	# TODO: remove the guard later, only useful for bisecting -9999
-	if [[ ! -e ${ED}${WINE_PREFIX}/bin/wine64 ]]; then
-		use abi_x86_64 && dosym wine ${WINE_PREFIX}/bin/wine64
-	fi
-
-	use perl || rm "${ED}"${WINE_DATADIR}/man/man1/wine{dump,maker}.1 \
-		"${ED}"${WINE_PREFIX}/bin/{function_grep.pl,wine{dump,maker}} || die
-
-	# create variant wrappers for eselect-wine
-	local bin
-	for bin in "${ED}"${WINE_PREFIX}/bin/*; do
-		make_wrapper "${bin##*/}-${P#wine-}" "${bin#"${ED}"}"
-	done
-
-	if use mingw; then
-		# don't let portage try to strip PE files with the wrong
-		# strip executable and instead handle it here (saves ~120MB)
-		dostrip -x ${WINE_PREFIX}/wine/{i386,x86_64}-windows
-
-		if use strip; then
-			ebegin "Stripping Windows (PE) binaries"
-			find "${ED}"${WINE_PREFIX}/wine/*-windows -regex '.*\.\(a\|dll\|exe\)' \
-				-exec $(usex abi_x86_64 x86_64 i686)-w64-mingw32-strip --strip-unneeded {} +
-			eend ${?} || die
-		fi
-	fi
+	wine_src_install
 
 	dodoc ANNOUNCE* AUTHORS README* documentation/README*
 }
 
 pkg_postinst() {
-	if use !abi_x86_32 && use !wow64; then
-		ewarn "32bit support is disabled. While 64bit applications themselves will"
-		ewarn "work, be warned that it is not unusual that installers or other helpers"
-		ewarn "will attempt to use 32bit and fail. If do not want full USE=abi_x86_32,"
-		ewarn "note the experimental/WIP USE=wow64 can allow 32bit without multilib."
-	elif use abi_x86_32 && { use opengl || use vulkan; }; then
-		# difficult to tell what is needed from here, but try to warn
-		if has_version 'x11-drivers/nvidia-drivers'; then
-			if has_version 'x11-drivers/nvidia-drivers[-abi_x86_32]'; then
-				ewarn "x11-drivers/nvidia-drivers is installed but is built without"
-				ewarn "USE=abi_x86_32 (ABI_X86=32), hardware acceleration with 32bit"
-				ewarn "applications under ${PN} will likely not be usable."
-				ewarn "Multi-card setups may need this on media-libs/mesa as well."
-			fi
-		elif has_version 'media-libs/mesa[-abi_x86_32]'; then
-			ewarn "media-libs/mesa seems to be in use but is built without"
-			ewarn "USE=abi_x86_32 (ABI_X86=32), hardware acceleration with 32bit"
-			ewarn "applications under ${PN} will likely not be usable."
-		fi
-	fi
+	wine_pkg_postinst
 
 	optfeature "/dev/hidraw* access used for *some* controllers (e.g. DualShock4)" \
 		games-util/game-device-udev-rules
-
-	eselect wine update --if-unset || die
 }
 
 pkg_postrm() {

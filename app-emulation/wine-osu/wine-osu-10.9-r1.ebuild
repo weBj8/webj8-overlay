@@ -294,11 +294,12 @@ src_prepare() {
 src_configure() {
 	WINE_PREFIX=/usr/lib/${P}
 	WINE_DATADIR=/usr/share/${P}
+	WINE_INCLUDEDIR=/usr/include/${P}
 
 	local conf=(
 		--prefix="${EPREFIX}"${WINE_PREFIX}
 		--datadir="${EPREFIX}"${WINE_DATADIR}
-		--includedir="${EPREFIX}"/usr/include/${P}
+		--includedir="${EPREFIX}"${WINE_INCLUDEDIR}
 		--libdir="${EPREFIX}"${WINE_PREFIX}
 		--mandir="${EPREFIX}"${WINE_DATADIR}/man
 
