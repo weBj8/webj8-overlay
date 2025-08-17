@@ -11,9 +11,9 @@ WINE_MONO=10.1.0
 _PV=${PV/_/-}
 WINE_P=wine-${_PV}
 _P=wine-staging-${PV}
-STAGING_COMMIT="c37f9f50912bd801e217ba81d2512feb7386f0d1"
-WINE_COMMIT="885446556ce443b496e368b8f2c68807dcc7df0f"
-OSU_PATCHES_TAGS="06-14-2025-88544655-c37f9f50"
+STAGING_COMMIT="a8a6d7b0ed4fe5217490907cc9222de8f2bdc040"
+WINE_COMMIT="75b9e1722d11d75c3d7745b39a03b73e9f9003ba"
+OSU_PATCHES_TAGS="08-16-2025-75b9e172-a8a6d7b0"
 
 if [[ ${PV} == *9999 ]]; then
 	inherit git-r3
@@ -165,7 +165,7 @@ QA_TEXTRELS="usr/lib/*/wine/i386-unix/*.so" # uses -fno-PIC -Wl,-z,notext
 
 PATCHES=(
 	# "${FILESDIR}/lto-fixup.patch"
-	"${FILESDIR}/makedep-fix.patch"
+	# "${FILESDIR}/makedep-fix.patch"
 	"${FILESDIR}"/${PN}-7.17-noexecstack.patch
 	"${FILESDIR}"/${PN}-7.20-unwind.patch
 	"${FILESDIR}"/${PN}-8.13-rpath.patch
@@ -200,6 +200,11 @@ src_unpack() {
 	for dir in ./wine-osu-patches-${OSU_PATCHES_TAGS}/**; do
 		mv "$dir" ${WORKDIR}/patch/. || die
 	done
+
+
+	# FIXME: manual fix on this patch set cuz duplicate define function
+	cp "${FILESDIR}/0001-user32-tests-Add-tests-for-NULL-invalidated-rect-with-window-resize.patch" ${WORKDIR}/patch/0003-pending-mrs-and-backports/8095-server-Update-full-window-invalidate-rect-with-window-resize/0001-user32-tests-Add-tests-for-NULL-invalidated-rect-with-window-resize.patch || die
+
 }
 
 src_prepare() {
@@ -212,52 +217,45 @@ src_prepare() {
 
 	edo "${PYTHON}" ../${_P}/staging/patchinstall.py "${patchinstallargs[@]}" 
 
-	# sanity check, bumping these has a history of oversights
-	local geckomono=$(sed -En '/^#define (GECKO|MONO)_VER/{s/[^0-9.]//gp}' \
-		dlls/appwiz.cpl/addons.c || die)
-	if [[ ${WINE_GECKO}$'\n'${WINE_MONO} != "${geckomono}" ]]; then
-		local gmfatal=
-		[[ ${PV} == *9999 ]] && gmfatal=nonfatal
-		${gmfatal} die -n "gecko/mono mismatch in ebuild, has: " ${geckomono} " (please file a bug)"
+	if [[ ${WINE_GECKO} && ${WINE_MONO} ]]; then
+		# sanity check, bumping these has a history of oversights
+		local geckomono=$(sed -En '/^#define (GECKO|MONO)_VER/{s/[^0-9.]//gp}' \
+			dlls/appwiz.cpl/addons.c || die)
+
+		if [[ ${WINE_GECKO}$'\n'${WINE_MONO} != "${geckomono}" ]]; then
+			local gmfatal=
+			has live ${PROPERTIES} && gmfatal=nonfatal
+			${gmfatal} die -n "gecko/mono mismatch in ebuild, has: " ${geckomono} " (please file a bug)"
+		fi
 	fi
 
 	default
 
-	if tc-is-clang; then
-		if use mingw; then
-			# -mabi=ms was ignored by <clang:16 then turned error in :17
-			# if used without --target *-windows, then gets used in install
-			# phase despite USE=mingw, drop as a quick fix for now
-			sed -i '/MSVCRTFLAGS=/s/-mabi=ms//' configure.ac || die
-		else
-			# fails in ./configure unless --enable-archs is passed, allow to
-			# bypass with EXTRA_ECONF but is currently considered unsupported
-			# (by Gentoo) as additional work is needed for (proper) support
-			# note: also fails w/ :17, but unsure if safe to drop w/o mingw
-			[[ ${EXTRA_ECONF} == *--enable-archs* ]] ||
-				die "building ${PN} with clang is only supported with USE=mingw"
-		fi
+	if tc-is-clang && use mingw; then
+		# -mabi=ms was ignored by <clang:16 then turned error in :17
+		# if used without --target *-windows, then gets used in install
+		# phase despite USE=mingw, drop as a quick fix for now
+		sed -i '/MSVCRTFLAGS=/s/-mabi=ms//' configure.ac || die
 	fi
 
 	# ensure .desktop calls this variant + slot
 	sed -i "/^Exec=/s/wine /${P} /" loader/wine.desktop || die
 
-	# datadir is not where wine-mono is installed, so prefixy alternate paths
+	# needed to find wine-mono on prefix
 	hprefixify -w /get_mono_path/ dlls/mscoree/metahost.c
+
 
 	mapfile -t patchlist < <(find "${WORKDIR}/patch/" -type f -regex ".*\.patch" | LC_ALL=C sort -f) || die
 	for patch in "${patchlist[@]}"; do
 		eapply --ignore-whitespace -Np1 "$patch" || die
-	done
+	done    	
+
 	# always update for patches (including user's wrt #432348)
 	eautoreconf
 	tools/make_requests || die # perl
-		if [ -e tools/make_specfiles ]; then
+	if [ -e tools/make_specfiles ]; then
 		tools/make_specfiles || die # perl
 	fi
-	# tip: if need more for user patches, with portage can e.g. do
-	# echo "post_src_prepare() { tools/make_specfiles || die; }" \
-	#     > /etc/portage/env/app-emulation/wine-staging
 }
 
 src_configure() {
@@ -282,7 +280,6 @@ src_configure() {
 		$(use_with opencl)
 		$(use_with opengl)
 		--without-oss # media-sound/oss is not packaged (OSSv4)
-		--without-coreaudio
 		$(use_with pcap)
 		$(use_with pulseaudio pulse)
 		$(use_with scanner sane)
@@ -306,51 +303,51 @@ src_configure() {
 		$(usev !odbc ac_cv_lib_soname_odbc=)
 	)
 
-	if use mingw; then
-		use crossdev-mingw || PATH=${BROOT}/usr/lib/mingw64-toolchain/bin:${PATH}
+	WINE_PREFIX=/usr/lib/${P}
+	WINE_DATADIR=/usr/share/${P}
+	WINE_INCLUDEDIR=/usr/include/${P}
 
-		# CROSSCC was formerly recognized by wine, thus been using similar
-		# variables (subject to change, esp. if ever make a mingw.eclass).
-		# local mingwcc_amd64=${CROSSCC:-${CROSSCC_amd64:-x86_64-w64-mingw32-gcc}}
-		# local mingwcc_x86=${CROSSCC:-${CROSSCC_x86:-i686-w64-mingw32-gcc}}
-		# local -n mingwcc=mingwcc_$(usex abi_x86_64 amd64 x86)
-		local mingwcc_amd64="clang"
-		local mingwcc_x86="clang++"
+	local conf=(
+		--prefix="${EPREFIX}"${WINE_PREFIX}
+		--datadir="${EPREFIX}"${WINE_DATADIR}
+		--includedir="${EPREFIX}"${WINE_INCLUDEDIR}
+		--libdir="${EPREFIX}"${WINE_PREFIX}
+		--mandir="${EPREFIX}"${WINE_DATADIR}/man
+	)
 
-		# # From https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=wine-osu-spectator-wow64
-		local _fake_gnuc_flag="-fgnuc-version=5.99.99"
-		local _polly_flags="-Xclang -load -Xclang /usr/lib/llvm/20/lib64/LLVMPolly.so -mllvm -polly -mllvm -polly-parallel -mllvm -polly-omp-backend=LLVM -mllvm -polly-vectorizer=stripmine"
-    	_extra_native_flags+=" ${_polly_flags} -rtlib=compiler-rt -unwindlib=libgcc -static-libgcc"
-		_extra_ld_flags+=" -rtlib=compiler-rt -unwindlib=libgcc -static-libgcc -fuse-ld=lld"
-		_lto_flags+=" -flto=full -Wl,--lto-whole-program-visibility -D__LLD_LTO__"
-		export wine_preloader_LDFLAGS="-fno-lto -fuse-ld=lld -Wl,--no-relax"
-		export wine64_preloader_LDFLAGS="-fno-lto -fuse-ld=lld -Wl,--no-relax"
-		export preloader_CFLAGS="-fno-lto -fuse-ld=lld -Wl,--no-relax"
-  		_extra_native_flags+=" ${_fake_gnuc_flag} -mtls-dialect=gnu2"
-		_extra_cross_flags+=" -fmsc-version=1933 -ffunction-sections -fdata-sections"
-		_extra_crossld_flags+=" -Wl,/FILEALIGN:4096,/OPT:REF,/OPT:ICF,/HIGHENTROPYVA:NO"
+	_extra_native_flags+="-static-libgcc   -mtls-dialect=gnu2"
+	_lto_flags+=" -fuse-ld=lld -ffat-lto-objects -fuse-linker-plugin -fdevirtualize-at-ltrans -flto-partition=one -flto"
+	_extra_ld_flags+=" -static-libgcc -fuse-ld=lld -ffat-lto-objects -fuse-linker-plugin -fdevirtualize-at-ltrans -flto-partition=one -flto"
+    export wine_preloader_LDFLAGS="-fuse-ld=bfd"
+    export wine64_preloader_LDFLAGS="-fuse-ld=bfd"
+    export preloader_CFLAGS="-fuse-ld=bfd"
+    _extra_cross_flags+="   -mtls-dialect=gnu2"
+    _extra_crossld_flags+=" -Wl,-O2,--sort-common,--as-needed,--file-alignment=4096"
 
-
-  		_common_cflags="-march=native -mtune=native -pipe -O3 -mfpmath=sse -fno-strict-aliasing -fwrapv -fno-semantic-interposition \
+  	_common_cflags="-march=native -mtune=native -pipe -O3 -mfpmath=sse -fno-strict-aliasing -fwrapv -fno-semantic-interposition \
                  -Wno-error=incompatible-pointer-types -Wno-error=implicit-function-declaration -w"
 
-		export CPPFLAGS="-D_GNU_SOURCE -D_TIME_BITS=64 -D_FILE_OFFSET_BITS=64 -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0 -DNDEBUG -D_NDEBUG"
-  		_GCC_FLAGS="${_common_cflags:-} ${_lto_flags:-} ${_extra_native_flags:-} ${CPPFLAGS:-} -ffunction-sections -fdata-sections" # only for the non-mingw side
-  		_CROSS_FLAGS="${_common_cflags:-} ${_extra_cross_flags:-} ${CPPFLAGS:-}" # only for the mingw side
+	CPPFLAGS="-D_GNU_SOURCE -D_TIME_BITS=64 -D_FILE_OFFSET_BITS=64 -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0 -DNDEBUG -D_NDEBUG"
+  	_GCC_FLAGS="${_common_cflags:-} ${_lto_flags:-} ${_extra_native_flags:-} ${CPPFLAGS:-} -ffunction-sections -fdata-sections" # only for the non-mingw side
+  	_CROSS_FLAGS="${_common_cflags:-} ${_extra_cross_flags:-} ${CPPFLAGS:-}" # only for the mingw side
 
-  		_LD_FLAGS="${_GCC_FLAGS:-} ${_extra_ld_flags:-} -static-libgcc -Wl,-O2,--sort-common,--as-needed,--gc-sections"
-  		_CROSS_LD_FLAGS="${_common_cflags:-} ${_extra_crossld_flags:-} ${CPPFLAGS:-}"
+  	_LD_FLAGS="${_GCC_FLAGS:-} ${_extra_ld_flags:-} -Wl,-O2,--sort-common,--as-needed,--gc-sections,--hash-style=gnu"
+  	_CROSS_LD_FLAGS="${_common_cflags:-} ${_extra_crossld_flags:-} ${CPPFLAGS:-}"
 
-		conf+=(
-			CC="ccache ${mingwcc_amd64}"
-			CXX="ccache ${mingwcc_x86}"
-  			x86_64_CC="ccache ${mingwcc_amd64}"
-  			x86_64_CXX="ccache ${mingwcc_x86}"
-  			i386_CC="ccache ${mingwcc_amd64}"
-  			i386_CXX="ccache ${mingwcc_x86}"
+	conf+=(
+			CC="ccache gcc"
+			CXX="ccache g++"
+  			x86_64_CC="ccache x86_64-w64-mingw32-gcc"
+  			x86_64_CXX="ccache x86_64-w64-mingw32-g++"
+  			i386_CC="ccache i686-w64-mingw32-gcc"
+  			i386_CXX="ccache i686-w64-mingw32-g++"
 
-			ac_cv_prog_x86_64_CC=" ${mingwcc_amd64}"
-			ac_cv_prog_i386_CC=" ${mingwcc_x86}"
+			# ac_cv_prog_x86_64_CC=" ${mingwcc_amd64}"
+			# ac_cv_prog_i386_CC=" ${mingwcc_x86}"
+  			x86_64_CFLAGS="${_CROSS_FLAGS} ${_common_64_cflags:-} -std=gnu23"
+  			x86_64_CXXFLAGS="${_CROSS_FLAGS} ${_common_64_cflags:-}"
+  			i386_CFLAGS="${_CROSS_FLAGS} ${_common_32_cflags:-} -std=gnu23"
+  			i386_CXXFLAGS="${_CROSS_FLAGS} ${_common_32_cflags:-}"
 
 			CPPFLAGS="${CPPFLAGS}"
 
@@ -365,38 +362,52 @@ src_configure() {
 			wine_preloader_LDFLAGS="${wine_preloader_LDFLAGS}"
 			wine64_preloader_LDFLAGS="${wine64_preloader_LDFLAGS}"
 			preloader_CFLAGS="${preloader_CFLAGS}"
+	)
+
+	if use abi_x86_64 && use abi_x86_32 && use !wow64; then
+		# multilib dual build method for "old" wow64 (must do 64 first)
+		local bits
+		for bits in 64 32; do
+		(
+			einfo "Configuring for ${bits}bits in ${WORKDIR}/build${bits} ..."
+
+			mkdir ../build${bits} || die
+			cd ../build${bits} || die
+
+			if (( bits == 64 )); then
+				conf+=( --enable-win64 )
+			else
+				conf+=(
+					--with-wine64=../build64
+					TARGETFLAGS=-m32 # for widl
+				)
+
+				# optional, but prefer over Wine's auto-detect (+#472038)
+				multilib_toolchain_setup x86
+			fi
+
+			ECONF_SOURCE=${S} econf "${conf[@]}" "${wineconfargs[@]}"
 		)
-	fi
+		done
+	else
+		# new --enable-archs method, or 32bit-only
+		local archs=(
+			$(usev abi_x86_64 x86_64)
+			$(usev wow64 i386) # 32-on-64bit "new" wow64
+			$(usev arm64 aarch64)
+		)
+		conf+=( ${archs:+--enable-archs="${archs[*]}"} )
 
-	# order matters with multilib: configure+compile 64->32, install 32->64
-	local -i bits
-	for bits in $(usev abi_x86_64 64) $(usev abi_x86_32 32); do
-	(
-		einfo "Configuring ${PN} for ${bits}bits in ${WORKDIR}/build${bits} ..."
-
-		mkdir ../build${bits} || die
-		cd ../build${bits} || die
-
-		if (( bits == 64 )); then
-			conf+=( --enable-win64 )
-		elif use amd64; then
-			conf+=(
-				$(usev abi_x86_64 --with-wine64=../build64)
-				TARGETFLAGS=-m32 # for widl
-			)
-			# _setup is optional, but use over Wine's auto-detect (+#472038)
+		if use amd64 && use !abi_x86_64; then
+			# same as above for 32bit-only on 64bit (allowed for wine)
+			conf+=( TARGETFLAGS=-m32 )
 			multilib_toolchain_setup x86
 		fi
 
-		ECONF_SOURCE=${S} econf "${conf[@]}"
-	)
-	done
+		econf "${conf[@]}" "${wineconfargs[@]}"
+	fi
 }
 
-src_compile() {
-	use abi_x86_64 && emake -C ../build64 # do first
-	use abi_x86_32 && emake -C ../build32
-}
 
 src_install() {
 	use perl || local WINE_SKIP_INSTALL=(
@@ -416,8 +427,85 @@ pkg_postinst() {
 		games-util/game-device-udev-rules
 }
 
-pkg_postrm() {
-	if has_version -b app-eselect/eselect-wine; then
-		eselect wine update --if-unset || die
-	fi
-}
+
+# @FUNCTION: wine_src_configure
+# @DESCRIPTION:
+# Setup toolchain and run ./configure by passing the ``wineconfargs``
+# array.
+#
+# The following options are handled automatically and do not need
+# to be passed: --prefix (and similar), --enable-archs, --enable-win64
+# --with-mingw, and --with-wine64
+#
+# Can adjust cross toolchain using CROSSCC, CROSSCC_amd64/x86/arm64,
+# CROSS{C,LD}FLAGS, and CROSS{C,LD}FLAGS_amd64/x86/arm64 (variable
+# naming is mostly historical because wine itself used to recognize
+# CROSSCC). By default it attempts to use same {C,LD}FLAGS as the
+# main toolchain but will strip known unsupported flags.
+# wine_src_configure() {
+# 	# wcc_* variables are used by _wine_flags(), see that
+# 	# function if need to adjust *FLAGS only for cross
+# 	local wcc_{amd64,x86,arm64}{,_testflags}
+# 	# TODO?: llvm-mingw support if ever packaged and wanted
+# 	if use mingw; then
+# 		conf+=( --with-mingw )
+
+# 		use !crossdev-mingw &&
+# 			! has_version -b 'dev-util/mingw64-toolchain[bin-symlinks]' &&
+# 			PATH=${BROOT}/usr/lib/mingw64-toolchain/bin:${PATH}
+
+# 		wcc_amd64=${CROSSCC:-${CROSSCC_amd64:-x86_64-w64-mingw32-gcc}}
+# 		wcc_x86=${CROSSCC:-${CROSSCC_x86:-i686-w64-mingw32-gcc}}
+# 		# no mingw64-toolchain ~arm64, but "may" be usable with crossdev
+# 		# (aarch64- rather than arm64- given it is what Wine searches for)
+# 		wcc_arm64=${CROSSCC:-${CROSSCC_arm64:-aarch64-w64-mingw32-gcc}}
+# 	else
+# 		conf+=( --with-mingw=clang )
+
+# 		# not building for ${CHOST} so $(tc-getCC) is not quite right, but
+# 		# *should* support -target *-windows regardless (testflags is only
+# 		# used by _wine_flags(), wine handles -target by itself)
+# 		tc-is-clang && local clang=$(tc-getCC) || local clang=clang
+# 		wcc_amd64=${CROSSCC:-${CROSSCC_amd64:-${clang}}}
+# 		wcc_amd64_testflags="-target x86_64-windows"
+# 		wcc_x86=${CROSSCC:-${CROSSCC_x86:-${clang}}}
+# 		wcc_x86_testflags="-target i386-windows"
+# 		wcc_arm64=${CROSSCC:-${CROSSCC_arm64:-${clang}}}
+# 		wcc_arm64_testflags="-target aarch64-windows"
+
+# 		# do not copy from regular LDFLAGS given odds are they all are
+# 		# incompatible, and difficult to test linking without llvm-mingw
+# 		: "${CROSSLDFLAGS:= }"
+# 	fi
+
+# 	conf+=(
+# 		ac_cv_prog_x86_64_CC="${wcc_amd64}"
+# 		ac_cv_prog_i386_CC="${wcc_x86}"
+# 		ac_cv_prog_aarch64_CC="${wcc_arm64}"
+# 	)
+
+# 	if ver_test -ge 10; then
+# 		# TODO: merge with the av_cv array above when <wine-10 is gone
+# 		conf+=(
+# 			# if set, use CROSS*FLAGS as-is without filtering
+# 			x86_64_CFLAGS="${CROSSCFLAGS_amd64:-${CROSSCFLAGS:-$(_wine_flags c amd64)}}"
+# 			x86_64_LDFLAGS="${CROSSLDFLAGS_amd64:-${CROSSLDFLAGS:-$(_wine_flags ld amd64)}}"
+# 			i386_CFLAGS="${CROSSCFLAGS_x86:-${CROSSCFLAGS:-$(_wine_flags c x86)}}"
+# 			i386_LDFLAGS="${CROSSLDFLAGS_x86:-${CROSSLDFLAGS:-$(_wine_flags ld x86)}}"
+# 			aarch64_CFLAGS="${CROSSCFLAGS_arm64:-${CROSSCFLAGS:-$(_wine_flags c arm64)}}"
+# 			aarch64_LDFLAGS="${CROSSLDFLAGS_arm64:-${CROSSLDFLAGS:-$(_wine_flags ld arm64)}}"
+# 		)
+# 	elif use abi_x86_64; then
+# 		conf+=(
+# 			# per-arch flags are only respected with >=wine-10,
+# 			# do a one-arch best effort fallback
+# 			CROSSCFLAGS="${CROSSCFLAGS_amd64:-${CROSSCFLAGS:-$(_wine_flags c amd64)}}"
+# 			CROSSLDFLAGS="${CROSSLDFLAGS_amd64:-${CROSSLDFLAGS:-$(_wine_flags ld amd64)}}"
+# 		)
+# 	elif use abi_x86_32; then
+# 		conf+=(
+# 			CROSSCFLAGS="${CROSSCFLAGS_x86:-${CROSSCFLAGS:-$(_wine_flags c x86)}}"
+# 			CROSSLDFLAGS="${CROSSLDFLAGS_x86:-${CROSSLDFLAGS:-$(_wine_flags ld x86)}}"
+# 		)
+# 	fi
+# }
