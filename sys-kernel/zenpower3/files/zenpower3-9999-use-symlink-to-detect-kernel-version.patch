@@ -23,7 +23,7 @@ index d108729..37a58ba 100644
 +TARGET          := ${KV_FULL}
  DKMS_ROOT_PATH  := /usr/src/zenpower-$(VERSION)
  
--KBUILD_CFLAGS   += -Wimplicit-fallthrough=3
+-KBUILD_CFLAGS   += -Wimplicit-fallthrough
 +ifeq ($(CC),clang)
 +    CXXFLAGS += -Wimplicit-fallthrough
 +else ifeq ($(CC),gcc)
