@@ -1,0 +1,10 @@
+# Example systemd-tmpfiles configuration for setting SR-IOV Virtual Functions (VFs)
+#
+# This file configures the number of Virtual Functions to create for the i915 GPU.
+# Place a copy (without .example suffix) in /etc/tmpfiles.d/ to enable.
+#
+# IMPORTANT: Verify the PCI device path matches your hardware!
+# Use 'lspci -nn | grep VGA' to find your GPU's PCI address.
+# The path below (0000:00:02.0) is an example and must be customized.
+
+# w /sys/devices/pci0000:00/0000:00:02.0/sriov_numvfs - - - - 7

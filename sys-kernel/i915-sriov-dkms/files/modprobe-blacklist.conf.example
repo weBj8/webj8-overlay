@@ -1,0 +1,14 @@
+# Example configuration for blacklisting conflicting GPU drivers
+#
+# Intel provides two graphics drivers:
+# - i915: Legacy driver for older Intel GPUs
+# - xe: New driver for modern Intel GPUs (Gen12+)
+#
+# You must blacklist one driver to prevent conflicts. Choose the
+# appropriate driver for your hardware and uncomment the corresponding line.
+
+# Uncomment to blacklist i915 when using xe driver
+# blacklist i915
+
+# Uncomment to blacklist xe when using i915 driver
+# blacklist xe
