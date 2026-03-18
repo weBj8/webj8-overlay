@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<name>Stllok</name>
+		<email>osustllok@gmail.com</email>
+	</maintainer>
+	<longdescription lang="en">
+		OpenWork desktop client repackaged from upstream Debian release artifacts.
+	</longdescription>
+	<upstream>
+		<remote-id type="github">different-ai/openwork</remote-id>
+	</upstream>
+</pkgmetadata>
