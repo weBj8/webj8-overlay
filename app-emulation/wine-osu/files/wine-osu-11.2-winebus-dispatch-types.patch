@@ -1,0 +1,38 @@
+--- a/dlls/winebus.sys/main.c
++++ b/dlls/winebus.sys/main.c
+@@ -1697,9 +1697,13 @@
+-static NTSTATUS WINAPI nop_one(void *a)
+-{
+-    return STATUS_SUCCESS;
+-}
+-
+-static NTSTATUS WINAPI nop_two(void *a, void *b)
+-{
+-    return STATUS_SUCCESS;
+-}
++static void WINAPI nop_unload(DRIVER_OBJECT *driver)
++{
++}
++
++static NTSTATUS WINAPI nop_device_dispatch(DEVICE_OBJECT *device, IRP *irp)
++{
++    return STATUS_SUCCESS;
++}
++
++static NTSTATUS WINAPI nop_add_device(DRIVER_OBJECT *driver, DEVICE_OBJECT *device)
++{
++    return STATUS_SUCCESS;
++}
+@@ -1725,7 +1729,7 @@ NTSTATUS WINAPI DriverEntry( DRIVER_OBJECT *driver, UNICODE_STRING *path )
+     on = check_bus_option(L"EnableWinebus", FALSE);
+-    driver->MajorFunction[IRP_MJ_PNP] = on ? common_pnp_dispatch : nop_two;
+-    driver->MajorFunction[IRP_MJ_INTERNAL_DEVICE_CONTROL] = on ? hid_internal_dispatch : nop_two;
+-    driver->DriverExtension->AddDevice = on ? driver_add_device : nop_two;
+-    driver->DriverUnload = on ? driver_unload : nop_one;
++    driver->MajorFunction[IRP_MJ_PNP] = on ? common_pnp_dispatch : nop_device_dispatch;
++    driver->MajorFunction[IRP_MJ_INTERNAL_DEVICE_CONTROL] = on ? hid_internal_dispatch : nop_device_dispatch;
++    driver->DriverExtension->AddDevice = on ? driver_add_device : nop_add_device;
++    driver->DriverUnload = on ? driver_unload : nop_unload;
+ 
+     return STATUS_SUCCESS;
+ }

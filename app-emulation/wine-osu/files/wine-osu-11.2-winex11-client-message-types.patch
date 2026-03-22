@@ -1,0 +1,42 @@
+--- a/dlls/winex11.drv/event.c
++++ b/dlls/winex11.drv/event.c
+@@ -1705,6 +1705,26 @@ static void handle_xdnd_leave_event( HWND hwnd, XEvent *xev )
+ {
+     drag_drop_leave();
+ }
++
++static void handle_dnd_client_message( HWND hwnd, XEvent *xev )
++{
++    handle_dnd_protocol( hwnd, &xev->xclient );
++}
++
++static void handle_xdnd_enter_client_message( HWND hwnd, XEvent *xev )
++{
++    handle_xdnd_enter_event( hwnd, &xev->xclient );
++}
++
++static void handle_xdnd_position_client_message( HWND hwnd, XEvent *xev )
++{
++    handle_xdnd_position_event( hwnd, &xev->xclient );
++}
++
++static void handle_xdnd_drop_client_message( HWND hwnd, XEvent *xev )
++{
++    handle_xdnd_drop_event( hwnd, &xev->xclient );
++}
+ 
+ 
+ struct client_message_handler
+@@ -1720,9 +1740,9 @@ static const struct client_message_handler client_messages[] =
+     { XATOM_WM_PROTOCOLS, handle_wm_protocols },
+     { XATOM__XEMBED,      handle_xembed_protocol },
+-    { XATOM_DndProtocol,  handle_dnd_protocol },
++    { XATOM_DndProtocol,  handle_dnd_client_message },
+-    { XATOM_XdndEnter,    handle_xdnd_enter_event },
+-    { XATOM_XdndPosition, handle_xdnd_position_event },
+-    { XATOM_XdndDrop,     handle_xdnd_drop_event },
++    { XATOM_XdndEnter,    handle_xdnd_enter_client_message },
++    { XATOM_XdndPosition, handle_xdnd_position_client_message },
++    { XATOM_XdndDrop,     handle_xdnd_drop_client_message },
+     { XATOM_XdndLeave,    handle_xdnd_leave_event }
+ };

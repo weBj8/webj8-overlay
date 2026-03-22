@@ -1,0 +1,20 @@
+--- a/dlls/appwiz.cpl/addons.c
++++ b/dlls/appwiz.cpl/addons.c
+@@ -91,7 +91,7 @@ static const addon_info_t addons_info[] = {
+         "http://source.winehq.org/winegecko.php",
+         L"MSHTML", L"GeckoUrl", L"GeckoCabDir",
+         MAKEINTRESOURCEW(ID_DWL_GECKO_DIALOG),
+-        "WINE_GECKO_CACHE_DIR",
++        L"WINE_GECKO_CACHE_DIR",
+         "WINE_SKIP_GECKO_INSTALLATION"
+     },
+     {
+@@ -102,7 +102,7 @@ static const addon_info_t addons_info[] = {
+         "http://source.winehq.org/winemono.php",
+         L"Dotnet", L"MonoUrl", L"MonoCabDir",
+         MAKEINTRESOURCEW(ID_DWL_MONO_DIALOG),
+-        "WINE_MONO_CACHE_DIR",
++        L"WINE_MONO_CACHE_DIR",
+         "WINE_SKIP_MONO_INSTALLATION"
+     }
+ };
