@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<name>Stllok</name>
+		<email>osustllok@gmail.com</email>
+	</maintainer>
+	<longdescription lang="en">
+		Fluxer desktop client repackaged from upstream Debian release artifacts.
+	</longdescription>
+	<upstream>
+		<remote-id type="github">fluxerapp/fluxer</remote-id>
+		<bugs-to>https://github.com/fluxerapp/fluxer/issues</bugs-to>
+	</upstream>
+</pkgmetadata>
