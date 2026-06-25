@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>osustllok@gmail.com</email>
+		<name>Stllok</name>
+	</maintainer>
+	<longdescription>
+		Keyboard configurator binary package for PrismTerminal devices.
+	</longdescription>
+	<upstream>
+		<bugs-to>https://github.com/Kagami-Studio/PrismTerminal-Release/issues</bugs-to>
+		<remote-id type="github">Kagami-Studio/PrismTerminal-Release</remote-id>
+	</upstream>
+</pkgmetadata>
