@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<name>Stllok</name>
+		<email>osustllok@gmail.com</email>
+	</maintainer>
+	<longdescription lang="en">
+		PiliPlus is a Flutter-based Bilibili video client repackaged from upstream Linux release artifacts.
+	</longdescription>
+	<upstream>
+		<remote-id type="github">bggRGjQaUbCoE/PiliPlus</remote-id>
+		<bugs-to>https://github.com/bggRGjQaUbCoE/PiliPlus/issues</bugs-to>
+	</upstream>
+</pkgmetadata>
