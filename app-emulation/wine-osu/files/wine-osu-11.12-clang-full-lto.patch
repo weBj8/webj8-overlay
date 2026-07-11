@@ -1,0 +1,180 @@
+From: webj8-overlay maintainers
+Subject: [PATCH] wine: keep assembly entry points with Clang full LTO
+
+Rebased for Wine 11.12 after the winello-v11.12-1 patch stack.
+Based on the AUR wine-osu-spectator-wow64 lto-fixup.patch:
+https://aur.archlinux.org/cgit/aur.git/tree/lto-fixup.patch?h=wine-osu-spectator-wow64&id=be5bc227695211db81aeee4b2bb738e36d19cbb4
+
+Keep assembly-referenced symbols during full LTO and compile/link Wine's
+preloader without LTO.  Teach makedep to append object-local CFLAGS so
+preloader_CFLAGS can override global -flto=full.
+
+diff --git a/dlls/ntdll/unix/signal_arm.c b/dlls/ntdll/unix/signal_arm.c
+index ee3a21c..30bb7a6 100644
+--- a/dlls/ntdll/unix/signal_arm.c
++++ b/dlls/ntdll/unix/signal_arm.c
+@@ -1111,7 +1111,7 @@ void signal_init_process( TEB *teb )
+ /***********************************************************************
+  *           init_syscall_frame
+  */
+-__attribute__((used)) void init_syscall_frame( LPTHREAD_START_ROUTINE entry, void *arg, TEB *teb )
++__attribute__((retain,used)) void init_syscall_frame( LPTHREAD_START_ROUTINE entry, void *arg, TEB *teb )
+ {
+     struct thread_data *data = get_thread_data();
+     struct syscall_frame *frame = get_syscall_frame( data );
+diff --git a/dlls/ntdll/unix/signal_arm64.c b/dlls/ntdll/unix/signal_arm64.c
+index 6786cb6..4430b59 100644
+--- a/dlls/ntdll/unix/signal_arm64.c
++++ b/dlls/ntdll/unix/signal_arm64.c
+@@ -1521,7 +1521,7 @@ void syscall_dispatcher_return_slowpath(void)
+ /***********************************************************************
+  *           init_syscall_frame
+  */
+-__attribute__((used)) void init_syscall_frame( LPTHREAD_START_ROUTINE entry, void *arg, TEB *teb )
++__attribute__((retain,used)) void init_syscall_frame( LPTHREAD_START_ROUTINE entry, void *arg, TEB *teb )
+ {
+     struct thread_data *data = get_thread_data();
+     struct syscall_frame *frame = get_syscall_frame( data );
+diff --git a/dlls/ntdll/unix/signal_i386.c b/dlls/ntdll/unix/signal_i386.c
+index d390bce..f5d818a 100644
+--- a/dlls/ntdll/unix/signal_i386.c
++++ b/dlls/ntdll/unix/signal_i386.c
+@@ -2441,7 +2441,7 @@ void signal_init_process( TEB *teb )
+ /***********************************************************************
+  *           init_syscall_frame
+  */
+-__attribute__((used)) void init_syscall_frame( LPTHREAD_START_ROUTINE entry, void *arg, TEB *teb )
++__attribute__((retain,used)) void init_syscall_frame( LPTHREAD_START_ROUTINE entry, void *arg, TEB *teb )
+ {
+     struct thread_data *data = get_thread_data();
+     struct syscall_frame *frame = get_syscall_frame( data );
+diff --git a/dlls/ntdll/unix/signal_x86_64.c b/dlls/ntdll/unix/signal_x86_64.c
+index 0759d69..e425b93 100644
+--- a/dlls/ntdll/unix/signal_x86_64.c
++++ b/dlls/ntdll/unix/signal_x86_64.c
+@@ -2846,7 +2846,7 @@ void signal_init_process( TEB *teb )
+ /***********************************************************************
+  *           init_syscall_frame
+  */
+-__attribute__((used)) void init_syscall_frame( LPTHREAD_START_ROUTINE entry, void *arg, TEB *teb )
++__attribute__((retain,used)) void init_syscall_frame( LPTHREAD_START_ROUTINE entry, void *arg, TEB *teb )
+ {
+     struct thread_data *data = get_thread_data();
+     struct syscall_frame *frame = get_syscall_frame( data );
+diff --git a/loader/Makefile.in b/loader/Makefile.in
+index a9ca82f..790ad60 100644
+--- a/loader/Makefile.in
++++ b/loader/Makefile.in
+@@ -11,6 +11,7 @@ INSTALL_LIB = $(WINELOADER_PROGRAMS)
+ UNIX_CFLAGS = -fPIE
+ 
+ preloader_EXTRADEFS = -fno-builtin
++preloader_CFLAGS = -fno-lto
+ 
+ wine_OBJS = main.o
+ wine_DEPS = $(WINELOADER_DEPENDS)
+@@ -18,4 +19,4 @@ wine_LDFLAGS = $(WINELOADER_LDFLAGS) $(LDEXECFLAGS) $(PTHREAD_LIBS)
+ 
+ wine_preloader_OBJS = preloader.o preloader_mac.o
+ wine_preloader_DEPS = $(WINELOADER_DEPENDS)
+-wine_preloader_LDFLAGS = $(WINEPRELOADER_LDFLAGS)
++wine_preloader_LDFLAGS = $(WINEPRELOADER_LDFLAGS) -fno-lto -fuse-ld=lld -Wl,--no-relax
+diff --git a/loader/preloader.c b/loader/preloader.c
+index deae42d..9c629a0 100644
+--- a/loader/preloader.c
++++ b/loader/preloader.c
+@@ -89,7 +89,9 @@
+ #include "wine/asm.h"
+ #include "main.h"
+ 
+-#pragma GCC visibility push(hidden)
++#if !defined(__LLD_LTO__)
++# pragma GCC visibility push(hidden)
++#endif
+ 
+ /* ELF definitions */
+ #define ELF_PREFERRED_ADDRESS(loader, maplength, mapstartpref) (mapstartpref)
+@@ -179,7 +181,7 @@ void __bb_init_func(void) { return; }
+ 
+ /* data for setting up the glibc-style thread-local storage in %gs */
+ 
+-static int thread_data[256] __attribute__((used));
++static int thread_data[256] __attribute__((retain,used));
+ 
+ struct
+ {
+@@ -194,7 +196,7 @@ struct
+     unsigned int  seg_not_present : 1;
+     unsigned int  usable : 1;
+     unsigned int  garbage : 25;
+-} thread_ldt __attribute__((used)) = { -1, (unsigned long)thread_data, 0xfffff, 1, 0, 0, 1, 0, 1, 0 };
++} thread_ldt __attribute__((retain,used)) = { -1, (unsigned long)thread_data, 0xfffff, 1, 0, 0, 1, 0, 1, 0 };
+ 
+ 
+ /*
+@@ -335,7 +337,7 @@ static inline int wld_prctl( int code, long arg )
+ 
+ #elif defined(__x86_64__)
+ 
+-void *thread_data[256] __attribute__((used));
++void *thread_data[256] __attribute__((retain,used));
+ 
+ /*
+  * The _start function is the entry and exit point of this program
+@@ -424,7 +426,7 @@ SYSCALL_NOERR( wld_getegid, 108 /* SYS_getegid */ );
+ 
+ #elif defined(__aarch64__)
+ 
+-void *thread_data[256] __attribute__((used));
++void *thread_data[256] __attribute__((retain,used));
+ 
+ /*
+  * The _start function is the entry and exit point of this program
+@@ -531,7 +533,7 @@ SYSCALL_NOERR( wld_getegid, 177 /* SYS_getegid */ );
+ 
+ #elif defined(__arm__)
+ 
+-void *thread_data[256];
++void *thread_data[256] __attribute__((retain,used));
+ 
+ /*
+  * The _start function is the entry and exit point of this program
+@@ -1397,7 +1399,7 @@ static void set_process_name( int argc, char *argv[] )
+  *  Load the binary and then its ELF interpreter.
+  *  Note, we assume that the binary is a dynamically linked ELF shared object.
+  */
+-__attribute__((used)) void* wld_start( void **stack )
++__attribute__((retain,used)) void* wld_start( void **stack )
+ {
+     long i, *pargc;
+     char **argv, **p;
+@@ -1523,6 +1525,8 @@ __attribute__((used)) void* wld_start( void **stack )
+     return (void *)ld_so_map.l_entry;
+ }
+ 
+-#pragma GCC visibility pop
++#if !defined(__LLD_LTO__)
++# pragma GCC visibility pop
++#endif
+ 
+ #endif /* __linux__ */
+diff --git a/tools/makedep.c b/tools/makedep.c
+index b1b5131..f428b3f 100644
+--- a/tools/makedep.c
++++ b/tools/makedep.c
+@@ -3778,6 +3778,7 @@ static void output_source_one_arch( struct makefile *make, struct incl_file *sou
+     output_filenames( defines );
+     output_filenames( cflags );
+     output_filename( var_cflags );
++    output_filenames( get_expanded_file_local_var( make, obj, "CFLAGS" ));
+     output( "\n" );
+ 
+     if (make->testdll && strendswith( source->name, ".c" ) &&
+@@ -3841,6 +3842,7 @@ static void output_source_one_arch( struct makefile *make, struct incl_file *sou
+         cmd->cmd = get_expanded_arch_var( make, "CC", arch );
+         if (cflags) strarray_add( &cmd->args, cflags );
+     }
++    strarray_addall( &cmd->args, get_expanded_file_local_var( make, obj, "CFLAGS" ));
+     list_add_tail( &compile_commands, &cmd->entry );
+ }
+ 

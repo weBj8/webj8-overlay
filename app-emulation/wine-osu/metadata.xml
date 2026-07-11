@@ -7,8 +7,6 @@ pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
     <name>ston</name>
   </maintainer>
   <use>
-    <flag name="capi">Enable ISDN support using
-    <pkg>net-libs/libcapi</pkg></flag>
     <flag name="crossdev-mingw">Use
     <pkg>sys-devel/crossdev</pkg>for the toolchain rather than
     <pkg>dev-util/mingw64-toolchain</pkg>(requires manual setting
@@ -25,8 +23,6 @@ pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
     shares using
     <pkg>net-fs/samba</pkg></flag>
     <flag name="opencl">Enable OpenCL support</flag>
-    <flag name="osmesa">Enable off-screen rendering (OpenGL in
-    bitmaps) support</flag>
     <flag name="pcap">Support packet capture software (e.g.
     wireshark)</flag>
     <flag name="perl">Install helpers that require perl
@@ -39,6 +35,9 @@ pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
     <flag name="vulkan">Enable Vulkan drivers</flag>
   </use>
   <upstream>
+    <remote-id type="github">wine-mirror/wine</remote-id>
     <remote-id type="github">wine-staging/wine-staging</remote-id>
+    <remote-id type="github">whrvt/wine-osu-patches</remote-id>
+    <remote-id type="github">NelloKudo/WineBuilder</remote-id>
   </upstream>
 </pkgmetadata>
