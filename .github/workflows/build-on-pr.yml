@@ -25,11 +25,22 @@ jobs:
     - name: packages
       id: packages
       run: |
-        packages=$(   git diff --diff-filter="ACMR" --name-only ${{ github.event.pull_request.base.sha }} \
-                    | grep -E '.*\/.*\/.*\.ebuild$' \
-                    | xargs -I{} dirname {} | sort | uniq | tr '\n' ' ' )
-        echo "::set-output name=packages::$packages"
-        echo "emerge $packages"
+        packages=$(
+          git diff --diff-filter="ACMR" --name-only "${{ github.event.pull_request.base.sha }}" |
+            while IFS= read -r ebuild; do
+              case ${ebuild} in
+                */*/*.ebuild)
+                  category=${ebuild%%/*}
+                  cpv=${ebuild##*/}
+                  printf '=%s/%s::webj8-overlay\n' "${category}" "${cpv%.ebuild}"
+                  ;;
+              esac
+            done |
+            sort -u |
+            tr '\n' ' '
+        )
+        echo "packages=${packages}" >> "${GITHUB_OUTPUT}"
+        echo "emerge ${packages}"
 
     - name: docker
       uses: liangyongxiang/emerge-action@v0.1
