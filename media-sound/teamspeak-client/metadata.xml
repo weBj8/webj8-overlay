@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<name>Stllok</name>
+		<email>osustllok@gmail.com</email>
+	</maintainer>
+	<longdescription lang="en">
+		TeamSpeak 3 is a proprietary Voice over Internet Protocol client for audio
+		communication between users on server-hosted chat channels. This package
+		repackages the legacy Linux client distributed by TeamSpeak.
+	</longdescription>
+	<upstream>
+		<bugs-to>https://support.teamspeak.com/hc/en-us/requests/new</bugs-to>
+	</upstream>
+</pkgmetadata>
