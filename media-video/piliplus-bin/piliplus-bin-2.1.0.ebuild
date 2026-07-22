@@ -5,7 +5,7 @@ EAPI=8
 
 inherit desktop xdg
 
-MY_PV="2.0.9+5051"
+MY_PV="2.1.0+5109"
 MY_PV_URI="${MY_PV/+/%2B}"
 
 DESCRIPTION="Bilibili video client built with Flutter"
