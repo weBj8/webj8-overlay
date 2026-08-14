@@ -7,7 +7,7 @@ inherit unpacker xdg
 
 DESCRIPTION="Free and open source instant messaging and VoIP chat app"
 HOMEPAGE="https://fluxer.app https://github.com/fluxerapp/fluxer"
-SRC_URI="https://api.fluxer.app/dl/desktop/stable/linux/x64/${PV}/deb -> ${P}-amd64.deb"
+SRC_URI="https://api.fluxer.app/dl/desktop/canary/linux/x64/${PV}/deb -> ${P}-amd64.deb"
 
 LICENSE="AGPL-3"
 SLOT="0"
@@ -46,11 +46,11 @@ RDEPEND="
 S=${WORKDIR}
 
 QA_PREBUILT="
-	opt/Fluxer/*
-	opt/Fluxer/resources/app.asar.unpacked/node_modules/@electron-webauthn/native-linux-x64-gnu/*.node
-	opt/Fluxer/resources/app.asar.unpacked/node_modules/electron-webauthn-mac/native/*.node
-	opt/Fluxer/resources/app.asar.unpacked/node_modules/node-mac-permissions/build/Release/*.node
-	opt/Fluxer/resources/app.asar.unpacked/node_modules/uiohook-napi/prebuilds/*/*.node
+	opt/Fluxer?Canary/*
+	opt/Fluxer?Canary/resources/app.asar.unpacked/node_modules/@electron-webauthn/native-linux-x64-gnu/*.node
+	opt/Fluxer?Canary/resources/app.asar.unpacked/node_modules/electron-webauthn-mac/native/*.node
+	opt/Fluxer?Canary/resources/app.asar.unpacked/node_modules/node-mac-permissions/build/Release/*.node
+	opt/Fluxer?Canary/resources/app.asar.unpacked/node_modules/uiohook-napi/prebuilds/*/*.node
 "
 
 src_unpack() {
@@ -63,18 +63,18 @@ src_install() {
 	unpacker "${DISTDIR}/${P}-amd64.deb"
 
 	sed -i \
-		-e 's|^Exec=/opt/Fluxer/fluxer %U$|Exec=fluxer %U|' \
+		-e 's|^Exec="/opt/Fluxer Canary/fluxer-canary"|Exec=fluxer|' \
 		-e 's|^Comment=Fluxer$|Comment=Instant messaging and VoIP client|' \
 		-e 's|^MimeType=.*$|MimeType=x-scheme-handler/fluxer;|' \
 		-e 's|^Categories=.*$|Categories=Network;InstantMessaging;Chat;|' \
-		"${ED}/usr/share/applications/fluxer.desktop" || die
+		"${ED}/usr/share/applications/fluxer-canary.desktop" || die
 
-	dosym -r /opt/Fluxer/fluxer /usr/bin/fluxer
+	dosym -r "/opt/Fluxer Canary/fluxer-canary" /usr/bin/fluxer
 
-	if [[ -f ${ED}/usr/share/doc/fluxer-app/changelog.gz ]]; then
-		gunzip -c "${ED}/usr/share/doc/fluxer-app/changelog.gz" > "${T}/changelog" || die
+	if [[ -f ${ED}/usr/share/doc/fluxer-canary/changelog.gz ]]; then
+		gunzip -c "${ED}/usr/share/doc/fluxer-canary/changelog.gz" > "${T}/changelog" || die
 		dodoc "${T}/changelog"
-		rm -r "${ED}/usr/share/doc/fluxer-app" || die
+		rm -r "${ED}/usr/share/doc/fluxer-canary" || die
 	fi
 }
 
