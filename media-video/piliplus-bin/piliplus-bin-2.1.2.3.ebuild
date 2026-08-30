@@ -5,12 +5,13 @@ EAPI=8
 
 inherit desktop xdg
 
-MY_PV="2.1.0+5109"
+MY_PV="2.1.2+5281"
 MY_PV_URI="${MY_PV/+/%2B}"
 
 DESCRIPTION="Bilibili video client built with Flutter"
 HOMEPAGE="https://github.com/bggRGjQaUbCoE/PiliPlus"
 SRC_URI="https://github.com/bggRGjQaUbCoE/PiliPlus/releases/download/${PV}/PiliPlus_linux_${MY_PV_URI}_amd64.tar.gz -> ${P}-amd64.tar.gz"
+S=${WORKDIR}
 
 LICENSE="GPL-3"
 SLOT="0"
@@ -29,7 +30,6 @@ RDEPEND="
 	media-libs/libepoxy
 	media-video/mpv[libmpv]
 	net-libs/webkit-gtk:4.1
-	sys-libs/zlib
 	x11-libs/cairo
 	x11-libs/gdk-pixbuf:2
 	x11-libs/gtk+:3
@@ -38,8 +38,6 @@ RDEPEND="
 	virtual/jre
 "
 BDEPEND="dev-util/patchelf"
-
-S=${WORKDIR}
 
 QA_PREBUILT="
 	opt/piliplus/lib/*.so
