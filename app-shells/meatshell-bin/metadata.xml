@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>osustllok@gmail.com</email>
+		<name>Stllok</name>
+	</maintainer>
+	<longdescription>
+		Lightweight FinalShell-style SSH, SFTP, serial, Telnet, and terminal client
+		distributed as upstream prebuilt Linux binaries.
+	</longdescription>
+	<upstream>
+		<bugs-to>https://github.com/yituorou/meatshell/issues</bugs-to>
+		<remote-id type="github">yituorou/meatshell</remote-id>
+	</upstream>
+</pkgmetadata>
