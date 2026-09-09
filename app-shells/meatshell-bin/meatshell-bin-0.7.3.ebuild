@@ -15,7 +15,9 @@ SRC_URI="
 		https://github.com/yituorou/meatshell/releases/download/v${PV}/meatshell-v${PV}-linux-aarch64-glibc228.tar.gz
 	)
 "
-S="${WORKDIR}/meatshell-v${PV}-linux-${ARCH/amd64/x86_64}-glibc228"
+MY_ARCH="${ARCH/amd64/x86_64}"
+MY_ARCH="${MY_ARCH/arm64/aarch64}"
+S="${WORKDIR}/meatshell-v${PV}-linux-${MY_ARCH}-glibc228"
 
 LICENSE="|| ( Apache-2.0 MIT ) CC-BY-4.0"
 SLOT="0"
