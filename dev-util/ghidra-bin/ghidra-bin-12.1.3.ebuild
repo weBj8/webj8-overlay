@@ -7,7 +7,7 @@ inherit desktop xdg
 
 MY_PN="${PN%-bin}"
 MY_P="${MY_PN}_${PV}_PUBLIC"
-PUBLIC_DATE="20260605"
+PUBLIC_DATE="20260817"
 
 DESCRIPTION="Software reverse engineering framework"
 HOMEPAGE="https://github.com/NationalSecurityAgency/ghidra"
