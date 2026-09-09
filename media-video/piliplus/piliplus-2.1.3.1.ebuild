@@ -6,7 +6,7 @@ EAPI=8
 inherit desktop flag-o-matic xdg
 
 FLUTTER_PV="3.47.2"
-MY_PV="2.1.2+5281"
+MY_PV="2.1.3+5315"
 
 DESCRIPTION="Bilibili video client built with Flutter"
 HOMEPAGE="https://github.com/bggRGjQaUbCoE/PiliPlus"
@@ -132,7 +132,7 @@ src_configure() {
 	done
 
 	cat > pili_release.json <<-	EOF || die
-	{"pili.name":"${MY_PV%+*}","pili.code":${MY_PV#*+},"pili.hash":"44680b8a486a0518f366a2c9bff6242506cf8783","pili.time":1788058648}
+	{"pili.name":"${MY_PV%+*}","pili.code":${MY_PV#*+},"pili.hash":"4d66b7b638c9cb9d533ffe95f23a56b822af90e2","pili.time":1788582982}
 	EOF
 }
 
