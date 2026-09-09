@@ -9,9 +9,9 @@ DESCRIPTION="unix-like reverse engineering framework and commandline tools"
 HOMEPAGE="https://www.radare.org"
 
 BINS_COMMIT=35b67ef6c274910348dfa17756a9837971e054d0
-CAPSTONE_COMMIT=49e5aef5bc8b1abb1840f56db4340a9051397df7
+CAPSTONE_COMMIT=51360daf925e50d4da383cff2278107e6ffd8074
 QJS_COMMIT=9d15fb60b67c45fd0de413bb49e48f8dacebac16
-SDB_COMMIT=2.5.0
+SDB_COMMIT=2.5.2
 
 SRC_URI="
 	mirror+https://github.com/radareorg/radare2/archive/${PV}.tar.gz -> ${P}.tar.gz
