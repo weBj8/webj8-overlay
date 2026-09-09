@@ -11,7 +11,25 @@ Before installing, ensure your system meets the following requirements:
 - GPU must support SR-IOV functionality (check Intel documentation for your specific model)
 
 ### Kernel Requirements
-- **Minimum kernel version**: 6.12.x
+
+The supported kernel range depends on the selected release:
+
+| Ebuild version | Supported kernels |
+| --- | --- |
+| `2026.08.12.1` and current `9999` | 6.17.x through 7.1.x |
+| `2026.03.05.7` (maintenance release) | 6.12.x through 6.19.x |
+
+For a 6.12.x through 6.16.x kernel, select the maintenance release explicitly:
+```bash
+emerge =sys-kernel/i915-sriov-dkms-2026.03.05.7
+```
+
+The Gentoo ebuild builds modules with `linux-mod-r1`, not the DKMS command.
+DKMS commands elsewhere in this guide apply to upstream's standalone installation,
+not to the Gentoo package. The new releases also require `CONFIG_HMM_MIRROR=y`
+and `CONFIG_MMU_NOTIFIER=y` for the bundled GPU SVM support.
+
+- **Check your kernel version**:
   ```bash
   uname -r
   ```

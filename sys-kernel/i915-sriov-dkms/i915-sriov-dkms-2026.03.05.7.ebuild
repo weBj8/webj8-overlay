@@ -1,4 +1,4 @@
-# Copyright 2024-2025 Gentoo Authors
+# Copyright 2024-2026 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -16,29 +16,30 @@ SLOT="0"
 KEYWORDS="~amd64"
 
 MODULES_KERNEL_MIN=6.12
-MODULES_KERNEL_MAX=6.18
+MODULES_KERNEL_MAX=6.19
 
-CONFIG_CHECK="DRM_I915 IOMMU_SUPPORT PCI_IOV"
+CONFIG_CHECK="DRM_I915 IOMMU_SUPPORT PCI_IOV HMM_MIRROR MMU_NOTIFIER"
 
 src_compile() {
 	MODULES_MAKEARGS+=(
-		TARGET="${KV_FULL}"
+		M="${S}"
 	)
 	local modlist=(
-		intel_sriov_compat=compat
-		i915=drivers/gpu/drm/i915
-		kvmgt=drivers/gpu/drm/i915
-		xe=drivers/gpu/drm/xe
+		"intel_sriov_compat=compat:${KV_OUT_DIR}:${S}/compat:modules"
+		"i915=drivers/gpu/drm/i915:${KV_OUT_DIR}:${S}/drivers/gpu/drm/i915:modules"
+		"kvmgt=drivers/gpu/drm/i915:${KV_OUT_DIR}:${S}/drivers/gpu/drm/i915:modules"
+		"xe=drivers/gpu/drm/xe:${KV_OUT_DIR}:${S}/drivers/gpu/drm/xe:modules"
 	)
 	linux-mod-r1_src_compile
 }
 
 src_install() {
 	linux-mod-r1_src_install
-	dodoc README.md COPYING
+	dodoc README.md COPYING "${FILESDIR}"/*.example
 }
 
 pkg_postinst() {
+	linux-mod-r1_pkg_postinst
 	elog ""
 	elog "WARNING: This package is highly experimental and may cause system instability."
 	elog ""

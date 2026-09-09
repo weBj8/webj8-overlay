@@ -1,18 +1,19 @@
-# Copyright 1999-2026 Gentoo Authors
+# Copyright 2024-2026 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-inherit linux-mod-r1 git-r3
+inherit linux-mod-r1
 
 DESCRIPTION="DKMS module for Linux i915 and xe drivers with SR-IOV support"
 HOMEPAGE="https://github.com/strongtz/i915-sriov-dkms"
 
-EGIT_REPO_URI="https://github.com/strongtz/i915-sriov-dkms"
+SRC_URI="https://github.com/strongtz/i915-sriov-dkms/archive/${PV}.tar.gz -> ${P}.tar.gz"
+S="${WORKDIR}/${P}"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS=""
+KEYWORDS="~amd64"
 
 MODULES_KERNEL_MIN=6.17
 MODULES_KERNEL_MAX=7.1
