@@ -1,0 +1,14 @@
+DEFINED_PHASES=install postinst postrm preinst prepare
+DESCRIPTION=Desktop client for OpenWork
+EAPI=8
+HOMEPAGE=https://openworklabs.com https://github.com/different-ai/openwork
+IDEPEND=dev-util/desktop-file-utils x11-misc/shared-mime-info
+INHERIT=desktop xdg
+KEYWORDS=~amd64 ~arm64
+LICENSE=MIT
+RDEPEND=app-accessibility/at-spi2-core:2 app-crypt/libsecret dev-libs/expat dev-libs/glib:2 dev-libs/nspr dev-libs/nss media-libs/alsa-lib media-libs/mesa net-print/cups sys-apps/dbus virtual/libudev x11-libs/cairo x11-libs/gtk+:3 x11-libs/libX11 x11-libs/libXcomposite x11-libs/libXdamage x11-libs/libXext x11-libs/libXfixes x11-libs/libXrandr x11-libs/libxcb x11-libs/libxkbcommon x11-libs/pango x11-misc/xdg-utils x11-themes/hicolor-icon-theme
+RESTRICT=strip
+SLOT=0
+SRC_URI=amd64? ( https://github.com/different-ai/openwork/releases/download/v0.18.44/openwork-linux-x64-0.18.44.tar.gz -> openwork-bin-0.18.44-amd64.tar.gz ) arm64? ( https://github.com/different-ai/openwork/releases/download/v0.18.44/openwork-linux-arm64-0.18.44.tar.gz -> openwork-bin-0.18.44-arm64.tar.gz )
+_eclasses_=desktop	e447b5f77146d69797e9f03ff177f3f1	xdg	3ef49a87c52c8b77c476351195dfe575	xdg-utils	42869b3c8d86a70ef3cf75165a395e09
+_md5_=b7f17a8aa5e492ea3b314a77d71a9017

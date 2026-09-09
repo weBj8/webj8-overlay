@@ -6,7 +6,9 @@
 		<email>osustllok@gmail.com</email>
 	</maintainer>
 	<longdescription lang="en">
-		OpenWork desktop client repackaged from upstream Debian release artifacts.
+		OpenWork provides a desktop interface for running AI agents and managing
+		local workspaces. This package installs the upstream Linux desktop release
+		together with its bundled runtime and command-line sidecars.
 	</longdescription>
 	<upstream>
 		<remote-id type="github">different-ai/openwork</remote-id>
