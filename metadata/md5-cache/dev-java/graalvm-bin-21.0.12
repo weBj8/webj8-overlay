@@ -1,0 +1,18 @@
+BDEPEND=app-arch/unzip
+DEFINED_PHASES=install postinst postrm prerm pretend setup
+DEPEND=dev-java/java-config app-eselect/eselect-java
+DESCRIPTION=Prebuilt Java JDK binaries provided by Oracle GraalVM
+EAPI=8
+HOMEPAGE=https://www.graalvm.org/
+IDEPEND=app-eselect/eselect-java
+INHERIT=java-vm-2 toolchain-funcs
+IUSE=+alsa cups headless-awt selinux +source
+KEYWORDS=~amd64
+LICENSE=GFTC
+RDEPEND=>=sys-apps/baselayout-java-0.1.0-r1 media-libs/fontconfig:1.0 media-libs/freetype:2 media-libs/harfbuzz elibc_glibc? ( >=sys-libs/glibc-2.28 ) virtual/zlib:= alsa? ( media-libs/alsa-lib ) cups? ( net-print/cups ) selinux? ( sec-policy/selinux-java ) !headless-awt? ( x11-libs/libX11 x11-libs/libXext x11-libs/libXi x11-libs/libXrender x11-libs/libXtst ) dev-java/java-config app-eselect/eselect-java
+REQUIRED_USE=elibc_glibc
+RESTRICT=bindist preserve-libs splitdebug strip
+SLOT=21
+SRC_URI=https://download.oracle.com/graalvm/21/archive/graalvm-jdk-21.0.12_linux-x64_bin.tar.gz
+_eclasses_=toolchain-funcs	58a918e3a42d0156f010dcfd43725be5	multilib	fc812e8eb2170022c28272d80a1f9e77	pax-utils	5555f2e75744739fe100ee62c22d28fe	prefix	2765cb74ebcf9f9ac73893d4503c8cb6	xdg-utils	42869b3c8d86a70ef3cf75165a395e09	java-vm-2	6c7243f2269a7c9b5c177579e49f89ab
+_md5_=7ca183d81b1e74e93ffe7923c8065775

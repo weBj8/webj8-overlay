@@ -1,29 +1,29 @@
-# Copyright 1999-2023 Gentoo Authors
+# Copyright 1999-2026 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
 inherit java-vm-2 toolchain-funcs
 
-SLOT="21"
-MY_PV="21.0.4+8.1"
-
-SRC_URI="https://download.oracle.com/graalvm/${SLOT}/archive/graalvm-jdk-${PV}_linux-x64_bin.tar.gz"
-
-DESCRIPTION="Prebuilt Java JDK binaries provided by GraalVM"
+DESCRIPTION="Prebuilt Java JDK binaries provided by Oracle GraalVM"
 HOMEPAGE="https://www.graalvm.org/"
-LICENSE="GPL-2-with-classpath-exception"
+# GraalVM innovation release 25.3 bundles JDK 25.0.4.1.
+SRC_URI="https://gds.oracle.com/download/graal/25i3/archive/graalvm-jdk-25i3-25.0.4.1_linux-x64_bin.tar.gz"
+S="${WORKDIR}/graalvm-${PV}+1.1"
+
+LICENSE="GFTC"
+SLOT="25"
 KEYWORDS="~amd64"
 IUSE="+alsa cups headless-awt selinux +source"
+REQUIRED_USE="elibc_glibc"
 
 RDEPEND="
 	>=sys-apps/baselayout-java-0.1.0-r1
 	media-libs/fontconfig:1.0
 	media-libs/freetype:2
 	media-libs/harfbuzz
-	elibc_glibc? ( >=sys-libs/glibc-2.2.5:* )
-	elibc_musl? ( sys-libs/musl )
-	sys-libs/zlib
+	elibc_glibc? ( >=sys-libs/glibc-2.28 )
+	virtual/zlib:=
 	alsa? ( media-libs/alsa-lib )
 	cups? ( net-print/cups )
 	selinux? ( sec-policy/selinux-java )
@@ -34,12 +34,10 @@ RDEPEND="
 		x11-libs/libXrender
 		x11-libs/libXtst
 	)
-	"
+"
 
-RESTRICT="preserve-libs splitdebug"
+RESTRICT="bindist preserve-libs splitdebug strip"
 QA_PREBUILT="*"
-
-S="${WORKDIR}/graalvm-jdk-${MY_PV}"
 
 pkg_pretend() {
 	if [[ "$(tc-is-softfloat)" != "no" ]]; then
@@ -47,13 +45,11 @@ pkg_pretend() {
 	fi
 }
 
-src_unpack() {
-	default
-}
-
 src_install() {
 	local dest="/opt/${P}"
 	local ddest="${ED}/${dest#/}"
+
+	docompress "${dest}/man"
 
 	# Not sure why they bundle this as it's commonly available and they
 	# only do so on x86_64. It's needed by libfontmanager.so. IcedTea
