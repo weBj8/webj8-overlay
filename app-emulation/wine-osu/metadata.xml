@@ -7,6 +7,8 @@ pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
     <name>ston</name>
   </maintainer>
   <use>
+    <flag name="arm64ec">Build ARM64EC support using FEX for x86-64 emulation</flag>
+    <flag name="wow64">Run 32-bit Windows applications with 64-bit Unix libraries</flag>
     <flag name="crossdev-mingw">Use
     <pkg>sys-devel/crossdev</pkg>for the toolchain rather than
     <pkg>dev-util/mingw64-toolchain</pkg>(requires manual setting
@@ -25,6 +27,7 @@ pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
     <flag name="opencl">Enable OpenCL support</flag>
     <flag name="pcap">Support packet capture software (e.g.
     wireshark)</flag>
+    <flag name="pipewire">Enable the native PipeWire audio driver</flag>
     <flag name="perl">Install helpers that require perl
     (winedump/winemaker)</flag>
     <flag name="samba">Pull in

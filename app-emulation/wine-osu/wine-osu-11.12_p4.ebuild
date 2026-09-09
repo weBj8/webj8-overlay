@@ -11,7 +11,8 @@ WINE_GECKO=2.47.4
 WINE_MONO=11.2.0
 WINE_COMMIT="996020f410e7a1aa2dd6b44cf740854ea524d31a"
 STAGING_COMMIT="bc50fb148ca22f8f328e7b75a7a2a7e145d0eec4"
-OSU_PATCHES_COMMIT="a5fa1de7f67c79039326e162b735bb26241eba4a"
+# WineBuilder wine-osu-staging-11.12-4 / winello-v11.12-4.
+OSU_PATCHES_COMMIT="6f9a41ec98ffcbfc4ffd9a9c195e6508db925090"
 WINE_P="wine-${WINE_COMMIT}"
 STAGING_P="wine-staging-${STAGING_COMMIT}"
 OSU_PATCHES_P="wine-osu-patches-${OSU_PATCHES_COMMIT}"
@@ -43,7 +44,7 @@ KEYWORDS="-* ~amd64 ~x86"
 IUSE="
 	+X +alsa bluetooth cups dbus dos +ffmpeg
 	+fontconfig +gecko gphoto2 +gstreamer kerberos +mono netapi
-	nls odbc opencl +opengl pcap perl +pulseaudio samba scanner
+	nls odbc opencl +opengl pcap perl pipewire +pulseaudio samba scanner
 	+sdl selinux smartcard +ssl +truetype +udev usb v4l
 	+vulkan +wayland +xinerama
 "
@@ -98,6 +99,7 @@ WINE_COMMON_DEPEND="
 	)
 	opencl? ( virtual/opencl[${WINE_USEDEP}] )
 	pcap? ( net-libs/libpcap[${WINE_USEDEP}] )
+	pipewire? ( media-video/pipewire:=[${WINE_USEDEP}] )
 	pulseaudio? ( media-libs/libpulse[${WINE_USEDEP}] )
 	scanner? ( media-gfx/sane-backends[${WINE_USEDEP}] )
 	smartcard? ( sys-apps/pcsc-lite[${WINE_USEDEP}] )
@@ -105,7 +107,7 @@ WINE_COMMON_DEPEND="
 	usb? ( dev-libs/libusb:1[${WINE_USEDEP}] )
 	wayland? (
 		dev-libs/wayland[${WINE_USEDEP}]
-		x11-libs/libxkbcommon[${WINE_USEDEP}]
+		>=x11-libs/libxkbcommon-1.6.0[${WINE_USEDEP}]
 	)
 "
 RDEPEND="
@@ -199,8 +201,8 @@ src_prepare() {
 	mapfile -d '' -t patchlist < <(
 		find "${patch_root}" -type f -name '*.patch' -print0 | LC_ALL=C sort -z -f
 	) || die
-	[[ ${#patchlist[@]} -eq 169 ]] ||
-		die "Expected 169 osu! patches, found ${#patchlist[@]}"
+	[[ ${#patchlist[@]} -eq 226 ]] ||
+		die "Expected 226 osu! patches, found ${#patchlist[@]}"
 	for patch in "${patchlist[@]}"; do
 		eapply --ignore-whitespace -Np1 "${patch}"
 	done
@@ -255,6 +257,7 @@ src_configure() {
 		$(use_with opengl)
 		--without-oss # media-sound/oss is not packaged (OSSv4)
 		$(use_with pcap)
+		$(use_with pipewire)
 		$(use_with pulseaudio pulse)
 		$(use_with scanner sane)
 		$(use_with sdl)
