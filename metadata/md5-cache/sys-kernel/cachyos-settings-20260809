@@ -1,0 +1,14 @@
+BDEPEND=virtual/pkgconfig
+DEFINED_PHASES=install postinst postrm prepare
+DESCRIPTION=System configuration tweaks for performance and responsiveness
+EAPI=8
+HOMEPAGE=https://github.com/CachyOS/CachyOS-Settings
+INHERIT=udev tmpfiles
+IUSE=zram
+KEYWORDS=~amd64
+LICENSE=GPL-3 ISC
+RDEPEND=virtual/udev sys-apps/hdparm sys-apps/pciutils sys-apps/systemd sys-apps/util-linux sys-libs/timezone-data net-wireless/iw zram? ( sys-apps/zram-generator app-arch/zstd ) virtual/tmpfiles
+SLOT=0
+SRC_URI=https://github.com/CachyOS/CachyOS-Settings/archive/refs/tags/1.4.0.tar.gz -> cachyos-settings-20260809.tar.gz
+_eclasses_=toolchain-funcs	58a918e3a42d0156f010dcfd43725be5	udev	1a23882bb73bc31c64a6f00a5e515f34	tmpfiles	e0b49bcd7a0daea941c0fbe4cb35ff4e
+_md5_=83f40df15eb4f9d8116cdeccb4551bd1
