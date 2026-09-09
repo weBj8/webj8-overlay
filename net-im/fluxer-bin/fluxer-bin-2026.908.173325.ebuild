@@ -9,6 +9,8 @@ DESCRIPTION="Free and open source instant messaging and VoIP chat app"
 HOMEPAGE="https://fluxer.app https://github.com/fluxerapp/fluxer"
 SRC_URI="https://api.fluxer.app/dl/desktop/canary/linux/x64/${PV}/deb -> ${P}-amd64.deb"
 
+S=${WORKDIR}
+
 LICENSE="AGPL-3"
 SLOT="0"
 KEYWORDS="-* ~amd64"
@@ -19,9 +21,12 @@ RDEPEND="
 	app-crypt/libsecret
 	dev-libs/expat
 	dev-libs/glib:2
+	dev-libs/libfido2
 	dev-libs/nss
 	media-libs/alsa-lib
+	media-libs/libpulse
 	media-libs/mesa
+	media-video/pipewire:=
 	net-print/cups
 	sys-apps/dbus
 	sys-apps/util-linux
@@ -37,20 +42,16 @@ RDEPEND="
 	x11-libs/libXrandr
 	x11-libs/libXt
 	x11-libs/libXtst
+	x11-libs/libnotify
 	x11-libs/libxcb
 	x11-libs/libxkbcommon
 	x11-misc/xdg-utils
 	x11-themes/hicolor-icon-theme
 "
 
-S=${WORKDIR}
-
 QA_PREBUILT="
 	opt/Fluxer?Canary/*
-	opt/Fluxer?Canary/resources/app.asar.unpacked/node_modules/@electron-webauthn/native-linux-x64-gnu/*.node
-	opt/Fluxer?Canary/resources/app.asar.unpacked/node_modules/electron-webauthn-mac/native/*.node
-	opt/Fluxer?Canary/resources/app.asar.unpacked/node_modules/node-mac-permissions/build/Release/*.node
-	opt/Fluxer?Canary/resources/app.asar.unpacked/node_modules/uiohook-napi/prebuilds/*/*.node
+	opt/Fluxer?Canary/resources/app.asar.unpacked/node_modules/@fluxer/*/*.node
 "
 
 src_unpack() {
@@ -63,6 +64,7 @@ src_install() {
 	unpacker "${DISTDIR}/${P}-amd64.deb"
 
 	sed -i \
+		-e 's|^Exec="/opt/Fluxer Canary/fluxer-canary-launcher"|Exec=fluxer|' \
 		-e 's|^Exec="/opt/Fluxer Canary/fluxer-canary"|Exec=fluxer|' \
 		-e 's|^Comment=Fluxer$|Comment=Instant messaging and VoIP client|' \
 		-e 's|^MimeType=.*$|MimeType=x-scheme-handler/fluxer;|' \
