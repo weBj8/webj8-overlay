@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>osustllok@gmail.com</email>
+		<name>Stllok</name>
+	</maintainer>
+	<upstream>
+		<remote-id type="github">amamiyakokoro/KokoroBox-Desktop</remote-id>
+	</upstream>
+</pkgmetadata>

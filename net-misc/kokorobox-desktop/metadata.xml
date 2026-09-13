@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<name>Stllok</name>
+		<email>osustllok@gmail.com</email>
+	</maintainer>
+	<longdescription lang="en">
+		KokoroBox is an Electron desktop client for the Mihomo proxy core.
+		This package builds the application from source using the upstream
+		JavaScript lockfile and bundles pinned Electron, Mihomo, service and
+		native module binaries. JavaScript dependency installation needs network
+		access. The amd64 core and service require an x86-64-v3 CPU.
+	</longdescription>
+	<upstream>
+		<remote-id type="github">amamiyakokoro/KokoroBox-Desktop</remote-id>
+	</upstream>
+</pkgmetadata>

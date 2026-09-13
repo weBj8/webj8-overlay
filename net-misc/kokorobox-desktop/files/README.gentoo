@@ -1,0 +1,54 @@
+KokoroBox Desktop on Gentoo
+==========================
+
+Build provenance
+----------------
+This package compiles the main process, preload and React renderer from upstream
+Desktop tag 3.26.9-5 using electron-vite. It never downloads or repacks a Desktop
+release app.asar. It is not an entirely from-source software stack: Electron
+44.3.0, Mihomo 1.19.30 and KokoroBox Service 0.2.4 are pinned upstream binaries in
+the Manifest. The upstream pnpm lockfile supplies kokorobox-native 0.8.2, its N-API
+module and its architecture-specific traffic presenter as prebuilt npm packages.
+The bundled amd64 Mihomo and service require an x86-64-v3 CPU.
+
+The ebuild bootstraps pnpm 11.1.1 from a Manifest-verified tarball and installs
+JavaScript dependencies with --frozen-lockfile --ignore-scripts. The upstream
+lockfile, dependency patch and workspace build settings are preserved, except
+that supportedArchitectures is restricted to the build host to exclude foreign
+native binaries. Upstream publishes no offline dependency bundle;
+RESTRICT=network-sandbox permits this locked npm
+installation to access the registry. This is deliberately not an offline build.
+The npm package integrity hashes come from the upstream lockfile, not the Gentoo
+Manifest. A complete pre-fetched npm bundle would be needed to remove this
+restriction. Package lifecycle scripts and upstream prepare.ts are not run:
+they otherwise download moving cores, geodata, fonts and a service prerelease.
+
+The upstream system-core build mode instead uses the installed, pinned Mihomo
+at /opt/kokorobox/resources/sidecar/mihomo and the pinned service at
+/opt/kokorobox/resources/files/kokorobox-service. This mode disables bundled-core
+switching/updating; there is no moving alpha core. It omits the downloaded emoji
+font and bundled geodata. Profiles that use geodata require Mihomo to retrieve
+those data at runtime (network access), or the user to supply them in their core
+data directory. Normal proxy use does not require the privileged service.
+
+Runtime and privileges
+----------------------
+Run kokorobox as your desktop user. Electron's sandbox is not disabled by the
+launcher. Chromium's chrome-sandbox helper is root-owned and mode 4755, as
+required by the bundled runtime. Neither core nor service is installed setuid,
+and installation does not create or activate a service.
+
+Use the app's permission/service panel to explicitly install and initialize
+KokoroBox Service if privileged features such as TUN are needed. This invokes
+the pinned service through pkexec and requires a running polkit authentication
+agent and an init system supported by upstream's helper. Select service mode
+and initialize the per-user service authentication before enabling TUN. Do not
+run the whole Electron application as root or grant setuid to Mihomo. OpenRC
+service integration is not supplied by this package; ordinary unprivileged
+proxy operation remains available without it.
+
+Use Portage for application/core/service updates, not the upstream updater.
+Before removing this package, remove any service you explicitly registered
+through the same permission/service panel; that registration is outside Portage.
+The source and -bin packages conflict because both own /opt/kokorobox and the
+kokorobox launcher. Existing user settings are not removed by either package.

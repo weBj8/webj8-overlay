@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=KokoroBox
+Comment=Mihomo proxy client
+Exec=kokorobox %U
+Icon=kokorobox
+Terminal=false
+Type=Application
+Categories=Network;
+StartupWMClass=kokorobox
+MimeType=x-scheme-handler/clash;x-scheme-handler/mihomo;x-scheme-handler/kokorobox;x-scheme-handler/sparkle;x-scheme-handler/kokoro;
