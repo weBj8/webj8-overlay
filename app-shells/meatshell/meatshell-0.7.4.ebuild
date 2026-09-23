@@ -256,9 +256,7 @@ CRATES="
 	i-slint-backend-linuxkms@1.16.1
 	i-slint-backend-selector@1.16.1
 	i-slint-common@1.16.1
-	i-slint-compiler@1.16.1
 	i-slint-core-macros@1.16.1
-	i-slint-core@1.16.1
 	i-slint-renderer-femtovg@1.16.1
 	i-slint-renderer-skia@1.16.1
 	i-slint-renderer-software@1.16.1
