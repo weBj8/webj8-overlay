@@ -157,6 +157,7 @@ CRATES="
 	fdeflate@0.3.7
 	fearless_simd@0.4.1
 	find-msvc-tools@0.1.14
+	fixedbitset@0.5.7
 	flate2@1.1.10
 	float-cmp@0.9.0
 	fmv-macos-events@0.1.0
@@ -266,6 +267,7 @@ CRATES="
 	memchr@2.8.3
 	memmap2@0.9.11
 	memoffset@0.9.1
+	memory-stats@1.2.0
 	miniz_oxide@0.8.9
 	miniz_oxide@0.9.1
 	mio@1.2.3
@@ -320,6 +322,7 @@ CRATES="
 	orbclient@0.3.55
 	ordered-float@5.5.0
 	ordered-stream@0.2.0
+	os_pipe@1.2.3
 	parking@2.2.1
 	parking_lot@0.12.5
 	parking_lot_core@0.9.12
@@ -331,6 +334,7 @@ CRATES="
 	pastey@0.2.3
 	peniko@0.6.1
 	percent-encoding@2.3.2
+	petgraph@0.8.3
 	phf@0.13.1
 	phf_generator@0.13.1
 	phf_macros@0.13.1
@@ -471,6 +475,7 @@ CRATES="
 	tracing-attributes@0.1.31
 	tracing-core@0.1.36
 	tracing@0.1.44
+	tree_magic_mini@3.2.2
 	twox-hash@2.1.4
 	type-map@0.5.1
 	uds_windows@1.2.1
@@ -566,6 +571,7 @@ CRATES="
 	winresource@0.1.31
 	winx@0.36.4
 	wit-bindgen@0.57.1
+	wl-clipboard-rs@0.9.4
 	writeable@0.6.4
 	x11-dl@2.21.0
 	x11rb-protocol@0.13.2

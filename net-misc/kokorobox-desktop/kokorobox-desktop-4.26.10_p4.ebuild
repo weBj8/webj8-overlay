@@ -7,9 +7,9 @@ inherit desktop xdg
 
 MY_PV="${PV/_p/-}"
 PNPM_PV="11.1.1"
-ELECTRON_PV="44.3.0"
-MIHOMO_PV="1.19.30"
-SERVICE_PV="0.2.4"
+ELECTRON_PV="44.5.1"
+MIHOMO_PV="1.19.32"
+SERVICE_PV="0.6.13"
 
 DESCRIPTION="Mihomo proxy client built from its Electron/React application sources"
 HOMEPAGE="https://github.com/amamiyakokoro/KokoroBox-Desktop"

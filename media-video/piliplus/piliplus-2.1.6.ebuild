@@ -5,8 +5,8 @@ EAPI=8
 
 inherit desktop flag-o-matic xdg
 
-FLUTTER_PV="3.47.4"
-MY_PV="2.1.4+5348"
+FLUTTER_PV="3.47.6"
+MY_PV="2.1.6+5453"
 
 DESCRIPTION="Bilibili video client built with Flutter"
 HOMEPAGE="https://github.com/bggRGjQaUbCoE/PiliPlus"

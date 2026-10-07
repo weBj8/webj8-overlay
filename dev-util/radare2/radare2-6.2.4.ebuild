@@ -10,8 +10,8 @@ HOMEPAGE="https://www.radare.org"
 
 BINS_COMMIT=35b67ef6c274910348dfa17756a9837971e054d0
 CAPSTONE_COMMIT=51360daf925e50d4da383cff2278107e6ffd8074
-QJS_COMMIT=9d15fb60b67c45fd0de413bb49e48f8dacebac16
-SDB_COMMIT=2.5.2
+QJS_COMMIT=b51e5278439b2fa0510fbb1f3b3dff9f0064d5d7
+SDB_COMMIT=2.5.8
 
 SRC_URI="
 	mirror+https://github.com/radareorg/radare2/archive/${PV}.tar.gz -> ${P}.tar.gz

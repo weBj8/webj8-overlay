@@ -6,7 +6,7 @@ EAPI=8
 inherit udev tmpfiles
 
 # Keep date-based version ordering after the original snapshot ebuild.
-SETTINGS_VERSION="1.4.0"
+SETTINGS_VERSION="1.4.1"
 DESCRIPTION="System configuration tweaks for performance and responsiveness"
 HOMEPAGE="https://github.com/CachyOS/CachyOS-Settings"
 SRC_URI="https://github.com/CachyOS/CachyOS-Settings/archive/refs/tags/${SETTINGS_VERSION}.tar.gz -> ${P}.tar.gz"

@@ -9,7 +9,7 @@ DESCRIPTION="Library for YUV conversion and scaling"
 HOMEPAGE="https://chromium.googlesource.com/libyuv/libyuv"
 # Upstream has no release tags. Use the commit date rather than the opaque
 # third-party snapshot number used by older ebuilds (upstream version: 1971).
-MY_COMMIT="137e29972ebbb16e72a6fc6d2314823198c7884e"
+MY_COMMIT="98697ab033ff9fb56dbe42c6bb214e1d285640c4"
 SRC_URI="https://chromium.googlesource.com/libyuv/libyuv/+archive/${MY_COMMIT}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="BSD"

@@ -59,6 +59,8 @@ CRATES="
 	av-scenechange@0.14.1
 	av1-grain@0.2.5
 	avif-serialize@0.8.8
+	axum-core@0.5.6
+	axum@0.8.9
 	base16ct@0.2.0
 	base64@0.22.1
 	base64ct@1.8.3
@@ -95,6 +97,7 @@ CRATES="
 	cfg-if@1.0.4
 	cfg_aliases@0.2.1
 	cgl@0.3.2
+	chacha20@0.10.2
 	chacha20@0.9.1
 	chacha20poly1305@0.10.1
 	chrono@0.4.44
@@ -120,6 +123,7 @@ CRATES="
 	core_maths@0.1.1
 	countme@3.0.1
 	cpufeatures@0.2.17
+	cpufeatures@0.3.1
 	crc32fast@1.5.0
 	critical-section@1.2.0
 	crossbeam-channel@0.5.15
@@ -140,6 +144,7 @@ CRATES="
 	dconf_rs@0.3.0
 	delegate@0.13.5
 	der@0.7.10
+	deranged@0.5.8
 	derive_more-impl@2.1.1
 	derive_more@2.1.1
 	derive_utils@0.15.1
@@ -162,6 +167,7 @@ CRATES="
 	drm-sys@0.8.1
 	drm@0.14.1
 	dtor@0.8.1
+	dyn-clone@1.0.20
 	ecdsa@0.16.9
 	ed25519-dalek@2.2.0
 	ed25519@2.2.3
@@ -207,6 +213,7 @@ CRATES="
 	foreign-types-shared@0.3.1
 	foreign-types@0.5.0
 	form_urlencoded@1.2.2
+	fs2@0.4.3
 	futures-channel@0.3.32
 	futures-core@0.3.32
 	futures-executor@0.3.32
@@ -253,6 +260,13 @@ CRATES="
 	hmac@0.12.1
 	home@0.5.12
 	htmlparser@0.2.1
+	http-body-util@0.1.5
+	http-body@1.1.0
+	http@1.5.0
+	httparse@1.10.1
+	httpdate@1.0.3
+	hyper-util@0.1.21
+	hyper@1.11.1
 	i-slint-backend-linuxkms@1.16.1
 	i-slint-backend-selector@1.16.1
 	i-slint-common@1.16.1
@@ -301,8 +315,11 @@ CRATES="
 	jni@0.22.4
 	jobserver@0.1.34
 	js-sys@0.3.95
+	jsonwebtoken@9.3.1
 	keyboard-types@0.7.0
+	keyboard-types@0.8.3
 	khronos_api@3.1.0
+	ksni@0.3.6
 	kurbo@0.13.0
 	lazy_static@1.5.0
 	leb128fmt@0.1.0
@@ -332,6 +349,7 @@ CRATES="
 	mach2@0.4.3
 	malloc_buf@0.0.6
 	matchers@0.2.0
+	matchit@0.8.4
 	maybe-rayon@0.1.1
 	md5@0.7.0
 	memchr@2.8.0
@@ -339,11 +357,13 @@ CRATES="
 	memoffset@0.6.5
 	memoffset@0.9.1
 	mimalloc@0.1.52
+	mime@0.3.17
 	minimal-lexical@0.2.1
 	miniz_oxide@0.8.9
 	mio@1.2.0
 	moxcms@0.8.1
 	muda@0.18.0
+	muda@0.20.0
 	natord@1.0.9
 	ndk-context@0.1.1
 	ndk-sys@0.6.0+11769913
@@ -361,6 +381,7 @@ CRATES="
 	nu-ansi-term@0.50.3
 	num-bigint-dig@0.8.6
 	num-bigint@0.4.6
+	num-conv@0.2.2
 	num-derive@0.4.2
 	num-integer@0.1.46
 	num-iter@0.1.45
@@ -422,8 +443,10 @@ CRATES="
 	password-hash@0.5.0
 	paste@1.0.15
 	pastey@0.1.1
+	pastey@0.2.3
 	pbkdf2@0.12.2
 	pem-rfc7468@0.7.0
+	pem@3.0.6
 	percent-encoding@2.3.2
 	petgraph@0.8.3
 	pico-args@0.5.0
@@ -447,6 +470,7 @@ CRATES="
 	portable-atomic@1.13.1
 	portable-pty@0.8.1
 	potential_utf@0.1.5
+	powerfmt@0.2.0
 	ppv-lite86@0.2.21
 	prettyplease@0.2.37
 	primeorder@0.13.6
@@ -464,10 +488,12 @@ CRATES="
 	quote@1.0.45
 	r-efi@5.3.0
 	r-efi@6.0.0
+	rand@0.10.3
 	rand@0.8.6
 	rand@0.9.4
 	rand_chacha@0.3.1
 	rand_chacha@0.9.0
+	rand_core@0.10.1
 	rand_core@0.6.4
 	rand_core@0.9.5
 	rav1e@0.8.1
@@ -481,6 +507,8 @@ CRATES="
 	redox_syscall@0.5.18
 	redox_syscall@0.7.4
 	redox_users@0.4.6
+	ref-cast-impl@1.0.27
+	ref-cast@1.0.27
 	regex-automata@0.4.14
 	regex-syntax@0.8.10
 	regex@1.12.3
@@ -489,6 +517,7 @@ CRATES="
 	rfd@0.15.4
 	rgb@0.8.53
 	ring@0.17.14
+	rmcp@2.2.0
 	rowan@0.16.1
 	roxmltree@0.20.0
 	roxmltree@0.21.1
@@ -510,8 +539,11 @@ CRATES="
 	rustls@0.23.40
 	rustversion@1.0.22
 	rustybuzz@0.20.1
+	ryu@1.0.23
 	salsa20@0.10.2
 	same-file@1.0.6
+	schemars@1.2.2
+	schemars_derive@1.2.2
 	scoped-tls-hkt@0.1.5
 	scoped-tls@1.0.1
 	scopeguard@1.2.0
@@ -523,9 +555,12 @@ CRATES="
 	serde@1.0.228
 	serde_core@1.0.228
 	serde_derive@1.0.228
+	serde_derive_internals@0.30.0
 	serde_json@1.0.149
+	serde_path_to_error@0.1.20
 	serde_repr@0.1.20
 	serde_spanned@1.1.1
+	serde_urlencoded@0.7.1
 	serial-core@0.4.0
 	serial-unix@0.4.0
 	serial-windows@0.4.0
@@ -543,6 +578,7 @@ CRATES="
 	simd_cesu8@1.1.1
 	simd_helpers@0.1.0
 	simdutf8@0.1.5
+	simple_asn1@0.6.4
 	simplecss@0.2.2
 	siphasher@1.0.2
 	skia-bindings@0.90.0
@@ -566,6 +602,7 @@ CRATES="
 	spin@0.9.8
 	spin_on@0.1.1
 	spki@0.7.3
+	sse-stream@0.2.6
 	ssh-cipher@0.2.0
 	ssh-encoding@0.2.0
 	ssh-key@0.6.7
@@ -578,11 +615,14 @@ CRATES="
 	svgtypes@0.16.1
 	swash@0.2.7
 	syn@2.0.117
+	syn@3.0.6
+	sync_wrapper@1.0.2
 	synstructure@0.13.2
 	sys-locale@0.3.2
 	sysinfo@0.33.1
 	taffy@0.9.2
 	tar@0.4.45
+	task-local@0.1.1
 	tempfile@3.27.0
 	termios@0.2.2
 	text-size@1.1.1
@@ -592,6 +632,9 @@ CRATES="
 	thiserror@2.0.18
 	thread_local@1.1.9
 	tiff@0.11.3
+	time-core@0.1.9
+	time-macros@0.2.32
+	time@0.3.55
 	tiny-keccak@2.0.2
 	tiny-skia-path@0.11.4
 	tiny-skia-path@0.12.0
@@ -613,11 +656,15 @@ CRATES="
 	toml_edit@0.25.11+spec-1.1.0
 	toml_parser@1.1.2+spec-1.1.0
 	toml_writer@1.1.1+spec-1.1.0
+	tower-layer@0.3.3
+	tower-service@0.3.3
+	tower@0.5.3
 	tracing-attributes@0.1.31
 	tracing-core@0.1.36
 	tracing-log@0.2.0
 	tracing-subscriber@0.3.23
 	tracing@0.1.44
+	tray-icon@0.25.1
 	tree_magic_mini@3.2.2
 	ttf-parser@0.20.0
 	ttf-parser@0.25.1
