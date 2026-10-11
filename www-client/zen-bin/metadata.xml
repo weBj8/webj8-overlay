@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<name>Stllok</name>
+		<email>osustllok@gmail.com</email>
+	</maintainer>
+	<upstream>
+		<remote-id type="github">zen-browser/desktop</remote-id>
+		<bugs-to>https://github.com/zen-browser/desktop/issues</bugs-to>
+	</upstream>
+</pkgmetadata>
