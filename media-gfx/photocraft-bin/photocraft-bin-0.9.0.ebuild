@@ -5,26 +5,26 @@ EAPI=8
 
 inherit xdg
 
-DESCRIPTION="Open-source clean-room AutoCAD alternative in pure Rust (prebuilt binary)"
-HOMEPAGE="https://getartcraft.com/apps/cadcraft https://github.com/storytold/cadcraft"
+DESCRIPTION="Open-source clean-room Photoshop alternative in pure Rust (prebuilt binary)"
+HOMEPAGE="https://getartcraft.com/apps/photocraft https://github.com/storytold/photocraft"
 SRC_URI="
 	amd64? (
-		https://github.com/storytold/cadcraft/releases/download/v${PV}/cadcraft-${PV}-linux-x86_64.tar.gz
+		https://github.com/storytold/photocraft/releases/download/v${PV}/photocraft-${PV}-linux-x86_64.tar.gz
 	)
 	arm64? (
-		https://github.com/storytold/cadcraft/releases/download/v${PV}/cadcraft-${PV}-linux-aarch64.tar.gz
+		https://github.com/storytold/photocraft/releases/download/v${PV}/photocraft-${PV}-linux-aarch64.tar.gz
 	)
 "
 MY_ARCH="${ARCH/amd64/x86_64}"
 MY_ARCH="${MY_ARCH/arm64/aarch64}"
-S="${WORKDIR}/cadcraft-${PV}-linux-${MY_ARCH}"
+S="${WORKDIR}/photocraft-${PV}-linux-${MY_ARCH}"
 
 LICENSE="|| ( Apache-2.0 MIT )"
 SLOT="0"
 KEYWORDS="-* ~amd64 ~arm64"
 
 RDEPEND="
-	!media-gfx/cadcraft
+	!media-gfx/photocraft
 	dev-libs/wayland
 	media-libs/mesa
 	media-libs/vulkan-loader
@@ -39,7 +39,7 @@ QA_PREBUILT="usr/bin/*"
 
 src_install() {
 	dobin bin/*
-	insinto /usr
+	insinto /usr/share
 	doins -r share/applications share/icons share/metainfo share/mime
-	dodoc share/doc/cadcraft/README.md
+	dodoc share/doc/photocraft/README.md
 }

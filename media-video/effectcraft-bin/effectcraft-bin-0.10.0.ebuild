@@ -5,26 +5,26 @@ EAPI=8
 
 inherit xdg
 
-DESCRIPTION="Open-source clean-room Pro Tools alternative in pure Rust (prebuilt binary)"
-HOMEPAGE="https://getartcraft.com/apps/soundcraft https://github.com/storytold/soundcraft"
+DESCRIPTION="Open-source clean-room After Effects alternative in pure Rust (prebuilt binary)"
+HOMEPAGE="https://getartcraft.com/apps/effectcraft https://github.com/storytold/effectcraft"
 SRC_URI="
 	amd64? (
-		https://github.com/storytold/soundcraft/releases/download/v${PV}/soundcraft-${PV}-linux-x86_64.tar.gz
+		https://github.com/storytold/effectcraft/releases/download/v${PV}/effectcraft-${PV}-linux-x86_64.tar.gz
 	)
 	arm64? (
-		https://github.com/storytold/soundcraft/releases/download/v${PV}/soundcraft-${PV}-linux-aarch64.tar.gz
+		https://github.com/storytold/effectcraft/releases/download/v${PV}/effectcraft-${PV}-linux-aarch64.tar.gz
 	)
 "
 MY_ARCH="${ARCH/amd64/x86_64}"
 MY_ARCH="${MY_ARCH/arm64/aarch64}"
-S="${WORKDIR}/soundcraft-${PV}-linux-${MY_ARCH}"
+S="${WORKDIR}/effectcraft-${PV}-linux-${MY_ARCH}"
 
 LICENSE="|| ( Apache-2.0 MIT )"
 SLOT="0"
 KEYWORDS="-* ~amd64 ~arm64"
 
 RDEPEND="
-	!media-sound/soundcraft
+	!media-video/effectcraft
 	dev-libs/wayland
 	media-libs/alsa-lib
 	media-libs/mesa
@@ -40,7 +40,7 @@ QA_PREBUILT="usr/bin/*"
 
 src_install() {
 	dobin bin/*
-	insinto /usr
+	insinto /usr/share
 	doins -r share/applications share/icons share/metainfo share/mime
-	dodoc share/doc/soundcraft/README.md
+	dodoc share/doc/effectcraft/README.md
 }

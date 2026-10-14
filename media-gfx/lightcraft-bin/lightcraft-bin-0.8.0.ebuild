@@ -5,26 +5,26 @@ EAPI=8
 
 inherit xdg
 
-DESCRIPTION="Open-source clean-room Excel alternative in pure Rust (prebuilt binary)"
-HOMEPAGE="https://getartcraft.com/apps/gridcraft https://github.com/storytold/gridcraft"
+DESCRIPTION="Open-source clean-room Lightroom alternative in pure Rust (prebuilt binary)"
+HOMEPAGE="https://getartcraft.com/apps/lightcraft https://github.com/storytold/lightcraft"
 SRC_URI="
 	amd64? (
-		https://github.com/storytold/gridcraft/releases/download/v${PV}/gridcraft-${PV}-linux-x86_64.tar.gz
+		https://github.com/storytold/lightcraft/releases/download/v${PV}/lightcraft-${PV}-linux-x86_64.tar.gz
 	)
 	arm64? (
-		https://github.com/storytold/gridcraft/releases/download/v${PV}/gridcraft-${PV}-linux-aarch64.tar.gz
+		https://github.com/storytold/lightcraft/releases/download/v${PV}/lightcraft-${PV}-linux-aarch64.tar.gz
 	)
 "
 MY_ARCH="${ARCH/amd64/x86_64}"
 MY_ARCH="${MY_ARCH/arm64/aarch64}"
-S="${WORKDIR}/gridcraft-${PV}-linux-${MY_ARCH}"
+S="${WORKDIR}/lightcraft-${PV}-linux-${MY_ARCH}"
 
 LICENSE="|| ( Apache-2.0 MIT )"
 SLOT="0"
 KEYWORDS="-* ~amd64 ~arm64"
 
 RDEPEND="
-	!app-office/gridcraft
+	!media-gfx/lightcraft
 	dev-libs/wayland
 	media-libs/mesa
 	media-libs/vulkan-loader
@@ -39,7 +39,7 @@ QA_PREBUILT="usr/bin/*"
 
 src_install() {
 	dobin bin/*
-	insinto /usr
+	insinto /usr/share
 	doins -r share/applications share/icons share/metainfo share/mime
-	dodoc share/doc/gridcraft/README.md
+	dodoc share/doc/lightcraft/README.md
 }

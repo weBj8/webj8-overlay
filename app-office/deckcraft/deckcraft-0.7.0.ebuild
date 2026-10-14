@@ -3,7 +3,7 @@
 
 EAPI=8
 
-RUST_MIN_VER="1.90"
+RUST_MIN_VER="1.95"
 
 CRATES="
 	accesskit@0.24.1
@@ -24,7 +24,9 @@ CRATES="
 	android-properties@0.2.2
 	android_system_properties@0.1.6
 	anyhow@1.0.104
+	arbitrary@1.5.0
 	arboard@3.6.1
+	arrayref@0.3.9
 	arrayvec@0.7.8
 	as-raw-xcb-connection@1.0.1
 	ash@0.38.0+1.3.281
@@ -43,6 +45,7 @@ CRATES="
 	atspi-proxies@0.13.0
 	atspi@0.29.0
 	autocfg@1.5.1
+	base64@0.22.1
 	bit-set@0.10.0
 	bit-set@0.8.0
 	bit-vec@0.8.0
@@ -66,12 +69,12 @@ CRATES="
 	cfg-if@1.0.5
 	cfg_aliases@0.2.2
 	cgl@0.3.2
-	clap-sys@0.5.0
+	chrono@0.4.45
 	clipboard-win@5.4.1
 	codespan-reporting@0.13.1
 	color@0.3.3
+	color_quant@1.1.0
 	colored@2.2.0
-	com-scrape-types@0.1.1
 	combine@4.6.8
 	concurrent-queue@2.5.0
 	core-foundation-sys@0.8.7
@@ -79,6 +82,7 @@ CRATES="
 	core-graphics-types@0.1.3
 	core-graphics@0.23.2
 	core_detect@1.0.0
+	core_maths@0.1.1
 	coreaudio-rs@0.13.0
 	cpal@0.16.0
 	crc32fast@1.5.2
@@ -89,6 +93,7 @@ CRATES="
 	crunchy@0.2.4
 	cursor-icon@1.2.0
 	dasp_sample@0.11.0
+	derive_arbitrary@1.5.0
 	dify@0.8.0
 	dispatch2@0.3.1
 	dispatch@0.2.0
@@ -123,10 +128,13 @@ CRATES="
 	fax@0.2.7
 	fdeflate@0.3.7
 	fearless_simd@0.4.1
+	fearless_simd@1.1.0
 	find-msvc-tools@0.1.14
 	flate2@1.1.10
+	float-cmp@0.9.0
 	fnv@1.0.7
 	foldhash@0.2.0
+	font-types@0.11.3
 	font-types@0.12.6
 	foreign-types-macros@0.2.4
 	foreign-types-shared@0.3.1
@@ -142,8 +150,10 @@ CRATES="
 	getopts@0.2.24
 	getrandom@0.3.4
 	getrandom@0.4.3
+	gif@0.14.2
 	gl_generator@0.14.0
 	glifo@0.2.0
+	glifo@0.3.0
 	glow@0.17.0
 	glutin-winit@0.5.0
 	glutin@0.32.3
@@ -154,10 +164,23 @@ CRATES="
 	guillotiere@0.7.0
 	half@2.7.1
 	harfrust@0.12.0
+	harfrust@0.13.3
 	hashbrown@0.16.1
 	hashbrown@0.17.1
+	hayro-ccitt@0.4.0
+	hayro-jbig2@0.3.1
+	hayro-jpeg2000@0.3.5
+	hayro-syntax@0.7.2
+	hayro-write@0.7.0
 	hermit-abi@0.5.3
 	hex@0.4.3
+	i_float@5.0.0
+	i_key_sort@0.11.0
+	i_overlay@9.0.0
+	i_shape@5.0.0
+	i_tree@0.19.0
+	iana-time-zone-haiku@0.1.2
+	iana-time-zone@0.1.65
 	icu_collections@2.3.0
 	icu_locale_core@2.3.0
 	icu_normalizer@2.3.0
@@ -167,7 +190,9 @@ CRATES="
 	icu_provider@2.3.1
 	idna@1.1.0
 	idna_adapter@1.2.2
+	image-webp@0.2.4
 	image@0.25.10
+	imagesize@0.14.0
 	indexmap@2.14.2
 	is-docker@0.2.0
 	is-wsl@0.4.0
@@ -181,10 +206,10 @@ CRATES="
 	jni@0.22.4
 	jobserver@0.1.35
 	js-sys@0.3.106
-	keyboard-types@0.7.0
 	khronos-egl@6.0.0
 	khronos_api@3.1.0
 	kittest@0.4.0
+	krilla@0.8.2
 	kurbo@0.13.1
 	lazy_static@1.5.1
 	libc@0.2.190
@@ -205,7 +230,6 @@ CRATES="
 	miniz_oxide@0.8.9
 	miniz_oxide@0.9.1
 	moxcms@0.8.1
-	muda@0.19.3
 	multiversion_no_op@1.0.0
 	naga-types@30.0.1
 	naga@30.0.1
@@ -213,9 +237,7 @@ CRATES="
 	ndk-sys@0.6.0+11769913
 	ndk@0.9.0
 	nohash-hasher@0.2.0
-	num-complex@0.4.6
 	num-derive@0.4.2
-	num-integer@0.1.47
 	num-traits@0.2.19
 	num_enum@0.7.6
 	num_enum_derive@0.7.6
@@ -251,11 +273,13 @@ CRATES="
 	once_cell@1.21.4
 	open@5.4.4
 	orbclient@0.3.55
+	ordered-channel@1.2.0
 	ordered-float@5.5.0
 	ordered-stream@0.2.0
 	parking@2.2.1
 	parking_lot@0.12.5
 	parking_lot_core@0.9.12
+	pdf-writer@0.15.0
 	peniko@0.6.1
 	percent-encoding@2.3.2
 	phf@0.13.1
@@ -278,7 +302,6 @@ CRATES="
 	potential_utf@0.1.6
 	ppv-lite86@0.2.21
 	presser@0.3.1
-	primal-check@0.3.4
 	proc-macro-crate@3.5.0
 	proc-macro2@1.0.107
 	profiling@1.0.18
@@ -286,6 +309,7 @@ CRATES="
 	pxfm@0.1.30
 	quick-error@1.2.3
 	quick-error@2.0.1
+	quick-xml@0.38.4
 	quick-xml@0.41.0
 	quote@1.0.47
 	r-efi@5.3.0
@@ -299,7 +323,10 @@ CRATES="
 	raw-window-metal@1.1.0
 	rayon-core@1.13.0
 	rayon@1.12.0
+	read-fonts@0.39.2
 	read-fonts@0.41.0
+	read-fonts@0.43.3
+	read-fonts@0.44.0
 	redox_syscall@0.4.1
 	redox_syscall@0.5.18
 	redox_syscall@0.9.4
@@ -309,11 +336,12 @@ CRATES="
 	rustc-hash@1.1.0
 	rustc-hash@2.1.3
 	rustc_version@0.4.1
-	rustfft@6.4.1
 	rustix@0.38.44
 	rustix@1.1.5
 	rustversion@1.0.23
 	rusty-fork@0.3.1
+	rustybuzz@0.20.1
+	ryu@1.0.23
 	same-file@1.0.6
 	scoped-tls@1.0.1
 	scopeguard@1.2.0
@@ -331,7 +359,9 @@ CRATES="
 	simd_cesu8@1.2.0
 	simdutf8@0.1.5
 	siphasher@1.0.4
+	skrifa@0.42.1
 	skrifa@0.44.0
+	skrifa@0.47.0
 	slab@0.4.12
 	slotmap@1.1.1
 	smallvec@1.16.2
@@ -342,7 +372,8 @@ CRATES="
 	spirv@0.4.0+sdk-1.4.341.0
 	stable_deref_trait@1.2.1
 	static_assertions@1.1.0
-	strength_reduce@0.2.4
+	strict-num@0.1.1
+	subsetter@0.2.6
 	symphonia-bundle-flac@0.5.5
 	symphonia-bundle-mp3@0.5.5
 	symphonia-codec-aac@0.5.5
@@ -368,7 +399,9 @@ CRATES="
 	thiserror-impl@2.0.21
 	thiserror@1.0.69
 	thiserror@2.0.21
+	thread_local@1.1.10
 	tiff@0.11.3
+	tiny-skia-path@0.12.0
 	tinystr@0.8.4
 	tokio@1.53.2
 	toml@1.1.6+spec-1.1.0
@@ -379,21 +412,28 @@ CRATES="
 	tracing-attributes@0.1.31
 	tracing-core@0.1.36
 	tracing@0.1.44
-	transpose@0.2.3
+	ttf-parser@0.25.1
 	type-map@0.5.1
 	uds_windows@1.2.1
 	unarray@0.1.4
+	unicode-bidi-mirroring@0.4.0
+	unicode-bidi@0.3.18
+	unicode-ccc@0.4.0
 	unicode-general-category@1.1.0
 	unicode-ident@1.0.26
+	unicode-linebreak@0.1.5
+	unicode-properties@0.1.4
+	unicode-script@0.5.8
 	unicode-segmentation@1.13.3
 	unicode-width@0.2.2
 	url@2.5.8
 	utf8_iter@1.0.4
 	uuid@1.27.0
 	vello_common@0.1.0
+	vello_common@0.2.0
 	vello_cpu@0.1.0
+	vello_cpu@0.2.0
 	version_check@0.9.5
-	vst3@0.3.0
 	wait-timeout@0.2.1
 	walkdir@2.5.0
 	wasip2@1.0.4+wasi-0.2.12
@@ -476,6 +516,7 @@ CRATES="
 	winnow@1.0.4
 	winresource@0.1.31
 	wit-bindgen@0.57.1
+	write-fonts@0.48.1
 	writeable@0.6.4
 	x11-dl@2.21.0
 	x11rb-protocol@0.13.2
@@ -484,6 +525,7 @@ CRATES="
 	xkbcommon-dl@0.4.2
 	xkeysym@0.2.1
 	xml-rs@0.8.29
+	xmp-writer@0.3.3
 	yoke-derive@0.8.4
 	yoke@0.8.3
 	zbus-lockstep-macros@0.5.2
@@ -493,15 +535,17 @@ CRATES="
 	zbus_names@4.3.4
 	zbus_xml@5.2.1
 	zcheapstr@1.1.0
-	zerocopy-derive@0.8.60
-	zerocopy@0.8.60
+	zerocopy-derive@0.8.61
+	zerocopy@0.8.61
 	zerofrom-derive@0.1.8
 	zerofrom@0.1.8
 	zerotrie@0.2.5
 	zerovec-derive@0.11.6
 	zerovec@0.11.8
+	zip@3.0.0
 	zlib-rs@0.6.8
 	zmij@1.0.23
+	zopfli@0.8.3
 	zune-core@0.5.3
 	zune-jpeg@0.5.15
 	zvariant@5.15.0
@@ -511,8 +555,8 @@ CRATES="
 
 inherit cargo desktop xdg
 
-DESCRIPTION="Open-source clean-room Pro Tools alternative in pure Rust"
-HOMEPAGE="https://getartcraft.com/apps/soundcraft https://github.com/storytold/soundcraft"
+DESCRIPTION="Open-source clean-room PowerPoint alternative in pure Rust"
+HOMEPAGE="https://getartcraft.com/apps/deckcraft https://github.com/storytold/deckcraft"
 SRC_URI="
 	https://github.com/storytold/${PN}/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz
 	${CARGO_CRATE_URIS}
@@ -521,7 +565,7 @@ SRC_URI="
 LICENSE="|| ( Apache-2.0 MIT )"
 # Dependent crate licenses
 LICENSE+="
-	Apache-2.0 BSD Boost-1.0 ISC MIT MPL-2.0 OFL-1.1
+	Apache-2.0 BSD-2 BSD Boost-1.0 ISC MIT MPL-2.0 OFL-1.1
 	UbuntuFontLicense-1.0 Unicode-3.0 ZLIB
 "
 SLOT="0"
@@ -532,7 +576,7 @@ DEPEND="
 "
 RDEPEND="
 	${DEPEND}
-	!media-sound/${PN}-bin
+	!app-office/${PN}-bin
 	dev-libs/wayland
 	media-libs/alsa-lib
 	media-libs/mesa

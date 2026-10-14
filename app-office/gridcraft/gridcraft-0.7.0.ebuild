@@ -3,7 +3,7 @@
 
 EAPI=8
 
-RUST_MIN_VER="1.90"
+RUST_MIN_VER="1.95"
 
 CRATES="
 	accesskit@0.24.1
@@ -16,6 +16,7 @@ CRATES="
 	accesskit_windows@0.32.1
 	accesskit_winit@0.32.2
 	adler2@2.0.1
+	aes@0.9.3
 	ahash@0.8.12
 	aho-corasick@1.1.5
 	allocator-api2@0.2.21
@@ -47,6 +48,7 @@ CRATES="
 	bit-vec@0.9.1
 	bitflags@1.3.2
 	bitflags@2.13.2
+	block-buffer@0.12.1
 	block2@0.5.1
 	block2@0.6.2
 	blocking@1.7.0
@@ -63,6 +65,7 @@ CRATES="
 	cfg-if@1.0.5
 	cfg_aliases@0.2.2
 	cgl@0.3.2
+	cipher@0.5.2
 	clipboard-win@5.4.1
 	codespan-reporting@0.13.1
 	color@0.3.3
@@ -73,15 +76,19 @@ CRATES="
 	core-foundation@0.9.4
 	core-graphics-types@0.1.3
 	core-graphics@0.23.2
+	cpubits@0.1.1
+	cpufeatures@0.3.1
 	crc32fast@1.5.2
 	crossbeam-channel@0.5.17
 	crossbeam-deque@0.8.8
 	crossbeam-epoch@0.9.21
 	crossbeam-utils@0.8.23
 	crunchy@0.2.4
+	crypto-common@0.2.2
 	cursor-icon@1.2.0
 	derive_arbitrary@1.5.0
 	dify@0.8.0
+	digest@0.11.3
 	dispatch2@0.3.1
 	dispatch@0.2.0
 	dlib@0.5.3
@@ -149,8 +156,10 @@ CRATES="
 	hashbrown@0.17.1
 	hermit-abi@0.5.3
 	hex@0.4.3
+	hybrid-array@0.4.15
 	image@0.25.10
 	indexmap@2.14.2
+	inout@0.2.2
 	is-docker@0.2.0
 	is-wsl@0.4.0
 	itertools@0.15.0
@@ -256,7 +265,6 @@ CRATES="
 	profiling@1.0.18
 	pxfm@0.1.30
 	quick-error@2.0.1
-	quick-xml@0.38.4
 	quick-xml@0.41.0
 	quote@1.0.47
 	r-efi@5.3.0
@@ -292,6 +300,8 @@ CRATES="
 	serde_json@1.0.151
 	serde_repr@0.1.21
 	serde_spanned@1.1.1
+	sha1@0.11.0
+	sha2@0.11.0
 	shlex@2.0.1
 	signal-hook-registry@1.4.8
 	simd-adler32@0.3.10
@@ -329,6 +339,7 @@ CRATES="
 	tracing@0.1.44
 	tree_magic_mini@3.2.2
 	type-map@0.5.1
+	typenum@1.20.1
 	uds_windows@1.2.1
 	unicode-general-category@1.1.0
 	unicode-ident@1.0.26
@@ -433,6 +444,11 @@ CRATES="
 	zvariant_derive@5.15.0
 	zvariant_utils@4.2.0
 "
+
+declare -A GIT_CRATES=(
+	[craft-print]='https://github.com/storytold/craft-libs;d27646a5f7c8b4fc85d9dd3213b8c88b58e0088d;craft-libs-%commit%/crates/print'
+	[craft-ui]='https://github.com/storytold/craft-libs;d27646a5f7c8b4fc85d9dd3213b8c88b58e0088d;craft-libs-%commit%/crates/ui'
+)
 
 inherit cargo desktop xdg
 
