@@ -684,7 +684,6 @@ CRATES="
 	unicode-script@0.5.8
 	unicode-segmentation@1.13.2
 	unicode-vo@0.1.0
-	unicode-width@0.1.14
 	unicode-width@0.2.2
 	unicode-xid@0.2.6
 	universal-hash@0.5.1
@@ -695,16 +694,14 @@ CRATES="
 	urlencoding@2.1.3
 	usvg@0.47.0
 	utf8_iter@1.0.4
-	utf8parse@0.2.2
 	uuid@1.23.1
 	v_frame@0.3.9
 	valuable@0.1.1
 	version_check@0.9.5
-	vt100@0.15.2
+	vt100@0.16.2
 	vtable-macro@0.4.0
 	vtable@0.4.0
-	vte@0.11.1
-	vte_generate_state_changes@0.1.2
+	vte@0.15.0
 	walkdir@2.5.0
 	wasi@0.11.1+wasi-snapshot-preview1
 	wasip2@1.0.3+wasi-0.2.9

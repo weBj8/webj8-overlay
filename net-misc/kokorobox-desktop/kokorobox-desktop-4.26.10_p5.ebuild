@@ -7,9 +7,9 @@ inherit desktop xdg
 
 MY_PV="${PV/_p/-}"
 PNPM_PV="11.1.1"
-ELECTRON_PV="44.5.1"
+ELECTRON_PV="44.7.0"
 MIHOMO_PV="1.19.32"
-SERVICE_PV="0.6.13"
+SERVICE_PV="0.6.14"
 
 DESCRIPTION="Mihomo proxy client built from its Electron/React application sources"
 HOMEPAGE="https://github.com/amamiyakokoro/KokoroBox-Desktop"
@@ -125,6 +125,10 @@ src_compile() {
 	chmod +x "${WORKDIR}/package/bin/pnpm.cjs" || die
 	ln -sf pnpm.cjs "${WORKDIR}/package/bin/pnpm" || die
 	export PATH="${WORKDIR}/package/bin:${PATH}"
+
+	# Build-time license collection reads the unpacked Electron distribution
+	# (install scripts, which would download it, are skipped).
+	export ELECTRON_OVERRIDE_DIST_PATH="${WORKDIR}/electron"
 
 	# Invoke the installed tool directly: pnpm exec can implicitly reinstall.
 	node_modules/.bin/electron-vite build || die

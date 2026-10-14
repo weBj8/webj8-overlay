@@ -50,8 +50,8 @@ RDEPEND="
 "
 
 QA_PREBUILT="
-	opt/Fluxer?Canary/*
-	opt/Fluxer?Canary/resources/app.asar.unpacked/node_modules/@fluxer/*/*.node
+	opt/fluxer-canary/*
+	opt/fluxer-canary/resources/app.asar.unpacked/node_modules/@fluxer/*/*.node
 "
 
 src_unpack() {
@@ -64,14 +64,14 @@ src_install() {
 	unpacker "${DISTDIR}/${P}-amd64.deb"
 
 	sed -i \
-		-e 's|^Exec="/opt/Fluxer Canary/fluxer-canary-launcher"|Exec=fluxer|' \
-		-e 's|^Exec="/opt/Fluxer Canary/fluxer-canary"|Exec=fluxer|' \
+		-e 's|^Exec=/opt/fluxer-canary/fluxer-canary-launcher|Exec=fluxer|' \
+		-e 's|^Exec="/opt/fluxer-canary/fluxer-canary"|Exec=fluxer|' \
 		-e 's|^Comment=Fluxer$|Comment=Instant messaging and VoIP client|' \
 		-e 's|^MimeType=.*$|MimeType=x-scheme-handler/fluxer;|' \
 		-e 's|^Categories=.*$|Categories=Network;InstantMessaging;Chat;|' \
-		"${ED}/usr/share/applications/fluxer-canary.desktop" || die
+		"${ED}/usr/share/applications/app.fluxer.FluxerDesktopCanary.desktop" || die
 
-	dosym -r "/opt/Fluxer Canary/fluxer-canary" /usr/bin/fluxer
+	dosym -r "/opt/fluxer-canary/fluxer-canary" /usr/bin/fluxer
 
 	if [[ -f ${ED}/usr/share/doc/fluxer-canary/changelog.gz ]]; then
 		gunzip -c "${ED}/usr/share/doc/fluxer-canary/changelog.gz" > "${T}/changelog" || die
