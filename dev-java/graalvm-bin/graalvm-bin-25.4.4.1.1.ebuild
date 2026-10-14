@@ -7,8 +7,8 @@ inherit java-vm-2 toolchain-funcs
 
 DESCRIPTION="Prebuilt Java JDK binaries provided by Oracle GraalVM"
 HOMEPAGE="https://www.graalvm.org/"
-# GraalVM innovation release 25.3 bundles JDK 25.0.4.1.
-SRC_URI="https://gds.oracle.com/download/graal/25i3/archive/graalvm-jdk-25i3-25.0.4.1_linux-x64_bin.tar.gz"
+# GraalVM innovation release 25.4 bundles JDK 25.0.4.1.1.
+SRC_URI="https://gds.oracle.com/download/graal/25i4/archive/graalvm-jdk-25i4-25.0.4.1.1_linux-x64_bin.tar.gz"
 S="${WORKDIR}/graalvm-${PV}+1.1"
 
 LICENSE="GFTC"

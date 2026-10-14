@@ -8,8 +8,8 @@ inherit cmake edo
 DESCRIPTION="Library for YUV conversion and scaling"
 HOMEPAGE="https://chromium.googlesource.com/libyuv/libyuv"
 # Upstream has no release tags. Use the commit date rather than the opaque
-# third-party snapshot number used by older ebuilds (upstream version: 1971).
-MY_COMMIT="98697ab033ff9fb56dbe42c6bb214e1d285640c4"
+# third-party snapshot number used by older ebuilds (upstream version: 1974).
+MY_COMMIT="58d817ed81e8fe8b06a58576d639cd56b19526d3"
 SRC_URI="https://chromium.googlesource.com/libyuv/libyuv/+archive/${MY_COMMIT}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="BSD"
@@ -51,7 +51,7 @@ src_test() {
 src_install() {
 	cmake_src_install
 
-	sed -e "s|%%VERSION%%|1971|" \
+	sed -e "s|%%VERSION%%|1974|" \
 		-e "s|%%LIBDIR%%|$(get_libdir)|" \
 		"${FILESDIR}"/libyuv.pc > "${T}"/libyuv.pc || die
 	insinto /usr/"$(get_libdir)"/pkgconfig
